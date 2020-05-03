@@ -15,3 +15,5 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 /nbproject/private/
+/public/fichiers/
+/public/upload/
