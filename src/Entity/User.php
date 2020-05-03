@@ -32,7 +32,8 @@ class User implements UserInterface ,\Serializable
     private $username;
     
     /**
-     * @ORM\Column(type="json")
+     * @var array
+     * @ORM\Column(type="array")
      */
     private $roles = [];
 
@@ -43,7 +44,7 @@ class User implements UserInterface ,\Serializable
     private $password;
     
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $agreedTermsAt;
 

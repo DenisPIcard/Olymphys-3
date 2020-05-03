@@ -1,6 +1,6 @@
 easy_admin :
     entities :
-        Equipesadmin :
+         Equipesadmin :
             class : App\Entity\Equipesadmin
             label : '<h2> Les équipes des CIA</h2>'
             controller: App\Controller\EquipesadminController 
@@ -60,5 +60,4 @@ easy_admin :
                   - 'prenomProf1'
                   - 'idProf2'
                   - 'nomProf2'
-                  - 'prenomProf2'
-                                  
+                  - 'prenomProf2'                  
