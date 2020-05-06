@@ -69,6 +69,14 @@ class Photoscn
       */
      private $edition;
      
+     
+     /**
+        * @ORM\Column(type="string", length=125,  nullable=true)
+        * 
+        * @var string
+        */
+      private $coment;
+      
      /**
        *  
        * @ORM\OneToOne(targetEntity="App\Entity\Photoscnthumb",orphanRemoval=true)
@@ -228,7 +236,16 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
    {
        return $this->updatedAt;
    }
-   
+   public function getComent()
+    {
+        return $this->coment;
+    }
+
+    public function setComent($coment)
+    {
+        $this->coment = $coment;
+        return $this;
+    }
    
     
 }

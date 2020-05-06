@@ -923,7 +923,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
 		->getManager()
 		->getRepository('App:Edition');
             $qb=$repositoryEdition->createQueryBuilder('e')
-                                      ->orderBy('e.edition', 'DESC');
+                                      ->orderBy('e.ed', 'DESC');
 
             
             $Editions = $qb->getQuery()->getResult();
