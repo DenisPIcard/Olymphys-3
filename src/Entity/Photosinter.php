@@ -75,12 +75,7 @@ class Photosinter
        * @ORM\JoinColumn(name="thumb_id",  referencedColumnName="id" )
        */
       private $thumb;
-      /**
-        * @ORM\Column(type="string", length=125,  nullable=true)
-        * 
-        * @var string
-        */
-      private $coment;
+     
      
      /**
        * 
@@ -234,16 +229,7 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
    {
        return $this->updatedAt;
    }
-    public function getComent()
-    {
-        return $this->coment;
-    }
-
-    public function setComent($coment)
-    {
-        $this->coment = $coment;
-        return $this;
-    }
+   
    
     
 }
