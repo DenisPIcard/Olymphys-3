@@ -161,12 +161,16 @@ public function choix_equipe(Request $request,$choix) {
                              ->andWhere('t.selectionnee=:selectionnee')
                              ->setParameter('selectionnee', TRUE)
                              ->andWhere('t.lettre >:valeur')
+                             ->andWhere('t.edition =:edition')
+                             ->setParameter('edition', $edition)
                              ->setParameter('valeur','')
                              ->orderBy('t.lettre', 'ASC');
     
      $qb3 =$repositoryEquipesadmin->createQueryBuilder('t')
                              ->where('t.idProf1=:professeur')
                              ->orwhere('t.idProf2=:professeur')
+                             ->andWhere('t.edition =:edition')
+                             ->setParameter('edition', $edition)
                              ->setParameter('professeur', $id_user);
    if ($dateconnect>$datelimcia) {
         $phase='national';
@@ -218,6 +222,8 @@ public function choix_equipe(Request $request,$choix) {
                                   $qb2 =$repositoryEquipesadmin->createQueryBuilder('t')
                                                   ->where('t.centre=:centre')
                                                   ->setParameter('centre', $centre)
+                                                  ->andWhere('t.edition =:edition')
+                                                  ->setParameter('edition', $edition)
                                                   ->orderBy('t.numero', 'ASC');
                              $liste_equipes=$qb2->getQuery()->getResult();  
 
@@ -259,7 +265,7 @@ public function choix_equipe(Request $request,$choix) {
                                           else{ 
                                          $request->getSession()
                                                  ->getFlashBag()
-                                                 ->add('info', 'Le site n\'est pas encore prêt pour une saisie des diaporamas ou vous n\'avez pas d\'équipes inscrite pour le concours national de la '.$edition->getEd().'e edition') ;
+                                                 ->add('info', 'Le site n\'est pas encore prêt pour une saisie des diaporamas ou vous n\'avez pas d\'équipe inscrite pour le concours national de la '.$edition->getEd().'e edition') ;
                                          return $this->redirectToRoute('core_home');
                                           }
                                        }
@@ -274,7 +280,7 @@ if ($choix=='liste_prof'){
                                             $liste_equipes=$qb3->getQuery()->getResult();     
                                          }
 
-                                         if(isset($liste_equipes)) {
+                                         if($liste_equipes) {
 
                                          $content = $this
                                                   ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -286,7 +292,8 @@ if ($choix=='liste_prof'){
                                           else{ 
                                          $request->getSession()
                                                  ->getFlashBag()
-                                                 ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipes inscrite pour le concours '. $phase.'de la '.$edition->getEd().'e edition') ;
+                                                 ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipe inscrite pour le concours '. $phase.' de la '.$edition->getEd().'e edition') ;
+                                         
                                          return $this->redirectToRoute('core_home');    
                                              }
    }
@@ -297,6 +304,7 @@ if ($choix=='liste_prof'){
                                          if (($dateconnect>$datelimcia) and ($dateconnect<=$datelimnat)) {
                                              $phase='national';
                                               $qb3 ->andWhere('t.selectionnee=:selectionnee')
+                                                      
                                                                   ->setParameter('selectionnee', TRUE);     
                                              $liste_equipes=$qb3->getQuery()->getResult();    
                                              }
@@ -305,7 +313,7 @@ if ($choix=='liste_prof'){
 
                                              $liste_equipes=$qb3->getQuery()->getResult();   
                                          }
-                                           if(isset($liste_equipes)) {
+                                           if($liste_equipes) {
 
                                              $content = $this
                                                       ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -317,7 +325,7 @@ if ($choix=='liste_prof'){
                                          else{ 
                                              $request->getSession()
                                                      ->getFlashBag()
-                                                     ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipes inscrite pour le concours '. $phase.'de la '.$edition->getEd().'e edition') ;
+                                                     ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipe inscrite pour le concours '. $phase.' de la '.$edition->getEd().'e edition') ;
                                              return $this->redirectToRoute('core_home');   
                                              }
                                             }
@@ -328,6 +336,8 @@ if ($choix=='liste_prof'){
                                                $qb4 =$repositoryEquipesadmin->createQueryBuilder('t')
                                                                   ->where('t.selectionnee=:selectionnee')
                                                                  ->setParameter('selectionnee',TRUE)
+                                                                 ->andWhere('t.edition =:edition')
+                                                                  ->setParameter('edition', $edition)
                                                                  ->andWhere('t.lettre>:valeur')
                                                                  ->setParameter('valeur', '')
                                                                  ->orderBy('t.lettre','ASC');
@@ -348,6 +358,8 @@ if ($choix=='liste_prof'){
                                                     $qb5= $repositoryEquipesadmin->createQueryBuilder('t')
                                                                   ->where('t.nomLycee>:vide')
                                                                  ->setParameter('vide','')
+                                                                  ->andWhere('t.edition =:edition')
+                                                                 ->setParameter('edition', $edition)
                                                                  ->orderBy('t.numero','ASC')
                                                                 ->andWhere('t.centre =:centre')
                                                                 ->setParameter('centre', $user->getCentrecia());
@@ -360,7 +372,7 @@ if ($choix=='liste_prof'){
 
 
 
-                                              if(isset($liste_equipes)) {
+                                              if($liste_equipes) {
 
                                              $content = $this
                                                       ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -372,7 +384,7 @@ if ($choix=='liste_prof'){
                                          else{ 
                                              $request->getSession()
                                                      ->getFlashBag()
-                                                     ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipes inscrite pour le concours '. $phase.'de la '.$edition->getEd().'e edition') ;
+                                                     ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipes inscrite pour le concours '. $phase.' de la '.$edition->getEd().'e edition') ;
                                              return $this->redirectToRoute('core_home');   
                                              }
                                              }
@@ -749,19 +761,25 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
+                              ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition)
                              ->setParameter('id_equipe', $id_equipe);
     
     $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le comité fichiers cia
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
                              ->setParameter('id_equipe', $id_equipe)
+                            ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition)
                              ->andWhere('t.national =:national')
                              ->setParameter('national', FALSE) ;
     
-    $qb3 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le comité fichiers cn 
+    $qb3 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le comité fichiers cn sans les fiches securité
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
                              ->setParameter('id_equipe', $id_equipe)
+                              ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition)
                              ->andWhere('t.typefichier <:type')
                              ->setParameter('type', 4)
                              ->andWhere('t.national =:national')
@@ -923,7 +941,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
 		->getManager()
 		->getRepository('App:Edition');
             $qb=$repositoryEdition->createQueryBuilder('e')
-                                      ->orderBy('e.edition', 'DESC');
+                                      ->orderBy('e.ed', 'DESC');
 
             
             $Editions = $qb->getQuery()->getResult();
@@ -983,12 +1001,14 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                                      $qb1->andWhere('m.typefichier <:type')
                                      ->setParameter('type',3);
                  }
+                 
                   if($num_type_fichier==3){       
                                      $qb1->andWhere('m.typefichier =:type')
-                                     ->setParameter('type',$num_type_fichier);
+                                     ->setParameter('type',$num_type_fichier) ->andWhere('m.edition=:edition')
+                                      ->setParameter('edition', $edition);
                  }
                $fichierstab=$qb1->getQuery()->getResult();
-                             
+                          
                
                $qb2= $repositoryEquipesadmin->createQueryBuilder('e')
                                       ->where('e.selectionnee=:selectionnee')
@@ -1017,12 +1037,23 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
               }
               
             if (isset($fichiersEquipe)){
+                if($num_type_fichier<3){
               $content = $this
                           ->renderView('adminfichiers\affiche_memoires.html.twig',
                                   array('fichiersequipes'=>$fichiersEquipe,
                                            'edition'=>$edition, 
                                             'concours'=>$concours
                                             )); 
+                }
+                 if($num_type_fichier==3){
+                     
+              $content = $this
+                          ->renderView('adminfichiers\affiche_presentations.html.twig',
+                                  array('fichiersequipes'=>$fichiersEquipe,
+                                           'edition'=>$edition, 
+                                            'concours'=>$concours
+                                            )); 
+                }
             return new Response($content); 
             }
               else
@@ -1033,6 +1064,10 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
         }
         }
 }
+
+
+
+
    /**
          *@IsGranted("ROLE_SUPER_ADMIN")
          * 

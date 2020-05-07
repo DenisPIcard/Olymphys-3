@@ -8,7 +8,7 @@
     {% if concours=='cn' %}
     Liste des présentations des épreuves nationales 
     {% endif %}
-    {% dump(edition.ed) %}
+    
    de la {{edition.ed}}<sup>e</sup> édition.
     {% endblock %}
 
@@ -17,15 +17,15 @@
     <div class="well">
     
                           
-        {% for fichier in fichiersequipes %}
+        {% for fichiers in fichiersequipes %}
          
              <div class="col">
       
-                      {% set presentation=fichier %}
+                      {% set presentation=fichiers[0] %}
     
                   {% if presentation is not null %}
                     Eq {{presentation.equipe.lettre}}-
-                    <a href="{{asset('/upload/equipes/presentations/'~presentation.presentation)}}" target="blank">{{presentation.equipe.titreProjet}}</a>
+                    <a href="{{asset('/upload/equipes/presentations/'~presentation.fichier)}}" target="blank">{{presentation.equipe.titreProjet}}</a>
               
                     <h8><i>Lycée {{presentation.equipe.rneId.nom}}, {{presentation.equipe.rneId.commune}} </i> </h8>
                     {% endif %}
@@ -42,7 +42,7 @@
  
     <div class="well" >
        
-            <center><a href="{{ path('fichiers_choixedition',{type_fichier:'presentation'})  }}" >Retour au choix des présentations</a></center>
+            <center><a href="{{ path('fichiers_choixedition',{num_type_fichier:3})  }}" >Retour au choix des fichiers</a></center>
         
     </div>
        

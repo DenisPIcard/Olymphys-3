@@ -289,15 +289,21 @@ class PhotosController extends  AbstractController
                                    ->getRepository('App:Photosinter');
              $Edition=$repositoryEdition->find(['id'=>$edition]);
              $liste_centres=$repositoryCentrescia->findAll();
-             $qb =$repositoryPhotosinter->createQueryBuilder('t');
-                               //->where('t.edition =: edition')
-                              // ->setParameter('edition', $edition);
+             $qb =$repositoryPhotosinter->createQueryBuilder('t')
+                               ->where('t.edition =:edition')
+                                ->setParameter('edition', $Edition);
                                
              $liste_photos=$qb->getQuery()->getResult();
-             //$liste_photos=$repositoryPhotosinter->findByEdition(['edition'=>$edition]);
+             if ($liste_photos){
              return $this->render('photos/affiche_photos_cia.html.twig', [
                 'liste_photos' => $liste_photos,'edition'=>$Edition,'liste_centres'=>$liste_centres, 'concours'=>'cia']);
-             
+             }
+             else
+             {$request->getSession()
+                         ->getFlashBag()
+                         ->add('info', 'Pas de photo des épreuves interacadémiques déposée pour l\'édition '.$Edition->getEd().' à ce jour') ;
+             return $this->redirectToRoute('core_home');
+              }
              
             
         }   
@@ -333,7 +339,9 @@ class PhotosController extends  AbstractController
              
              $qb2 =$repositoryPhotoscn->createQueryBuilder('p')
                      ->leftJoin('p.equipe', 'e')
-                     ->orderBy('e.lettre','ASC');
+                     ->orderBy('e.lettre','ASC')
+                     ->andWhere('p.edition =:edition')
+                     ->setParameter('edition', $Edition);
             
              $liste_photos=$qb2->getQuery()->getResult();
              
@@ -350,7 +358,7 @@ class PhotosController extends  AbstractController
               if (!$liste_photos)
               {$request->getSession()
                          ->getFlashBag()
-                         ->add('info', 'Pas de photo déposée pour l\'édition '.$Edition->getEd().'à ce jour') ;
+                         ->add('info', 'Pas de photo du concours national déposée pour l\'édition '.$Edition->getEd().' à ce jour') ;
              return $this->redirectToRoute('core_home');
               }
             }
