@@ -4,17 +4,17 @@ imports :
 
       - { resource: easy_admin/basic.yml }
       - { resource: easy_admin/design.yml }
-      #- { resource: easy_admin/equipes.yml }
-      #- { resource: easy_admin/jures.yml }
-      #-  { resource: easy_admin/recompenses.yml }   
+      - { resource: easy_admin/equipes.yml }
+      - { resource: easy_admin/jures.yml }
+      -  { resource: easy_admin/recompenses.yml }   
       - { resource: easy_admin/users.yml }   
       - { resource: easy_admin/equipesadmin.yml }   
       - { resource: easy_admin/edition.yml }  
-      #- { resource: easy_admin/classement.yml }
+      - { resource: easy_admin/classement.yml }
       - { resource: easy_admin/photosinter.yml }  
       - { resource: easy_admin/photoscn.yml }  
       - { resource: easy_admin/centrescia.yml } 
-      #- { resource: easy_admin/elevesinter.yml } 
+      - { resource: easy_admin/elevesinter.yml } 
       - { resource: easy_admin/selectionnees.yml }
       - { resource: easy_admin/fichiersequipesmemoires.yml }
       - { resource: easy_admin/fichiersequipesmemoiresinter.yml }

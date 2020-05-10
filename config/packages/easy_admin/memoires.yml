@@ -1,0 +1,45 @@
+easy_admin :
+     entities :
+         Memoires:
+             class : App\Entity\Memoires
+             templates:
+                        list: 'admin/customizations/memoires_list.html.twig'
+             actions :
+               - {name : 'new', label : 'Déposer un mémoire'}
+             
+             list :
+                  max_results: 30
+                  dql_filter : 'entity.annexe = 0'
+                  actions: [{ name: 'Lire', icon: 'eye' ,label: ''},'-edit']
+                  batch_actions: 
+                      - {name : 'telechargernat', icon : 'download'}
+                    
+                  title : '<font color="yelow"><h2>Memoires</h2></font>' 
+                  fields:
+                    - {property : 'equipe.lettre', label: 'Lettre'}
+                    - {property: 'equipe.titreProjet', label : 'Projet'}
+                    - {property : 'memoire', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoires.html.twig', base_path: '%app.path.memoires_nat%', propertyFile: 'memoireFile'}
+                    - {property: 'updatedat', label : 'Déposé le ', type: 'datetime'} 
+                  sort: ['equipe.lettre','ASC']
+                  
+             edit :
+                  title: ' Les fichiers sont automatiquement renommés selon leur catégorie : memoire ou annexe' 
+                  fields :
+                      - { type: 'group', columns: 6, label: '<font color="red" > Choisir l''équipe </font> ' } 
+                      - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin',query_builder : 'App\Repository\EquipesadminRepository::getEquipeNa', 'choice_label' : 'getInfoequipe'}}
+                      - { type: 'group', columns: 6, label: '<font color="red" > Cocher cette case si c''est une annexe </font>'}  
+                      - { property : 'annexe' }
+                      - { property : 'memoireFile', label: Choisir le mémoire',  type : 'vich_file',  type_options : {'allow_delete' : false}}
+                          
+                 
+             new :
+                  title : ' Les fichiers sont automatiquement renommés selon leur catégorie : memoire ou annexe'
+                  fields: 
+                     
+                      - { type: 'group', columns: 6, label: '<font color="red" > Choisir le fichier à déposer </font> ' } 
+                      - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin',query_builder : 'App\Repository\EquipesadminRepository::getEquipeNa', 'choice_label' : 'getInfoequipenat'}}
+                      - { property : 'memoireFile', label: 'Memoire',  type : 'vich_file',  type_options : {}}
+                      - { type: 'group', columns: 6, label: '<font color="red" > Cocher cette case si c''est une annexe </font>'}  
+                      - { property : 'annexe' } 
+                     # - {property : 'memoire', label: 'Fichier', type : 'file', data_class : 'null'}
+    
