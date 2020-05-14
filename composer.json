@@ -45,6 +45,7 @@
         "twig/cssinliner-extra": "^3.0",
         "twig/extra-bundle": "^3.0",
         "vich/uploader-bundle": "^1.10"
+         
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
@@ -52,6 +53,7 @@
         "sensiolabs/security-checker": "^6.0",
         "symfony/profiler-pack": "^1.0",
         "symfony/test-pack": "*"
+       
     },
     "config": {
         "preferred-install": {
