@@ -65,7 +65,7 @@ $http = new HttpClient('http://192.168.1.37/phpbb3', array(
     )
 ));
        
-       dd($request);
+      
        
        $accessToken = 'abcd1234def67890';
 
