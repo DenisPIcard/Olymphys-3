@@ -26,58 +26,6 @@ use Symfony\Component\HttpClient\HttpClient;
 
 class SecurityController extends AbstractController
 {  
-    
-    //use Guzzle\Http\Client;
-    /**
- * @Route("/oauth", name="oauth");
- * 
- */
-   public function oauth(Request $request)
-   {    
-       
-    /*   //include __DIR__.'/vendor/autoload.php';
-           $client = HttpClient::createForBaseUri('192.168.1.37/phpbb3', [
-    // HTTP Basic authentication (there are multiple ways of configuring it)
-    'auth_basic' => ['the-username'],
-    'auth_basic' => ['the-username', 'the-password'],
-    'auth_basic' => 'the-username:the-password',
-
-    // HTTP Bearer authentication (also called token authentication)
-    'auth_bearer' => 'the-bearer-token',
-
-    // Microsoft NTLM authentication (there are multiple ways of configuring it)
-    'auth_ntlm' => ['the-username'],
-    'auth_ntlm' => ['the-username', 'the-password'],
-    'auth_ntlm' => 'the-username:the-password',
-]);
-
-$response = $client->request('POST', '192.168.1.37/phpbb3', [
-    // use a different HTTP Basic authentication only for this request
-    'auth_basic' => ['the-username', 'the-password'],
-
-    // ...
-]);*/
-
-// create our http client (Guzzle)
-$http = new HttpClient('http://192.168.1.37/phpbb3', array(
-    'request.options' => array(
-        'exceptions' => false,
-    )
-));
-       
-      
-       
-       $accessToken = 'abcd1234def67890';
-
-$request = $http->request('POST', 'jouve');
-$request->addHeader('Authorization', 'Bearer '.$accessToken);
-
-$response = $request->send();
-       
-   }
-    
-    
-    
     /**
      * @Route("/login", name="login")
      */

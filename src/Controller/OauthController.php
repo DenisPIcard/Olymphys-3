@@ -22,25 +22,36 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\HttpClient\HttpClient;
-
+use Guzzle\Http\Client;
 class OauthController extends AbstractController
 {  
+             
      /**
  * @Route("/oauth/authorize", name="oauth_authorize");
  * 
  */
-   public function oauth(Request $request)
-   {    $client = HttpClient::create();
-    
+   public function authorize(Request $request, AuthenticationUtils $authenticationUtils)
+   {    
+       $client = HttpClient::create();
+       //dd($request);
+        $error = $authenticationUtils->getLastAuthenticationError();
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+       // dd($lastUsername);
+        //return $this->render($request->query->get('redirect_uri'));
        
-      
+       $response= $client->request('GET',$request->query->get('redirect_uri').'/olymphys');
        
-       $accessToken = 'abcd1234def67890';
-
-$request = $client->request('POST', 'http://192.168.1.37/phpbb3')->addHeader('Authorization', 'Bearer '.$accessToken);;
-
-
-$response = $request->send();
+     
    }
+    /**
+ * @Route("/oauth/access_token", name="oauth_access_token");
+ * 
+ */
+   public function access_token(Request $request)
+   {    
+       
+   }
+   
 }
 
