@@ -1167,6 +1167,7 @@ public function transpose_donnees(Request $request){
         }    
          if (isset($liste_Fichessecur)){
        foreach($liste_Fichessecur as $fiche){
+           if ($fiche->getFiche()){
            $Fichier=new Fichiersequipes();
            $Fichier->setEdition($fiche->getEdition());
            $Fichier->setNational(0);
@@ -1179,7 +1180,7 @@ public function transpose_donnees(Request $request){
            
            $em->persist($Fichier);
            $em->flush();
-                
+           }  
           }       
         }  
          if (isset($liste_Presentations)){

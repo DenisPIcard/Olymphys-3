@@ -17,10 +17,10 @@ security:
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
    
     firewalls:
-        dev:
+       dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+       main:
             pattern:    ^/
             anonymous: lazy
             provider: app_user_provider
@@ -50,4 +50,4 @@ security:
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/core/index, roles: ROLE_SUPER_ADMIN,}
          - { path :  ^/public, roles : ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/authorize, roles: IS_AUTHENTICATED_REMEMBERED }
