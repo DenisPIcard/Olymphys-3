@@ -38,7 +38,7 @@
               {% set i = 1 %} 
          {% for photo in liste_photos  %}
              
-             {%if photo.equipe.lettre == equipe.lettre%}
+             {%if photo.equipe.id == equipe.id%}
                  {% if i==1 %}
                      
                  <div class="carousel-item active" data-interval="5000">
@@ -54,12 +54,12 @@
                             {% if i>1 and i<5%}
                    <div class="carousel-item" >
                        
-                        <a href="{{path('photos_galleryphotos',{infos: 'national-'~edition.id~'-'~equipe.id})}}}">                
+                        <a href="{{path('photos_galleryphotos',{infos: 'national-'~edition.id~'-'~equipe.id})}}">                
                            <div class="parent">
-                               <center><div style="background:black;"><img src=" {{asset('/upload/images/'~edition.ed~'/nat/thumb/'~photo.photo) }}"   alt="{{photo.equipe.TitreProjet}}"></div></center>
+                               <center><div style="background:black"><img src=" {{asset('/upload/images/'~edition.ed~'/nat/thumb/'~photo.photo) }}"   alt="{{photo.equipe.TitreProjet}}"></div></center>
                            </div>
                             </a> 
-                           {# <center><div style="background:black"> <font color="white" size="-2"> photo {{i}}/{{n}}</font></div></center> #}
+                         
                 </div>  
                 {% endif %}
                 {% set i= i+1 %}

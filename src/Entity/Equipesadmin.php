@@ -30,7 +30,7 @@ class Equipesadmin
     /**
      * @var string
      *
-     * @ORM\Column(name="lettre", type="string", length=1, unique=true,nullable= true)
+     * @ORM\Column(name="lettre", type="string", length=1, nullable= true)
      */
     private $lettre;
      
@@ -39,13 +39,14 @@ class Equipesadmin
      *
      * @ORM\Column(name="numero", type="smallint", nullable=true)
      */
+   ////
     private $numero; 
           
      /**
-     * @var string
+     * 
      * 
      * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
-     * @ORM\JoinColumn(name ="centre_id", referencedColumnName = "id", nullable=true)
+     * @ORM\JoinColumn(name ="centre_id", referencedColumnName="id", nullable=true)
      */
     private $centre; 
     
@@ -58,7 +59,7 @@ class Equipesadmin
     /**
      * @var string
      *
-     * @ORM\Column(name="titreProjet", type="string", length=255, unique=true, nullable=true)
+     * @ORM\Column(name="titreProjet", type="string", length=255, nullable=true)
      */
     private $titreProjet;
 
@@ -127,7 +128,7 @@ class Equipesadmin
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Rne")
-     * @ORM\JoinColumn(name ="rne_id", referencedColumnName = "id",nullable=true)
+     * @ORM\JoinColumn(name ="rne_id", referencedColumnName = "id",nullable=true, unique=false)
      */
     private $rneId;
 

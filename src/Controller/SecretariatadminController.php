@@ -274,7 +274,7 @@ class SecretariatadminController extends AbstractController
 
             $defaultData = ['message' => 'Charger le fichier '];
             $form = $this->createFormBuilder($defaultData)
-                            ->add('fichier',      FileType::class)
+                            ->add('fichier',      FileType::class) 
                             ->add('save',      SubmitType::class)
                             ->getForm();
             
@@ -282,7 +282,16 @@ class SecretariatadminController extends AbstractController
 			->getDoctrine()
 			->getManager()
 			->getRepository('App:Equipesadmin');
-            
+             $repositoryEdition = $this
+			->getDoctrine()
+			->getManager()
+			->getRepository('App:Edition');
+             $repositoryRne = $this
+			->getDoctrine()
+			->getManager()
+			->getRepository('App:Rne');
+              $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+             //$edition=$repositoryEdition->find(['id' => 1]);
             $form->handleRequest($request);                            
             if ($form->isSubmitted() && $form->isValid()) 
                 {
@@ -298,20 +307,32 @@ class SecretariatadminController extends AbstractController
                 for ($row = 2; $row <= $highestRow; ++$row) 
                    {                       
                    
-                   $value = $worksheet->getCellByColumnAndRow(4, $row)->getValue();
-                   $numero=$value;
-                   $equipe=$repositoryEquipesadmin->findOneByNumero($numero);
+                    $numero= $worksheet->getCellByColumnAndRow(4, $row)->getValue();
+                    $equipe=$repositoryEquipesadmin->findOneByNumero($numero);
+                    if (isset($equipe)){
+                     $date=$worksheet->getCellByColumnAndRow(21, $row)->getValue();
+                     //dd($date);
+                        if ($date>date('l')){
+                            
+                         $equipe= new equipesadmin();                            
+                        }
+                    }
                    if(!$equipe){
                    $equipe= new equipesadmin(); }
+                        $equipe->setEdition($edition);
                         $equipe->setNumero($numero) ;
                         $value = $worksheet->getCellByColumnAndRow(5, $row)->getValue();
+                        if ($value!='~'){
+                           
+                       
                         $equipe->setLettre($value);
+                        }
                         $value = $worksheet->getCellByColumnAndRow(8, $row)->getValue();
                         $equipe->setNomLycee($value);
                         $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue();
                         $equipe->setDenominationLycee($value);
-                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue();
-                        $equipe->setRne($value);
+                        $rne = $worksheet->getCellByColumnAndRow(10, $row)->getValue();
+                        $equipe->setRne($rne);
                         $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue(); 
                         $equipe->setLyceeLocalite($value) ;
                         $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue(); 
@@ -326,6 +347,10 @@ class SecretariatadminController extends AbstractController
                         $equipe->setPrenomProf2($prenomProf2) ;
                         $nomProf2 = $worksheet->getCellByColumnAndRow(25, $row)->getValue();
                         $equipe->setNomProf2($nomProf2) ;
+                        $rneid=$repositoryRne->findOneBy(['rne'=>$rne]);
+                        //dd($rneid);
+                        $equipe->setRneId($rneid);
+                        
                         $repositoryUser= $this->getDoctrine()
 		->getManager()
 		->getRepository('App:User');

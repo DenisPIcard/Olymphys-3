@@ -44,7 +44,7 @@ class Fichiersequipes //extends BaseMedia
       /**
        *  
        * @ORM\ManyToOne(targetEntity="App\Entity\Equipesadmin")
-       * @ORM\JoinColumn(name="equipe_id",  referencedColumnName="id" )
+       * @ORM\JoinColumn(name="equipe_id",  referencedColumnName="id",onDelete="CASCADE" )
        */
       private $equipe;
       

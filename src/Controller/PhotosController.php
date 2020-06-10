@@ -294,6 +294,7 @@ class PhotosController extends  AbstractController
                                 ->setParameter('edition', $Edition);
                                
              $liste_photos=$qb->getQuery()->getResult();
+             
              if ($liste_photos){
              return $this->render('photos/affiche_photos_cia.html.twig', [
                 'liste_photos' => $liste_photos,'edition'=>$Edition,'liste_centres'=>$liste_centres, 'concours'=>'cia']);

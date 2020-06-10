@@ -313,7 +313,7 @@ if ($choix=='liste_prof'){
 
                                              $liste_equipes=$qb3->getQuery()->getResult();   
                                          }
-                                           if($liste_equipes) {
+                                           if(isset($liste_equipes)) {
 
                                              $content = $this
                                                       ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -477,7 +477,7 @@ public function  confirme_charge_fichier(Request $request, $file_equipe){
          * @Route("/fichiers/charge_fichiers/{infos}", name="fichiers_charge_fichiers")
          * 
          */         
-public function  charge_fichiers(Request $request, $infos ,Mailer $mailer,ValidatorInterface $validator){
+public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer,ValidatorInterface $validator){
     $repositoryFichiersequipes= $this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:Fichiersequipes');
@@ -697,6 +697,8 @@ public function  charge_fichiers(Request $request, $infos ,Mailer $mailer,Valida
                             ->add('info', 'Votre fichier renommé selon : '.$nom_fichier.' a bien été déposé. Merci !') ;
                
                 $user = $this->getUser();//Afin de rappeler le nom du professeur qui a envoyé le fichier dans le mail
+                
+                
                 $bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', 
                                     ['nom' => $user->getNom(),
                                     'prenom' =>$user->getPrenom(),
@@ -705,19 +707,7 @@ public function  charge_fichiers(Request $request, $infos ,Mailer $mailer,Valida
                                     'typefichier' => $this->getParameter('type_fichier')[$num_type_fichier]]);
                 //$mailer->sendMessage('alain.jouvealb@gmail.com', 'info@olymphys.fr', 'Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe(),'L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier');
                 $centre = $equipe->getCentre();
-                if ($centre){
-                    $cohorte_centre =$repositoryUser->findByCentrecia(['centrecia'=>$centre]);
-                    foreach($cohorte_centre as $individu){
-                        $roles = $individu->getRoles();
-                        $mailorganisateur='';
-                            foreach($roles as $role){
-                                if ($role=='ROLE_ORGACIA'){
-                                    $mailorganisateur=$individu->getEmail();
-                                    //$mailer->sendMessage('webmestre2@olymphys.fr', $mailorganisateur, 'Depot du '.$type_fichier.'de l\'équipe '.$Equipe_choisie->getNumero(),'L\'équipe '.'n°'.$Equipe_choisie->getNumero().':'.$Equipe_choisie->getTitreProjet().' a déposé un fichier');
-                                     }
-                                }
-                            }
-                        }
+                
                 return $this->redirectToRoute('core_home');     
                 }        
     }
@@ -805,7 +795,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     if ($equipe_choisie->getSelectionnee()==true ){
         $infoequipe=$equipe_choisie->getInfoequipenat();//pour les comités et jury,inutile pour les prof , ;
      }
+     if($centre){
     $centre=$equipe_choisie->getCentre()->getCentre();
+     }
     $user = $this->getUser();
     
     $i=0;
@@ -1097,6 +1089,9 @@ public function transpose_donnees(Request $request){
     $repositoryEquipesadmin = $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');
+     $repositoryEdition = $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Edition');
     
     $liste_memoires=$repositoryMemoires->findAll();
      $liste_memoiresinter=$repositoryMemoiresinter->findAll();
@@ -1169,7 +1164,11 @@ public function transpose_donnees(Request $request){
        foreach($liste_Fichessecur as $fiche){
            if ($fiche->getFiche()){
            $Fichier=new Fichiersequipes();
-           $Fichier->setEdition($fiche->getEdition());
+           
+         
+               $edition=$repositoryEdition->find(['id'=>1]);
+           $fiche->setEdition($edition);
+           $Fichier->setEdition($edition);
            $Fichier->setNational(0);
            $Fichier->setEquipe($fiche->getEquipe());
            $Fichier->setTypefichier(4);          
