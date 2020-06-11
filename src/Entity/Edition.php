@@ -62,14 +62,14 @@ class Edition
         
         /**
         * @var \datetime
-        *  @ORM\Column(name="concours_cia", type="datetime",nullable=true)
+        *  @ORM\Column(name="concours_cia", type="date",nullable=true)
         */    
         protected $concourscia;
        
         
          /**
         * @var \datetime
-        *  @ORM\Column(name="concours_cn", type="datetime",nullable=true)
+        *  @ORM\Column(name="concours_cn", type="date",nullable=true)
         */    
         protected $concourscn;
     

@@ -269,8 +269,7 @@ public function choix_equipe(Request $request,$choix) {
           if ($dateconnect>$datelimnat )  {
                                           $qb3->andWhere('t.selectionnee=:selectionnee')
                                                               ->setParameter('selectionnee', TRUE);
-
-                                         $liste_equipes=$qb3->getQuery()->getResult();    
+                                        $liste_equipes=$qb3->getQuery()->getResult();    
                                       }
                                          if($liste_equipes!=null) {
 
