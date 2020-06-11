@@ -38,6 +38,7 @@ class AdminController extends EasyAdminController
         //$this->initialize($request);
         // if the URL doesn't include the entity name, this is the index page  // if the URL doesn't include the entity name, this is the index page
         //dd($request);
+        
         if (null === $request->query->get('entity')) {
             // define this route in any of your own controllers
              $content = $this->renderView('Admin/content.html.twig',array());
