@@ -14,10 +14,10 @@ use App\Form\ClassementType ;
 use App\Form\PrixType ;
 use App\Form\ToutfichiersType;
 use App\Form\ConfirmType;
-use App\Form\ListmemoiresinterType;
 use App\Form\ListefichiersType;
-use App\Form\ListmemoiresinterallType;
-use App\Form\FichessecurType;
+
+
+
 
 use App\Entity\Equipes ;
 use App\Entity\Eleves ;
@@ -36,7 +36,7 @@ use App\Entity\Liaison ;
 use App\Entity\Fichiersequipes;
 use App\Entity\Equipesadmin;
 use App\Entity\Centrescia;
-
+use App\Entity\Videosequipes;
 
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -287,7 +287,7 @@ public function choix_equipe(Request $request,$choix) {
                                          return $this->redirectToRoute('core_home');
                                           }
                                        }
-if ($choix=='liste_prof'){
+if (($choix=='liste_prof') || ($choix=='video')){
                                           if ($phase=='interacadémique')     {
                                          $liste_equipes=$qb3->getQuery()->getResult();    
                                           }
@@ -519,17 +519,19 @@ public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
     $datelimnat=$edition->getDatelimnat();
    
-    $dateconnect= new \datetime('now');
-            $form1=$this->createForm(ToutfichiersType::class);
-            $nom_equipe=$equipe->getTitreProjet();
+      $dateconnect= new \datetime('now');
+      $form1=$this->createForm(ToutfichiersType::class);
+      $nom_equipe=$equipe->getTitreProjet();
         $lettre_equipe= $equipe->getLettre();
+        
         $donnees_equipe=$lettre_equipe.' - '.$nom_equipe;
         
     if(!$lettre_equipe){
         $numero_equipe=$equipe->getNumero();
-        $nom_equipe=$repositoryEquipesadmin->findOneByNumero(['numero'=>$numero_equipe])->getTitreProjet();
+        $nom_equipe=$equipe->getTitreProjet();
         $donnees_equipe=$numero_equipe.' - '.$nom_equipe;
         }
+        
     $form1->handleRequest($request); 
     if ($form1->isSubmitted() && $form1->isValid()){
            
@@ -662,7 +664,7 @@ public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer
                              ]
                              );
                      if ($violations->count() > 0) {
-                                                                                        dd($violations);
+                                                                                    
                                                                                     /** @var ConstraintViolation $violation */
                                                                                     $violation = $violations[0];
                                                                                     $this->addFlash('alert', $violation->getMessage());
@@ -672,7 +674,7 @@ public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer
                                                                                 } 
              
             }
-            
+          
             $em=$this->getDoctrine()->getManager();
             $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
            
@@ -1225,7 +1227,64 @@ public function transpose_donnees(Request $request){
         
     
 }
-
+/**
+    *@IsGranted("ROLE_PROF")
+    * 
+    * @Route("/fichiers/liens_videos,{infos}", name="fichiers_liens_videos")
+    * 
+    */
+public function liens_videos(Request $request, $infos){
+    $repositoryEquipesadmin= $this->getDoctrine()
+                                  ->getManager()
+                                  ->getRepository('App:Equipesadmin');
+    
+      $repositoryEdition= $this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:Edition');
+    $Infos=explode('-',$infos);
+    
+    $id_equipe=$Infos[0];
+    $concours=$Infos[1];
+    $choix=$Infos[2];
+   $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
+    
+    $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+    $nom_equipe=$equipe->getTitreProjet();
+    $lettre_equipe= $equipe->getLettre();
+    $donnees_equipe=$lettre_equipe.' - '.$nom_equipe;
+        
+    if(!$lettre_equipe){
+        $numero_equipe=$equipe->getNumero();
+        $nom_equipe=$equipe->getTitreProjet();
+        $donnees_equipe=$numero_equipe.' - '.$nom_equipe;
+        }
+   
+    $videoequipe= new Videosequipes();
+    $form = $this->createFormBuilder($videoequipe)
+           
+            ->add('lien', TextType::class)
+            ->add('nom', TextType::class)
+            ->add('save', SubmitType::class, ['label' => 'Valider'])
+            ->getForm();
+     $form->handleRequest($request); 
+    if ($form->isSubmitted() && $form->isValid()) 
+                { 
+        $em=$this->getDoctrine()->getManager();
+         $lien=$form->get('lien')->getData();
+         $nom=$form->get('nom')->getData();
+        $videoequipe->setLien($lien);
+        $videoequipe->setNom($nom);
+        $videoequipe->setEquipe($equipe);
+        $em->persist($videoequipe);
+        $em->flush();
+        return $this->redirectToRoute('fichiers_liens_videos',['infos'=>$infos]);
+                }
+   
+    return $this->render('adminfichiers/liens_videos.html.twig', [
+            'form' => $form->createView(),'donnees_equipe'=>$donnees_equipe
+        ]);
+    }
+    
 
 
 }

@@ -43,8 +43,7 @@ class ToutfichiersType extends AbstractType
                                 'Annexe(pdf, 2,5 M max  20 pages)'=>1,
                                 'Résumé(pdf, 1 M max, 1 page)'=>2,
                                 'Fiche sécurité(1M max, doc, docx, pdf, jpg, odt)'=>4,
-                                'Présentation(pdf, 10 M max)'=>3,
-                                'Lien vers une vidéo'=>5]
+                                'Présentation(pdf, 10 M max)'=>3,]
                                ] )
               ->add('save',      SubmitType::class);
                 
