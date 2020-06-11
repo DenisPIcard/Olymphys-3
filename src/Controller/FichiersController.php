@@ -104,17 +104,35 @@ class FichiersController extends AbstractController
          * 
          */           
 public function choix_centre(Request $request) {
+    $repositoryEdition=$this->getDoctrine()
+		->getManager()
+		->getRepository('App:Edition');
     $repositoryCentres=$this->getDoctrine()
 		->getManager()
 		->getRepository('App:Centrescia');
-    $liste_centres = $repositoryCentres->findAll();
-     if(isset($liste_centres)) {
+    $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);  
+    
+    $qb= $repositoryCentres->createQueryBuilder('c')
+                                          ->where('c.edition =:edition')
+                                         ->setParameter('edition', $edition);
+    $liste_centres = $qb->getQuery()->getResult();
+     if($liste_centres!=null) {
                    $content = $this
                  ->renderView('adminfichiers\choix_centre.html.twig', array(
                      'liste_centres'=>$liste_centres,
                     )
                                 );
         return new Response($content);  
+     }
+     else{
+         $request->getSession()
+                                     ->getFlashBag()
+                                     ->add('info', 'Pas encore de centre attribué pour le  concours interacadémique de l\'édition '.$edition->getEd()) ;
+                             return $this->redirectToRoute('core_home'); 
+         
+         
+         
+         
      }
     }
  
@@ -183,7 +201,7 @@ public function choix_equipe(Request $request,$choix) {
                     if (($role=='ROLE_COMITE') or ($role=='ROLE_JURY') or ($role=='ROLE_SUPER_ADMIN')){
 
                         $liste_equipes=$qb1->getQuery()->getResult();    
-                        if(isset($liste_equipes)) {
+                        if($liste_equipes!=null) {
                            if(($role=='ROLE_COMITE') or ($role=='ROLE_SUPER_ADMIN')){
 
                         $content = $this
@@ -199,10 +217,10 @@ public function choix_equipe(Request $request,$choix) {
                            }
                            return new Response($content);  
                        } 
-                        if(!isset($liste_equipes)) {
+                        else{
                            $request->getSession()
                                 ->getFlashBag()
-                                ->add('info', 'Pas encore d\'équipe pour le concours national de la '.$edition->getEd().'e edition') ;
+                                ->add('info', 'Pas encore d\'équipe sélectionnée pour le concours national de la '.$edition->getEd().'e edition') ;
                         return $this->redirectToRoute('core_home');    
                         }
                     }    
@@ -253,7 +271,7 @@ public function choix_equipe(Request $request,$choix) {
 
                                          $liste_equipes=$qb3->getQuery()->getResult();    
                                       }
-                                         if(isset($liste_equipes)) {
+                                         if($liste_equipes!=null) {
 
                                          $content = $this
                                                   ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -280,7 +298,7 @@ if ($choix=='liste_prof'){
                                             $liste_equipes=$qb3->getQuery()->getResult();     
                                          }
 
-                                         if($liste_equipes) {
+                                         if($liste_equipes!=null) {
 
                                          $content = $this
                                                   ->renderView('adminfichiers\choix_equipe.html.twig', array(
