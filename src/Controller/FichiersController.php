@@ -189,7 +189,8 @@ public function choix_equipe(Request $request,$choix) {
                              ->orwhere('t.idProf2=:professeur')
                              ->andWhere('t.edition =:edition')
                              ->setParameter('edition', $edition)
-                             ->setParameter('professeur', $id_user);
+                             ->setParameter('professeur', $id_user)
+                             ->orderBy('t.numero', 'ASC');
    if ($dateconnect>$datelimcia) {
         $phase='national';
    }
@@ -294,7 +295,8 @@ if ($choix=='liste_prof'){
 
                                          if ($dateconnect>$datelimcia) {
                                              $qb3->andWhere('t.selectionnee=:selectionnee')
-                                                     ->setParameter('selectionnee', TRUE);
+                                                     ->setParameter('selectionnee', TRUE)
+                                                     ->orderBy('t.lettre', 'ASC');                                                    ;
                                             $liste_equipes=$qb3->getQuery()->getResult();     
                                          }
 
@@ -717,13 +719,13 @@ public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer
                 $user = $this->getUser();//Afin de rappeler le nom du professeur qui a envoyé le fichier dans le mail
                 
                 
-                $bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', 
+                /*$bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', 
                                     ['nom' => $user->getNom(),
                                     'prenom' =>$user->getPrenom(),
                                     'fichier'=>$nom_fichier,
                                     'equipe'=>$equipe->getInfoequipe(),
-                                    'typefichier' => $this->getParameter('type_fichier')[$num_type_fichier]]);
-                //$mailer->sendMessage('alain.jouvealb@gmail.com', 'info@olymphys.fr', 'Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe(),'L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier');
+                                    'typefichier' => $this->getParameter('type_fichier')[$num_type_fichier]]);*/
+                $mailer->sendMessage('alain.jouvealb@gmail.com', 'info@olymphys.fr', 'Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe(),'L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier');
                 $centre = $equipe->getCentre();
                 
                 return $this->redirectToRoute('core_home');     
