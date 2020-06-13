@@ -287,7 +287,7 @@ public function choix_equipe(Request $request,$choix) {
                                          return $this->redirectToRoute('core_home');
                                           }
                                        }
-if (($choix=='liste_prof') || ($choix=='video')){
+if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                           if ($phase=='interacadémique')     {
                                          $liste_equipes=$qb3->getQuery()->getResult();    
                                           }
@@ -1227,65 +1227,6 @@ public function transpose_donnees(Request $request){
         
     
 }
-/**
-    *@IsGranted("ROLE_PROF")
-    * 
-    * @Route("/fichiers/liens_videos,{infos}", name="fichiers_liens_videos")
-    * 
-    */
-public function liens_videos(Request $request, $infos){
-    $repositoryEquipesadmin= $this->getDoctrine()
-                                  ->getManager()
-                                  ->getRepository('App:Equipesadmin');
-    
-      $repositoryEdition= $this->getDoctrine()
-                                 ->getManager()
-                                 ->getRepository('App:Edition');
-    $Infos=explode('-',$infos);
-    
-    $id_equipe=$Infos[0];
-    $concours=$Infos[1];
-    $choix=$Infos[2];
-   $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
-    
-    $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-    $nom_equipe=$equipe->getTitreProjet();
-    $lettre_equipe= $equipe->getLettre();
-    $donnees_equipe=$lettre_equipe.' - '.$nom_equipe;
-        
-    if(!$lettre_equipe){
-        $numero_equipe=$equipe->getNumero();
-        $nom_equipe=$equipe->getTitreProjet();
-        $donnees_equipe=$numero_equipe.' - '.$nom_equipe;
-        }
-   
-    $videoequipe= new Videosequipes();
-    $form = $this->createFormBuilder($videoequipe)
-           
-            ->add('lien', TextType::class)
-            ->add('nom', TextType::class)
-            ->add('save', SubmitType::class, ['label' => 'Valider'])
-            ->getForm();
-     $form->handleRequest($request); 
-    if ($form->isSubmitted() && $form->isValid()) 
-                { 
-        $em=$this->getDoctrine()->getManager();
-         $lien=$form->get('lien')->getData();
-         $nom=$form->get('nom')->getData();
-        $videoequipe->setLien($lien);
-        $videoequipe->setNom($nom);
-        $videoequipe->setEquipe($equipe);
-        $em->persist($videoequipe);
-        $em->flush();
-        return $this->redirectToRoute('fichiers_liens_videos',['infos'=>$infos]);
-                }
-   
-    return $this->render('adminfichiers/liens_videos.html.twig', [
-            'form' => $form->createView(),'donnees_equipe'=>$donnees_equipe
-        ]);
-    }
-    
-
 
 }
         

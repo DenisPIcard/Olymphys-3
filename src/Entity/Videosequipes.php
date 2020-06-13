@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Centrescia
  * 
  * @ORM\Table(name="videosequipes")
- * @ORM\Entity(repositoryClass="App\Repository\videosequipesRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\VideosequipesRepository")
  * 
  */
 

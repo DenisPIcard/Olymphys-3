@@ -1,5 +1,5 @@
 {% extends "base.html.twig" %}
-{% block title %} Fichiers  de l'équipe {{equipe.infoequipe}}{% endblock %}
+{% block title %} Vidéos  de l'équipe {{equipe.infoequipe}}{% endblock %}
 
 
 
@@ -8,21 +8,17 @@
     {{edition.ed}}<sup>e</sup>  édition : 
     {%if concours =='interacadémique'%}
    Concours interacadémique <br>
-   {% if centre != null %}
+   {% if equipe.centre != null %}
    Centre de {{centre.centre}}<br>
    {% endif %}
     {% endif %}
     {%if concours =='national'%}
         Concours national<br>
         {% endif %}
-        <h4> Liste des fichiers de l'équipe "{{equipe.titreProjet}}" du lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}}</h4>
+        <h4> Liste des vidéos de l'équipe "{{equipe.titreProjet}}" du lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}}</h4>
     <br>
     </center>
-   
-        
-    
-
-
+  
 {% endblock %}
 
 
@@ -36,23 +32,54 @@
                     {{ form_errors(form) }}
                 </div>
                 <div class="row">
-                    <div class="col">
-                        {{ form_row(form.fichier, {  'class':'custom-file-input'}) }}
-                    </div>
+                    
                     <div class="col" id="some-custom-id">
-                        {% if loop.index<loop.length %}
-                            {{ form_widget(form.save, { 'label': 'Télécharger' }) }}
-                        {% else %}
-                            {{ form_widget(form.save, { 'label': 'Tout télécharger' }) }}
-                        {% endif %}
+                           {% for video in liste_videos %}
+                              
+                               {%  if video.id == form.vars.value.id%}
+                               
+                                 <li><a href="{{ video.lien}}" target="blank">{{ video.nom }}</a> ({{ video.updatedAt}}) 
+                            {% endif %}
+                          {% endfor %}
+                               
+                       
+                            {{ form_widget(form.change, { 'label': 'Modifier' }) }}
+                       
+                            
+                             {{ form_widget(form.delete, { 'label': 'Supprimer' }) }}
+                               
                     </div>
                 </div>
                 {{ form_end(form) }}         
                 <hr> 
             {% endfor %} 
         </table>
-        
-   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="well">
+        <ul>
+            {% for video in liste_videos %}
+                <li><a href="{{ video.lien}}" target="blank">{{ video.nom }}</a>
+                 
+                
+                
+                
+            {% endfor %} 
+        </ul>
+    
         {% if (role== 'ROLE_JURY') or (role== 'ROLE_COMITE') or (role== 'ROLE_JURYCIA') or (role== 'ROLE_ORGACIA') or (role== 'ROLE_SUPER_ADMIN')%}   
 
             {% if concours=='interacadémique' %}
@@ -64,7 +91,7 @@
             {% endif %}
              {% if role=='ROLE_PROF' %}   
             
-            <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></center>
+            <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_video'})  }}" >Retour à la liste des équipes</a></center>
            
         {% endif %}
     </div>
