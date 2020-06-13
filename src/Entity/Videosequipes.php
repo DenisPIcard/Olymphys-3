@@ -95,7 +95,7 @@ class Videosequipes
     }
     public function getUpdatedAt()
     {
-        return $this->upDatedAt;
+        return $this->updatedAt;
     }
 
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
