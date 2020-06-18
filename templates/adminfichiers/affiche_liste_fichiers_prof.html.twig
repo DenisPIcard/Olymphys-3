@@ -27,7 +27,9 @@
 
 
 {% block body %}
-    <div class="well">
+    
+        {%  if formtab is defined %}
+        <div class="well">    
        <table>  
             {% for form in formtab %}
                  {% form_theme form 'bootstrap_4_layout.html.twig' %}
@@ -50,11 +52,31 @@
                 {{ form_end(form) }}         
                 <hr> 
             {% endfor %} 
-        </table>
-        
-   
+        </table> 
+        </div>
+       {%  else %}    
+           <div class="alert alert-light" role="alert">
+           Cette équipe n'a pas encore déposé de fichier.
+           </div>
+      {%  endif %} 
+      {%  if listevideos is defined %}
+         
+          <ul>
+        {%  for video in listevideos%}
+            <li> <a href ="{{video.lien}}" target="blank">{{ video.nom}}</a>
+          
+          
+         {%  endfor %}
+          </ul>
+          {% else %}
+              <div class="alert alert-light" role="alert">
+           Cette équipe n'a pas encore déposé de vidéo.
+           </div>
+              
+          {%endif     %}
+          <div class="well">
         {% if (role== 'ROLE_JURY') or (role== 'ROLE_COMITE') or (role== 'ROLE_JURYCIA') or (role== 'ROLE_ORGACIA') or (role== 'ROLE_SUPER_ADMIN')%}   
-
+             
             {% if concours=='interacadémique' %}
                 <center><a href="{{ path('fichiers_choix_equipe',{choix: centre.centre}) }}" >Retour à la liste des équipes</a></center>
            {% endif %}
@@ -67,7 +89,7 @@
             <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></center>
            
         {% endif %}
-    </div>
+ </div>  
        
     {% block javascripts %}
         <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js" ></script> 

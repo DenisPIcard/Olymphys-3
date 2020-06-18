@@ -119,7 +119,7 @@ public function choix_centre(Request $request) {
      if($liste_centres!=null) {
                    $content = $this
                  ->renderView('adminfichiers\choix_centre.html.twig', array(
-                     'liste_centres'=>$liste_centres,
+                     'liste_centres'=>$liste_centres
                     )
                                 );
         return new Response($content);  
@@ -183,6 +183,10 @@ public function choix_equipe(Request $request,$choix) {
                              ->setParameter('edition', $edition)
                              ->setParameter('valeur','')
                              ->orderBy('t.lettre', 'ASC');
+     $qb2 =$repositoryEquipesadmin->createQueryBuilder('t')
+                             ->andWhere('t.edition =:edition')
+                             ->setParameter('edition', $edition)
+                             ->orderBy('t.numero', 'ASC');
     
      $qb3 =$repositoryEquipesadmin->createQueryBuilder('t')
                              ->where('t.idProf1=:professeur')
@@ -197,8 +201,10 @@ public function choix_equipe(Request $request,$choix) {
     if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datelimcia)) {
         $phase= 'interacadémique';
     }
-   
-    if ($choix=='liste_cn_comite')  {
+             
+         
+     
+    if (($choix=='liste_cn_comite') )  {
                     if (($role=='ROLE_COMITE') or ($role=='ROLE_JURY') or ($role=='ROLE_SUPER_ADMIN')){
 
                         $liste_equipes=$qb1->getQuery()->getResult();    
@@ -232,6 +238,10 @@ public function choix_equipe(Request $request,$choix) {
                                       $centre = $Centre;
               } 
     }
+    
+    
+    
+    
     
     if (isset($centre) or ($choix=='centre'))  { //pour le jurycia, comité, superadmin liste des équipes d'un centre
                             if (($role=='ROLE_COMITE') or ($role=='ROLE_JURY') or ($role=='ROLE_SUPER_ADMIN')or ($role=='ROLE_ORGACIA') or ($role=='ROLE_JURYCIA')){  
@@ -295,7 +305,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                          if ($dateconnect>$datelimcia) {
                                              $qb3->andWhere('t.selectionnee=:selectionnee')
                                                      ->setParameter('selectionnee', TRUE)
-                                                     ->orderBy('t.lettre', 'ASC');                                                    ;
+                                                     ->orderBy('t.lettre', 'ASC');                                                    
                                             $liste_equipes=$qb3->getQuery()->getResult();     
                                          }
 
@@ -747,7 +757,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     $repositoryFichiersequipes= $this->getDoctrine()
                               ->getManager()
                               ->getRepository('App:Fichiersequipes');
-    
+    $repositoryVideosequipes= $this->getDoctrine()
+                              ->getManager()
+                              ->getRepository('App:Videosequipes');
     $repositoryEquipesadmin= $this->getDoctrine()
                                   ->getManager()
                                   ->getRepository('App:Equipesadmin');
@@ -861,7 +873,13 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
         $i=$i+1;
         }
     }      
-            
+     $qb = $repositoryVideosequipes->createQueryBuilder('v')
+                             ->LeftJoin('v.equipe', 'e')
+                             ->Where('e.id=:id_equipe')
+                             ->setParameter('id_equipe', $id_equipe)
+                            ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition);
+     $listevideos= $qb->getQuery()->getResult();
         if ($request->isMethod('POST') ) 
             {
             if ($request->request->has('FormAll')) {         
@@ -893,20 +911,38 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                     }
                 }
             }
-        if(isset($formtab)){      
+        if(isset($formtab )){      
             $fichier=new Fichiersequipes();
             $formBuilder=$this->get('form.factory')->createNamedBuilder('FormAll', ListefichiersType::class,$fichier);  
             $formBuilder->add('save',      SubmitType::class );
             $Form=$formBuilder->getForm();
             $formtab[$i]=$Form->createView();//Ajoute le bouton  tout télécharger
-            ($formtab);   
+        }
+        
+        if((isset($formtab)) and ($listevideos!=null)){
             $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab,
+                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,
                                                         'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
                                             ); 
             return new Response($content); 
             }
-        if(!isset($formtab)){
+          if((!isset($formtab)) and ($listevideos!=null)){
+            $content = $this
+                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array( 'listevideos'=>$listevideos,
+                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
+                                            ); 
+            return new Response($content); 
+            }   
+            
+          if((isset($formtab)) and ($listevideos==null)){
+            $content = $this
+                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 
+                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
+                                            ); 
+            return new Response($content); 
+            }
+            
+        if((!isset($formtab)) and ($listevideos==null)){
          
                 if ($role=='ROLE_PROF'){
                     $num_equipe='n° '.$equipe_choisie->getNumero();

@@ -21,7 +21,7 @@ imports :
       - { resource: easy_admin/fichiersequipesresumes.yml }
       - { resource: easy_admin/fichiersequipesfichessecur.yml }
       - { resource: easy_admin/fichiersequipespresentations.yml }
-
+      - { resource: easy_admin/Videosequipes.yml }
 easy_admin:   
     user:
         name_property_path: 'Nom'

@@ -5,5 +5,15 @@ easy_admin :
                          label : 'Centres interacadémiques'
                          list : 
                              fields : 
-                             - { property :  'centre' , type : 'text' }
-        
+                                - { property : 'edition.ed', label : 'Edition'}
+                                - { property : 'centre'}
+                             
+                         edit :
+                             fields : 
+                                - { property : 'edition', type: 'entity' , type_options : { class : 'App\Entity\Edition', query_builder : 'App\Repository\EditionRepository::getEdition', 'choice_label' : 'getEd'}}
+                                - { property : 'centre'}
+                                
+                         new :
+                             fields : 
+                                - { property : 'edition', type: 'entity' , type_options : { class : 'App\Entity\Edition', query_builder : 'App\Repository\EditionRepository::getEdition', 'choice_label' : 'getEd'}}
+                                - { property : 'centre'}

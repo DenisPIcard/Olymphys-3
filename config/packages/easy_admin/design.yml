@@ -18,6 +18,7 @@ easy_admin :
                          - { entity : 'Fichiersequipesmemoiresinter', 'label' : 'Les mémoires' , icon : 'book'}
                          - { entity : 'Fichiersequipesresumes', 'label' : 'Les résumés' , icon : 'book'}
                          - { entity : 'Fichiersequipesfichessecur', 'label' : 'Les fiches sécurités' , icon : 'book'}
+                         - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
                          - { entity : 'Elevesinter', 'label' : 'Elèves inscrits', icon : 'child' }
                          - { entity : 'Photosinter', 'label' : ' Lesphotos', icon : 'images'}
                          
@@ -30,6 +31,7 @@ easy_admin :
                         - { entity : 'Fichiersequipesmemoires', 'label' : 'Les mémoires' , icon : 'book'}
                         - { entity : 'Fichiersequipesresumes', 'label' : 'Les résumés' , icon : 'book'}
                         - { entity : 'Fichiersequipespresentations', 'label' : 'Les présentations' , icon : 'book'}
+                        - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
                         #- { entity: 'Eleves' , icon : 'asterisk'}
                         - { label : 'Les photos', entity: 'Photoscn' , icon : 'images'}
                         - label : 'Les recompenses'
