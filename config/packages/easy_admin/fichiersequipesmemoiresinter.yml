@@ -4,6 +4,7 @@ easy_admin :
              
              
              class : App\Entity\Fichiersequipes
+             controller: App\Controller\Admin\FichiersequipesController 
              templates:
                         list: 'admin/customizations/memoires_list.html.twig'
              
@@ -13,7 +14,12 @@ easy_admin :
              list :
                   max_results: 30
                   actions: [  { name: 'Lire', icon: 'eye' }, '-edit', {name : 'new' , label : 'Déposer un memoire'} ]
-                  dql_filter : "entity.typefichier < 2  AND  entity.national = 0" 
+                  filters :
+                      - 'edition'
+                      
+                     
+                     
+                  dql_filter : "entity.typefichier < 2 AND  entity.national = false" 
                   
                   batch_actions: 
                       - {name : 'telecharger', icon : 'download'}

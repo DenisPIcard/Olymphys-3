@@ -32,7 +32,12 @@ class Videosequipes
       * @ORM\Column(name="lien", type="string")
        */
       private $lien;
-      
+      /**
+       *  
+       * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
+       * @ORM\JoinColumn(name="edition_id",  referencedColumnName="id",onDelete="CASCADE" )
+       */
+      private $edition;
       
       /**
        *  
@@ -60,7 +65,16 @@ class Videosequipes
     {
         return $this->id;
     }
+     public function getEdition()
+    {
+        return $this->edition;
+    }
 
+    public function setEdition($edition)
+    {    
+        $this->edition = $edition;
+         return $this;
+    }
     public function getEquipe()
     {
         return $this->equipe;

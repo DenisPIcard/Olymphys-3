@@ -709,8 +709,15 @@ class SecretariatadminController extends AbstractController
              $repositoryEdition=$this->getDoctrine()
 			->getManager()
 			->getRepository('App:Edition');
-           $Equipes=$repositoryEquipes->findAll();
-           $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+           $qb=$repositoryEquipes->CreateQueryBuilder('e')
+                   ->where('e.edition is NULL')
+                   ->andWhere('e.numero <:nombre')
+                  ->setParameter('nombre', '100');
+                  
+           $Equipes=$qb->getQuery()->getResult();
+                   
+                  
+           $edition=$repositoryEdition->find(['id' => 1]);
            
            foreach($Equipes as $equipe){
                if (null==$equipe->getEdition()){

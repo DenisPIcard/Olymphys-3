@@ -29,14 +29,7 @@ class Centrescia
         * @var string
         */
       private $centre;
-      
-      
-      /**
-        * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
-         * @ORM\JoinColumn(name="id_edition",  referencedColumnName="id" )
-        */
-      private $edition;
-       
+    
       /**
         * @ORM\ManyToOne(targetEntity="App\Entity\User")
          * @ORM\JoinColumn(name="id_orga1",  referencedColumnName="id" )

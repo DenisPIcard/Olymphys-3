@@ -2,6 +2,7 @@ easy_admin :
      entities :
          Fichiersequipesmemoires:
              class : App\Entity\Fichiersequipes
+             controller: App\Controller\Admin\FichiersequipesController 
              templates :                 
                  list: 'admin/customizations/memoires_list.html.twig'
              actions :
@@ -14,6 +15,7 @@ easy_admin :
                   max_results: 30
                   dql_filter : "entity.typefichier < 2  AND  entity.national = 1"
                   filters: { property: 'typefichier' }
+                  
                   actions: [{ name: 'Lire', icon: 'eye' ,label: ''},{name : 'edit', icon : 'pencil' }]
                   batch_actions: 
                       - {name : 'telechargernat', icon : 'download'}

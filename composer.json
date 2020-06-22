@@ -5,8 +5,7 @@
         "php": "^7.4.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "alterphp/easyadmin-extension-bundle": "^3.0",
-        "easycorp/easyadmin-bundle": "^2.3",
+        "easycorp/easyadmin-bundle": "^2.2",
         "howtomakeaturn/pdfinfo": "1.*",
         "laminas/laminas-code": "^3.4",
         "league/flysystem-ziparchive": "^1.0",
@@ -31,7 +30,6 @@
         "symfony/http-client": "5.0.*",
         "symfony/intl": "5.0.*",
         "symfony/mailer": "5.0.*",
-        "symfony/maker-bundle": "dev-master",
         "symfony/mime": "5.0.*",
         "symfony/monolog-bundle": "^3.1",
         "symfony/notifier": "5.0.*",
@@ -55,9 +53,9 @@
         "doctrine/doctrine-fixtures-bundle": "^3.3",
         "fzaninotto/faker": "^1.9",
         "sensiolabs/security-checker": "^6.0",
+        "symfony/maker-bundle": "^1.19",
         "symfony/profiler-pack": "^1.0",
         "symfony/test-pack": "*"
-       
     },
     "config": {
         "preferred-install": {

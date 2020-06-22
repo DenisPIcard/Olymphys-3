@@ -150,13 +150,9 @@ class Equipesadmin
      */
     private $edition;
    
-    
+   
   
-    public function __toString(): string
-        {
-           return $this->centre;
-           
-        }   
+   
        
     
    

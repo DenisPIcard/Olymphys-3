@@ -4,15 +4,20 @@ easy_admin :
              
              
              class : App\Entity\Videosequipes
-             
+             controller: App\Controller\Admin\VideosequipesController 
              actions :
                - {name : 'new', label : 'Déposer une vidéo'}
              
              list :
+                  filters :
+                     - 'edition'
+                     - 'equipe'
+                  dql_filter  : 
+                      
                   max_results: 50
                   actions: [ { name: 'Lire', icon: 'eye' }]
                   batch_actions: [ {name : 'telecharger', icon : 'download'}]
-                  title : '<font color="yellow"><h2>Les résumés</h2></font>' 
+                  title : '<font color="yellow"><h2>Les vidéos des équipes</h2></font>' 
                   fields: 
                     - {property : 'equipe.numero', label: 'Numero équipe'}
                     - {property : 'equipe.lettre', label: 'Lettre équipe'}
@@ -24,7 +29,7 @@ easy_admin :
                   sort: ['equipe.numero','ASC']
                   
              edit :
-                  title: ' Les fichiers sont automatiquement renommés' 
+                  title: ' Donner un nom à la vidéo ' 
                   fields :
                          
                       

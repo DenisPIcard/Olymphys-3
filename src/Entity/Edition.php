@@ -73,6 +73,7 @@ class Edition
         */    
         protected $concourscn;
     
+       
 
     public function getId(): ?int
     {

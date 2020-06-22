@@ -4,7 +4,7 @@ easy_admin :
              
              
              class : App\Entity\Fichiersequipes
-             
+             controller: App\Controller\Admin\FichiersequipesController 
              actions :
                - {name : 'new', label : 'Déposer un résumé'}
              
@@ -12,6 +12,9 @@ easy_admin :
                   max_results: 50
                   actions: [ { name: 'Lire', icon: 'eye' }]
                   batch_actions: [ {name : 'telecharger', icon : 'download'}]
+                  filters :
+                      - 'edition'
+                      
                   dql_filter : 'entity.typefichier = 2'
                   title : '<font color="yellow"><h2>Les résumés</h2></font>' 
                   fields: 

@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\EntityRepository;
 use ZipArchive;
+use App\Entity\Equipesadmin;
 
 class AdminController extends EasyAdminController
 {
@@ -55,11 +56,7 @@ class AdminController extends EasyAdminController
      {
          $this->passwordEncoder = $passwordEncoder;
      }
-     
-     
-     
-     
-     
+   
      public function LireAction()
      {    $fichier='';
           $class = $this->entity['class'];
@@ -197,36 +194,6 @@ class AdminController extends EasyAdminController
                  
             }
    
-    
-    public function persistMemoiresinterEntity($entity)
-            {   $repositoryMemoiresinter = $this->getDoctrine()->getRepository('App:Memoiresinter');
-                 $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-                  $entity->setEdition($edition);
-                 $equipe = $entity->getEquipe();
-                 
-                 $memoires= $repositoryMemoiresinter->findByEquipe(['equipe' =>$equipe]);
-                 if ($memoires){
-                          foreach($memoires as $memoire) {
-                              
-                              if($memoire->getAnnexe() ==true and $entity->getAnnexe() ==true){
-                                  $memoire->setMemoireFile($entity->getMemoireFile());
-                                  $idmemoire=$memoire->getId();
-                                  
-                              }
-                              if($memoire->getAnnexe() ==false and $entity->getAnnexe() ==false){
-                                  $memoire->setMemoireFile($entity->getMemoireFile());
-                                   $idmemoire=$memoire->getId();
-                              }
-                              parent::persistEntity($entity);
-                          }              
-                     
-                 }
-                 if(!$memoires){
-                     parent::persistEntity($entity);
-                 }
-                 
-            }
   
     
    public function persistPhotosinterEntity($entity)

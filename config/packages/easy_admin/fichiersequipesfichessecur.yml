@@ -4,18 +4,21 @@ easy_admin :
              
              
              class : App\Entity\Fichiersequipes
-             
+             controller: App\Controller\Admin\FichiersequipesController 
              actions :
                - {name : 'new', label : 'Déposer une fiche sécurité'}
              
              list :
                   max_results: 50
                   actions: [{ name: 'Lire', icon: 'eye' }]
+                  filters :
+                      - 'edition'
+                      
                   dql_filter : 'entity.typefichier =4' 
                   batch_actions: 
                       - {name : 'telecharger', icon : 'download'}
                     
-                  title : '<font color="yellow"><h2>Fiches sécurités</h2></font>' 
+                  title : '<h2>Fiches sécurités</h2>' 
                   fields: 
                     - {property : 'equipe.numero', label: 'Numero équipe'}
                     - {property : 'equipe.lettre', label: 'Lettre équipe'}

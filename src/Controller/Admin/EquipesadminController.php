@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller;
+namespace App\Controller\Admin;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Centrescia;
-use App\Form\Filter\EquipeFilterType;
+use App\Form\Filter\EquipesadminFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
@@ -47,7 +47,7 @@ class EquipesadminController extends EasyAdminController
     { 
         $form = parent::createFiltersForm($entityName);
         
-        $form->add('edition', EquipeFilterType::class, [
+        $form->add('edition', EquipesadminFilterType::class, [
             'class' => Edition::class,
             'query_builder' => function (EntityRepository $er) {
                             return $er->createQueryBuilder('u')
@@ -55,7 +55,7 @@ class EquipesadminController extends EasyAdminController
                                      },
            'choice_label' => 'getEd',
             'multiple'=>false,]);
-            $form->add('centre', EquipeFilterType::class, [
+            $form->add('centre', EquipesadminFilterType::class, [
                          'class' => Centrescia::class,
                          'query_builder' => function (EntityRepository $er) {
                                          return $er->createQueryBuilder('u')
@@ -77,7 +77,21 @@ class EquipesadminController extends EasyAdminController
          parent::persistEntity($entity);
         
     }
-    
+    public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
+           $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+            $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+        /* @var DoctrineQueryBuilder */
+        $queryBuilder = $em->createQueryBuilder()
+            ->select('entity')
+            ->from($this->entity['class'], 'entity')
+            ->leftJoin('entity.edition','edition')
+            ->where('edition.ed =:edition')
+            ->setParameter('edition', $edition->getEd())
+           ->orderBy('entity.centre', 'ASC');
+            return $queryBuilder;
+         
+      }
     
     
     

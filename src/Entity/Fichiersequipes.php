@@ -89,6 +89,9 @@ class Fichiersequipes //extends BaseMedia
        */
     private $updatedAt;
     
+    
+    
+    
       public function getEdition()
     {
         return $this->edition;

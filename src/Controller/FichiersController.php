@@ -110,12 +110,29 @@ public function choix_centre(Request $request) {
     $repositoryCentres=$this->getDoctrine()
 		->getManager()
 		->getRepository('App:Centrescia');
+    $repositoryEquipesAdmin=$this->getDoctrine()
+		->getManager()
+		->getRepository('App:Equipesadmin');
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);  
+    $centres=$repositoryCentres->findAll();
+    $equipes=$repositoryEquipesAdmin->findByEdition(['edition'=>$edition]);
+    if ($equipes!=null){
+         foreach($centres as $centre){
+             foreach($equipes as $equipe){
+             if ($centre==$equipe->getCentre()){
+                $liste_centres[$centre->getCentre()]=$centre;
+                 
+             }
+             
+             }
+         }
+    }        
+            
+            //dd($liste_centres);      
     
-    $qb= $repositoryCentres->createQueryBuilder('c')
-                                          ->where('c.edition =:edition')
-                                         ->setParameter('edition', $edition);
-    $liste_centres = $qb->getQuery()->getResult();
+    
+    
+   
      if($liste_centres!=null) {
                    $content = $this
                  ->renderView('adminfichiers\choix_centre.html.twig', array(
@@ -183,10 +200,7 @@ public function choix_equipe(Request $request,$choix) {
                              ->setParameter('edition', $edition)
                              ->setParameter('valeur','')
                              ->orderBy('t.lettre', 'ASC');
-     $qb2 =$repositoryEquipesadmin->createQueryBuilder('t')
-                             ->andWhere('t.edition =:edition')
-                             ->setParameter('edition', $edition)
-                             ->orderBy('t.numero', 'ASC');
+    
     
      $qb3 =$repositoryEquipesadmin->createQueryBuilder('t')
                              ->where('t.idProf1=:professeur')
@@ -248,15 +262,16 @@ public function choix_equipe(Request $request,$choix) {
                                   if (!isset($centre)){
                                       $centre=$this->getUser()->getCentrecia();
                                   }
+                                  
                                   $qb2 =$repositoryEquipesadmin->createQueryBuilder('t')
-                                                  ->where('t.centre=:centre')
+                                                  ->where('t.centre =:centre')
                                                   ->setParameter('centre', $centre)
                                                   ->andWhere('t.edition =:edition')
                                                   ->setParameter('edition', $edition)
                                                   ->orderBy('t.numero', 'ASC');
                              $liste_equipes=$qb2->getQuery()->getResult();  
-
-                             if(isset($liste_equipes)) {
+                        
+                             if($liste_equipes!=null) {
 
                              $content = $this
                                       ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -266,7 +281,7 @@ public function choix_equipe(Request $request,$choix) {
                              return new Response($content);  
 
                              } 
-                             if(!isset($liste_equipes)) {
+                             if($liste_equipes==null) {
                                 $request->getSession()
                                      ->getFlashBag()
                                      ->add('info', 'Pas encore d\'équipe pour le concours interacadémique de la '.$edition->getEd().'e edition') ;

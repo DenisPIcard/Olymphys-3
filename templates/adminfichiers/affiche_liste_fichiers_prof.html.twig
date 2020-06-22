@@ -55,21 +55,25 @@
         </table> 
         </div>
        {%  else %}    
-           <div class="alert alert-light" role="alert">
+           <div class="alert alert-light" >
            Cette équipe n'a pas encore déposé de fichier.
            </div>
       {%  endif %} 
       {%  if listevideos is defined %}
-         
+          <hr>
+          <div class='well'>
+          Vidéos de l'équipe :
           <ul>
         {%  for video in listevideos%}
             <li> <a href ="{{video.lien}}" target="blank">{{ video.nom}}</a>
           
           
          {%  endfor %}
+         
           </ul>
+          </div>
           {% else %}
-              <div class="alert alert-light" role="alert">
+              <div class="alert alert-light">
            Cette équipe n'a pas encore déposé de vidéo.
            </div>
               
@@ -92,14 +96,10 @@
  </div>  
        
     {% block javascripts %}
-        <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js" ></script> 
-        {#<script src="./coverage/bs-custom-file-input.js"></script>#}
-        <script>
-            {# $(document).ready(function () {
-                bsCustomFileInput.init()
-            })#}
-                bsCustomFileInput.init()
-        </script>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     {% endblock %}  
 {% endblock %}
 
