@@ -309,16 +309,17 @@ class SecretariatadminController extends AbstractController
                    
                     $numero= $worksheet->getCellByColumnAndRow(4, $row)->getValue();
                     $equipe=$repositoryEquipesadmin->findOneByNumero($numero);
-                    if (isset($equipe)){
+                     if (isset($equipe)){
                      $date=$worksheet->getCellByColumnAndRow(21, $row)->getValue();
-                     //dd($date);
-                        if ($date>date('l')){
+                     
+                        if ($date>date('Y')){
                             
                          $equipe= new equipesadmin();                            
                         }
                     }
                    if(!$equipe){
-                   $equipe= new equipesadmin(); }
+                   $equipe= new equipesadmin(); 
+                                    }
                         $equipe->setEdition($edition);
                         $equipe->setNumero($numero) ;
                         $value = $worksheet->getCellByColumnAndRow(5, $row)->getValue();

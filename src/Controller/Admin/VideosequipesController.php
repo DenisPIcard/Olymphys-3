@@ -9,11 +9,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\ChoiceList\ChoiceList;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Centrescia;
-use App\Form\Filter\EquipesadminFilterType;
-use App\Form\Filter\FichiersequipesFilterType;
+
+use App\Form\Filter\VideosequipesFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
@@ -42,14 +43,17 @@ class VideosequipesController extends EasyAdminController
                         'choice_label' => 'getCentre',
                          'multiple'=>false,]);
            $form->add('equipe', VideosequipesFilterType::class, [
-                         'class' => Equipesadmin::class,
-                         'query_builder' => function (EntityRepository $er) {
+                               'class' => Equipesadmin::class,
+                               'query_builder' => function (EntityRepository $er) {
                                          return $er->createQueryBuilder('u')
-                                                 ->orderBy('u.numero','ASC');
+                                                 ->andWhere('u.numero <:valeur')
+                                                 ->setParameter('valeur',100 )
+                                                 ->addOrderBy('u.numero','ASC')
+                                                 ->addOrderBy('u.edition', 'DESC');
                                                       
                                                   },
-                        'choice_label' => 'getInfoequipe',
-                         'multiple'=>false,]);
+                           'choice_label'=>'getInfoEquipe',
+                         'multiple'=>true,]);
         return $form;
     }
     public function persistEntity($entity)

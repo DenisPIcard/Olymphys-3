@@ -4,13 +4,22 @@ easy_admin :
              
              
              class : App\Entity\Photosinter
+             controller: App\Controller\Admin\PhotosinterController
              templates:
-                        list: 
+                list: 'Admin/customizations/list.html.twig'
              actions :
                - {name : 'new', label : 'Déposer une photo'}
              
              list :
                   max_results: 30
+                  filters :
+                      - property: 'edition'
+                        
+                     
+                      - property : 'equipe'
+                       
+                     
+                  dql_filter :
                   actions: [{ name: 'Enregistrer', icon: 'download' }, '-edit']
                   batch_actions: 
                       - {name : 'telecharger', icon : 'download'}
