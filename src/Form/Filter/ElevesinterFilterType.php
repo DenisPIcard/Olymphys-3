@@ -11,42 +11,28 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType ;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\Edition ;
 use App\Entity\Equipesadmin;
-use App\Entity\Centrescia;
+use App\Entity\Elevesinter;
 
 
 
-class EquipesadminFilterType extends FilterType
+class ElevesinterFilterType extends FilterType
 { use FilterTypeTrait;
     
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
         
        $datas =$form->getParent()->getData();
-       $listparam=array();
-        if(isset($datas['edition'])){
-                              $listparam['edition_']=$datas['edition'];
-       }     
-         if(isset($datas['centre'])){
-                             $centres = $datas['centre'];
-                              $n=0;
-                            foreach($centres as $centre){
-                                $listparam['centre'.$n]=$centre;
-                                 $n++;} 
-         unset($centre);  
-         }
-       //$queryBuilder->expr()->eq();
       
-      
-      if(isset($datas['edition'])){
+      if(method_exists($datas['edition'], 'getId')){
             
-         $queryBuilder->Where( 'entity.edition =:edition')
+         $queryBuilder->Where( 'equipe.edition =:edition')
                               ->setParameter('edition',$datas['edition']);
        }     
-       if(isset($datas['centre'])){
+       if(isset($datas['equipe'])){
                     
-           $queryBuilder->andWhere( 'entity.centre =:centre')
-                              ->setParameter('centre',$datas['centre'])
-                              ->orderBy('entity.numero','ASC');
+           $queryBuilder->andWhere( 'entity.equipe =:equipe')
+                              ->setParameter('equipe',$datas['equipe'])
+                              ->orderBy('equipe.numero','ASC');
        }
      
          
@@ -56,7 +42,7 @@ class EquipesadminFilterType extends FilterType
     {    $resolver->setDefaults([
             'choice_label' => [
                 'Edition' => 'edition',
-                'Centre' => 'centre',
+                'Equipe' => 'equipe',
                 // ...
             ],
         ]);

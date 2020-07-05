@@ -11,8 +11,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType ;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\Edition ;
 use App\Entity\Equipesadmin;
-use App\Entity\Centrescia;
-use App\Entity\Photosinter;
+use App\Entity\Elevesinter;
+
 
 
 class PhotosinterFilterType extends FilterType

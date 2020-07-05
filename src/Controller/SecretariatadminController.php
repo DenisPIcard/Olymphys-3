@@ -308,15 +308,22 @@ class SecretariatadminController extends AbstractController
                    {                       
                    
                     $numero= $worksheet->getCellByColumnAndRow(4, $row)->getValue();
-                    $equipe=$repositoryEquipesadmin->findOneByNumero($numero);
-                     if (isset($equipe)){
+                    $qb=$repositoryEquipesadmin->createQueryBuilder('e')
+                                                                  ->where('e.numero =:numero')
+                                                                  ->setParameter('numero', $numero)
+                                                                   ->andWhere('e.edition =:edition')
+                                                                   ->setParameter('edition',$edition);
+                    $equipe=$qb->getQuery()->getResult();
+                    
+                    /* if (null!=$equipe){
                      $date=$worksheet->getCellByColumnAndRow(21, $row)->getValue();
-                     
+                     dump($date);
+                     dd(date('Y'));
                         if ($date>date('Y')){
                             
                          $equipe= new equipesadmin();                            
                         }
-                    }
+                    }*/
                    if(!$equipe){
                    $equipe= new equipesadmin(); 
                                     }

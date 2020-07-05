@@ -11,14 +11,15 @@ easy_admin :
                       
                     - property : 'centre'  
                       
-                dql_filter : " entity.numero < 100  "
+                dql_filter : " entity.numero < 100  "  
+                #les équipes de n° >100 sont les photos du cn hors équipes
                 actions : 
                     - { name : 'new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
                     - { name: 'edit', icon: 'pencil', label: false }
                     - { name: 'delete', icon: 'trash-alt', label: false }
                 batch_actions: ['delete']  
                 max_results: 50
-                sort: ['centre.centre', 'ASC']
+                
                 template : 'Admin\customizations\list.html.twig'
                 fields :
                   - { property : 'edition.ed', label : 'Edition'}

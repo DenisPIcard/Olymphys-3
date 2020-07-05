@@ -21,33 +21,19 @@ class FichiersequipesFilterType extends FilterType
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
        
-       $datas =$form->getParent()->getData();
-       $listparam=array();
-        if(isset($datas['edition'])){
-                              $listparam['edition_']=$datas['edition'];
-       }     
-         if(isset($datas['centre'])){
-                             $centres = $datas['centre'];
-                              $n=0;
-                            foreach($centres as $centre){
-                                $listparam['centre'.$n]=$centre;
-                                 $n++;} 
-         unset($centre);  
-         }
-       
-      
-      
-      if(isset($datas['edition'])){
+        $datas =$form->getParent()->getData();
+    
+      if(method_exists($datas['edition'], 'getId')){
             
          $queryBuilder->andWhere( 'entity.edition =:edition')
                               ->setParameter('edition',$datas['edition']);
        }     
-       if(isset($datas['centre'])){
-                    
-           $queryBuilder->andWhere( 'eq.centre =:centre')
-                              ->setParameter('centre',$datas['centre'])
-                              ->orderBy('eq.numero','ASC');
-       }
+       if(method_exists($datas['centre'],'getId')){
+                  
+           $queryBuilder->andWhere( 'eq.centre=:centre')
+                              ->setParameter('centre',$datas['centre']);
+             
+                  } 
       
        
        return $queryBuilder;

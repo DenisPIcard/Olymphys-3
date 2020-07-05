@@ -3,9 +3,15 @@ easy_admin :
         Elevesinter :
             class :  App\Entity\Elevesinter
             label : 'Eleves'
+            controller: App\Controller\Admin\ElevesciaController
             list :
                 permission: 'ROLE_COMITE'
-                
+                filters :
+                    - 'equipe'
+                    
+                    
+                dql_filter : 
+                    
                 batch_actions: ['delete']
                 fields : 
                     - {property : 'nom'}
