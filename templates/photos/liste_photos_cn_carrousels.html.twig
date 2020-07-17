@@ -56,9 +56,9 @@
      
         {% if i ==1 %}
             
-          <div class="carousel-item col-lg-4 col-md-6 active"><a href="{{asset('/upload/images/'~edition.ed~'/nat/'~photo.photo)}}">
+          <div class="carousel-item col-lg-4 col-md-6 active"><a href="{{asset('/upload/photos/'~photo.photo)}}">
               <div class="container">
-       <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/images/'~edition.ed~'/nat/thumb/'~photo.photo)}}" ></div>
+       <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}" ></div>
          <div class="text">
                                     
                                        
@@ -72,10 +72,10 @@
       {% if i>1 %} 
         
       <div class="carousel-item col-lg-4 col-md-6">
-          <a href="{{asset('/upload/images/'~edition.ed~'/nat/'~photo.photo)}}">
+          <a href="{{asset('/upload/photos/'~photo.photo)}}">
          <div class="container">
            <div class="d-flex h-100 align-items-center justify-content-center">
-               <img src="{{asset('/upload/images/'~edition.ed~'/nat/thumb/'~photo.photo)}}" ></div>
+               <img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}" ></div>
               {% if photo.coment !='' %} 
          <div class="text">
                                    

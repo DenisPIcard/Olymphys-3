@@ -7,11 +7,12 @@
     
     {% endblock %}
 
-{% block title %} {{edition.ed}}   Les photos des épreuves interacadémiques {% endblock %}
+{% block title %} {{edition.ed}}   Les photos des épreuves nationales {% endblock %}
 
 
 
-{% block titre3 %}{{edition.ed}} <sup>eme</sup> Les photos  des épreuves interacadémiques  du centre {{centre}} {% endblock %}
+{% block titre3 %}<center>{{edition.ed}} <sup>eme</sup> Les photos  des épreuves nationales.</center></br> 
+    <Font color="blue">Equipe  {{equipe.lettre}}  :  {{equipe.Titreprojet}}</font>{% endblock %}
 
 
 {% block body %}
@@ -48,14 +49,14 @@
                         {{ form_widget(form.id)}}  
                         {{ form_label(form.photo, photo.equipe.titreProjet) }}
                         <div class="custom-control custom-checkbox">
-      {{ form_widget(form.photo,{'label': photo.equipe.numero, 'class':'custom-control-input'})}} {#  #}
+      {{ form_widget(form.photo,{'label': ' ', 'class':'custom-control-input'})}} {#  #}
                         </div>
                        
                         <font size = "-2"></font>
                        
                        {# <div class="row>"> #}
-                           <a href="{{asset('/upload/photos/'~photo.photo)}}">
-                           <img src="{{asset('/upload/photos/thumb/'~photo.photo)}}"></a>
+                           <a href="{{asset('/upload/photo/'~photo.photo)}}">
+                           <img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}"></a>
                       {# </div>  #}
                            
                     

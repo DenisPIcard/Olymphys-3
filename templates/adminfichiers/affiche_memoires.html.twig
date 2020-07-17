@@ -10,7 +10,7 @@
     {% if concours=='cn' %}
     Liste des memoires des épreuves nationales 
     {% endif %}
-   {%  dump(edition) %}
+   
     de la {{edition.ed}}<sup>e</sup> édition.
     {% endblock %}
 
@@ -41,12 +41,13 @@
                 
                   {% if memoire is not null %}
                    
-                    <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
+                    
                    
                     {% if concours=='cn' %}
                         {{memoire.equipe.lettre}} - 
-                     <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
                     {% endif %}
+                     <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
+                    
                     <h8><i>Lycée {{memoire.equipe.rneId.nom}}, {{memoire.equipe.rneId.commune}} </i> </h8>
                   {% endif %}
                      {% if memoire is null %}

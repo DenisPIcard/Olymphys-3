@@ -94,9 +94,21 @@ use Howtomakeaturn\PDFInfo\PDFInfo;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use ZipArchive;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
+
     
 class FichiersController extends AbstractController
 {
+     private $session;
+   
+    public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+        }
+    
+    
+    
  /**
          * @Security("is_granted('ROLE_ORGACIA')")
          * 
@@ -133,7 +145,7 @@ public function choix_centre(Request $request) {
     
     
    
-     if($liste_centres!=null) {
+     if(isset($liste_centres)) {
                    $content = $this
                  ->renderView('adminfichiers\choix_centre.html.twig', array(
                      'liste_centres'=>$liste_centres
@@ -156,7 +168,7 @@ public function choix_centre(Request $request) {
  /**
          * @Security("is_granted('ROLE_PROF')")
          * 
-         * @Route("/fichiers/choix_equipe/{choix}", name="fichiers_choix_equipe")
+         * @Route("/fichiers/choix_equipe, {choix}", name="fichiers_choix_equipe")
          * 
          */           
 public function choix_equipe(Request $request,$choix) {
@@ -392,9 +404,29 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                              $qb4 =$repositoryEquipesadmin->createQueryBuilder('t')
                                                                   ->where('t.nomLycee>:vide')
                                                                  ->setParameter('vide','')
+                                                                   ->andWhere('t.edition =:edition')
+                                                                  ->setParameter('edition', $edition)
                                                                  ->orderBy('t.numero','ASC');
                                              $liste_equipes=$qb4->getQuery()->getResult();  
                                                }
+                                                if($liste_equipes) {
+
+                                             $content = $this
+                                                      ->renderView('adminfichiers\choix_equipe.html.twig', array(
+                                                          'liste_equipes'=>$liste_equipes, 'phase'=>$phase, 'user'=>$user,'choix'=>$choix,'role'=>$role
+                                                         )
+                                                                     );
+                                             return new Response($content);  
+                                             }   
+                                         else{ 
+                                             $request->getSession()
+                                                     ->getFlashBag()
+                                                     ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipes inscrite pour le concours '. $phase.' de la '.$edition->getEd().'e edition') ;
+                                             return $this->redirectToRoute('core_home');   
+                                         }
+                                               
+                                               
+                                               
                                              }
                                                 if (($role=='ROLE_ORGACIA') or ($role=='ROLE_JURYCIA') ) {
 
@@ -430,7 +462,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                                      ->getFlashBag()
                                                      ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipes inscrite pour le concours '. $phase.' de la '.$edition->getEd().'e edition') ;
                                              return $this->redirectToRoute('core_home');   
-                                             }
+                                         }
                                              }
          }            
  }
@@ -439,7 +471,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
 /**
          * @Security("is_granted('ROLE_PROF')")
          * @var Symfony\Component\HttpFoundation\File\UploadedFile $file 
-         * @Route("/fichiers/confirme_charge_fichier/{file_equipe}", name="fichiers_confirme_charge_fichier")
+         * @Route("/fichiers/confirme_charge_fichier, {file_equipe}", name="fichiers_confirme_charge_fichier")
          * 
          */        
 public function  confirme_charge_fichier(Request $request, $file_equipe){   
@@ -518,10 +550,10 @@ public function  confirme_charge_fichier(Request $request, $file_equipe){
         /**
          * @Security("is_granted('ROLE_PROF')")
          * @var Symfony\Component\HttpFoundation\File\UploadedFile $file 
-         * @Route("/fichiers/charge_fichiers/{infos}", name="fichiers_charge_fichiers")
+         * @Route("/fichiers/charge_fichiers, {infos}", name="fichiers_charge_fichiers")
          * 
          */         
-public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer,ValidatorInterface $validator){
+public function  charge_fichiers(Request $request, $infos ,MailerInterface $mailer,ValidatorInterface $validator){
     $repositoryFichiersequipes= $this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:Fichiersequipes');
@@ -743,15 +775,15 @@ public function  charge_fichiers(Request $request, $infos ,\Swift_Mailer $mailer
                             ->add('info', 'Votre fichier renommé selon : '.$nom_fichier.' a bien été déposé. Merci !') ;
                
                 $user = $this->getUser();//Afin de rappeler le nom du professeur qui a envoyé le fichier dans le mail
+                $type_fichier= $this->getParameter('type_fichier')[$num_type_fichier];
                 
-                
-                /*$bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', 
-                                    ['nom' => $user->getNom(),
-                                    'prenom' =>$user->getPrenom(),
-                                    'fichier'=>$nom_fichier,
-                                    'equipe'=>$equipe->getInfoequipe(),
-                                    'typefichier' => $this->getParameter('type_fichier')[$num_type_fichier]]);*/
-                $mailer->sendMessage('alain.jouvealb@gmail.com', 'info@olymphys.fr', 'Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe(),'L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier');
+               $email=(new Email())
+                    ->from('info@olymphys.fr')
+                    ->to(new adress('alain.jouvealb@gmail.com','Alain')) //'webmestre2@olymphys.fr', 'Denis'
+                    ->subject('Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe())
+                    ->text('L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier : '.$type_fichier);
+                   
+                $mailer->send($email);
                 $centre = $equipe->getCentre();
                 
                 return $this->redirectToRoute('core_home');     

@@ -46,7 +46,7 @@ class EquipesadminFilterType extends FilterType
                     
            $queryBuilder->andWhere( 'entity.centre =:centre')
                               ->setParameter('centre',$datas['centre'])
-                              ->orderBy('entity.numero','ASC');
+                              ->addOrderBy('entity.numero','ASC');
        }
      
          

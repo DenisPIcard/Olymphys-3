@@ -41,7 +41,7 @@ class PhotosinterFilterType extends FilterType
                     
            $queryBuilder->andWhere( 'entity.equipe =:equipe')
                                ->setParameter('equipe',$datas['equipe'])
-                               ->addorderBy('eq.numero','ASC');
+                               ->addOrderBy('eq.numero','ASC');
                                           
        }
        

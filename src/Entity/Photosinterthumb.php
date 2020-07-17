@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 use Doctrine\Common\Collections\ArrayCollection;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -18,12 +18,13 @@ use Doctrine\ORM\EntityRepository;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Naming\NamerInterface;
 use Vich\UploaderBundle\Naming\PropertyNamer;
+use Vich\UploaderBundle\Naming\DirectoryNamerInterface;
 use App\Entity\Edition ;
- //
-//@ORM\Table(name="photosinterthumb")
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+ 
 
 /**
- * 
+ * @ORM\Table(name="photosinterthumb")
  * @ORM\Entity(repositoryClass="App\Repository\PhotosinterthumbRepository")
  * @Vich\Uploadable
  */
@@ -31,7 +32,14 @@ use App\Entity\Edition ;
 
 
 class Photosinterthumb
-{
+{   private $session;
+   
+    public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+            
+        }
+    
     /**
      * @var int
      * 
@@ -55,7 +63,7 @@ class Photosinterthumb
     /**
      *  
      *  @var File 
-     *  @Vich\UploadableField(mapping="photosinterthumb_photos", fileNameProperty="photo")
+     *  @Vich\UploadableField(mapping="photosinterthumb", fileNameProperty="photo")
      *    
      */
      private $photoFile;
@@ -124,26 +132,24 @@ class Photosinterthumb
         return $this->id;
     }
 
-    public function getEquipe()
-    {
-        return $this->equipe;
-    }
-
-    public function setEquipe($equipe)
-    {
-        $this->equipe = $equipe;
-        return $this;
-    }
-     
+   
+public function directoryName(): string
+     {   
+    /*$em=$this->getDoctrine()->getManager();
+           $edition=$this->session->get('edition'); 
+           $edition=$em->merge($edition);*/
+       $edition=$this->getEdition();
+       $path='/'.$edition->getEd().'/int/thumb';
+        
+          return $path;
+     }    
 
     
 public function personalNamer()    //permet à vichuploeder et à easyadmin de renommer le fichier, ne peut pas être utilisé directement
- {         $edition='x';
-           if ( $this->getEdition()) 
-           {
-           $edition=$this->getEdition()->getEd(); 
-             }
-           $equipe=$this->getEquipe();
+ {         
+           
+          $edition=$this->getEdition();
+           /*$equipe=$this->getEquipe();
            $centre=$equipe->getCentre()->getCentre();
            $numero_equipe=$equipe->getNumero();
            $nom_equipe=$equipe->getTitreProjet();
@@ -153,6 +159,9 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
            $nom_equipe= str_replace("é","e",$nom_equipe);
            $nom_equipe= str_replace("ë","e",$nom_equipe);
            $nom_equipe= str_replace("ê","e",$nom_equipe);
+           $nom_equipe= str_replace("ô","o",$nom_equipe);
+           $nom_equipe= str_replace("?","",$nom_equipe);
+           $nom_equipe= str_replace("ï","i",$nom_equipe);
             setLocale(LC_CTYPE,'fr_FR');
            
            
@@ -160,12 +169,10 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
            //$nom_equipe= str_replace("'","",$nom_equipe);
            //$nom_equipe= str_replace("`","",$nom_equipe);
             
-           //$nom_equipe= str_replace("?","",$nom_equipe);     
-           $fileName=$edition.'-'.$centre.'-eq-'.$numero_equipe.'-'.$nom_equipe.'.'.uniqid();
-               
-          //dump($fileName);
-           
-           return $fileName;
+           //$nom_equipe= str_replace("?","",$nom_equipe);*/     
+           $fileName=$edition->getEd().uniqid();
+         
+    return $fileName;
  }
     
     
@@ -188,14 +195,7 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
 
         return $this;
    }
-   public function getNom_equipe($lettre){
-       $nom_equipe=$this->getDoctrine()
-    ->getRepository(Totalequipes::class)
-    -> getTotEquipesNom($lettre);
-       
-       return $nom_equipe;
-       
-   }
+   
 
    public function getUpdatedAt()
    {

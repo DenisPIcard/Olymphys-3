@@ -93,7 +93,7 @@ public function liens_videos(Request $request, $infos){
                 }
    
     return $this->render('adminfichiers/liens_videos.html.twig', [
-            'form' => $form->createView(),'donnees_equipe'=>$donnees_equipe
+            'form' => $form->createView(),'donnees_equipe'=>$donnees_equipe,'choix'=>$choix
         ]);
     }
 /**

@@ -19,9 +19,15 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\TypeEntityType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class PhotoscnType extends AbstractType
-{
+{    private $session;
+   
+    public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+        }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {    
       
@@ -29,9 +35,11 @@ class PhotoscnType extends AbstractType
                                        'class' => 'App:Equipesadmin',
                                        'query_builder'=>function (EntityRepository $ea) {
                                                         return $ea->createQueryBuilder('e')
-                                                                        ->where('e.selectionnee = TRUE')
-                                                                        ->orderBy('e.lettre', 'ASC');},
-                                        'choice_label'=>'getInfoequipenat',
+                                                                        ->andWhere('e.edition =:edition')
+                                                                        ->setParameter('edition',$this->session->get('edition'))
+                                                                        ->andWhere('e.selectionnee = TRUE')
+                                                                        ->addOrderBy('e.lettre', 'ASC');},
+                                         'choice_label'=>'getInfoequipenat',
                                         'label' => 'Choisir une équipe .',
                                          'mapped'=>false
                                          ])

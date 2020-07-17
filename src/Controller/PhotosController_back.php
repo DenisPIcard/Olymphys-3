@@ -83,7 +83,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use ZipArchive;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class PhotosController extends  AbstractController
+class PhotosController_back extends  AbstractController
 {      private $session;
    
     public function __construct(SessionInterface $session)
@@ -115,12 +115,23 @@ class PhotosController extends  AbstractController
             $edition = $this->session->get('edition');
             $edition=$em->merge($edition);
            
-           
-             $Photos = new Photos($this->session);
+            if ($concours=="inter"){
+             $Photos = new Photosinter($this->session);
              //$Photos->setSession($session);
-             $form = $this->createForm(PhotosType::class, null);
+             $form = $this->createForm(PhotosinterType::class, null);
               $form->handleRequest($request);
-           
+              
+            }
+             if ($concours=="cn"){
+             $Photos = new Photoscn($this->session);
+             //$Photos->setSession($session);
+             $form = $this->createForm(PhotoscnType::class, null);
+              $form->handleRequest($request);
+              
+            }
+            
+            
+            
             if ($form->isSubmitted() && $form->isValid()) {
                       
                      
@@ -135,24 +146,32 @@ class PhotosController extends  AbstractController
                      if($files){
                        foreach($files as $file)
                        {
-                        
-                         $photo=new Photos($this->session);
-                                     
-                       
+                         if ($concours== 'inter')  {
+                         $photo=new Photosinter($this->session);
+                                      }
+                         if ($concours== 'cn')  {
+                         $photo=new Photoscn($this->session);
+                                       }            
+                      
                         $photo->setEdition($edition);
-                        if ($this->session->get('concours')=='interacadémique'){
-                        $photo->setNational(FALSE);}
-                        if ($this->session->get('concours')=='national'){
-                        $photo->setNational(TRUE);}
                         $photo->setPhotoFile($file);//Vichuploader gère l'enregistrement dans le bon dossier, le renommage du fichier
                          $photo->setEquipe($equipe);
                         
                          $em->persist($photo);
                           $em->flush();
                          
-                         
-                           $photo= $repositoryPhotos->findOneby(['photo'=>$photo->getPhoto()]);
-                          
+                          if ($concours== 'inter')  {
+                          $photothumb = New Photosinterthumb($this->session);
+                           $photo= $repositoryPhotosinter->findOneby(['photo'=>$photo->getPhoto()]);
+                           
+                                            
+                          }
+                          if ($concours== 'cn')  {
+                          $photothumb = New Photoscnthumb($this->session);
+                           $photo= $repositoryPhotoscn->findOneby(['photo'=>$photo->getPhoto()]);
+                           
+                           
+                          }
                           //dd($photo);
                          //$filename=basename($photo->getPhoto());
                          //$fileName=$edition->getEd().'-eq-'.$numero_equipe.'-'.$nom_equipe.'-'.uniqid().'.'.$file->guessExtension();//inutile avec vichuploader
@@ -171,15 +190,20 @@ class PhotosController extends  AbstractController
                           $image =imagecreatefromjpeg($photo->getPhotoFile());
                             // Resample
                             $thumb = imagecreatetruecolor($new_width, $new_height);
-                           $paththumb = $this->getParameter('app.path.photos').'/thumbs';
+                           $paththumbtmp = $this->getParameter('app.path.thumbtmp');
                            
                             imagecopyresampled($thumb,$image, 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
                            
                            
                           //dd($thumb);
-                          imagejpeg($thumb, $paththumb.'/'.$photo->getPhoto()); 
+                          imagejpeg($thumb, $paththumbtmp.'/'.$photo->getPhoto()); 
                           
-                          
+                          $thumbfile=new UploadedFile($paththumbtmp.'/'.$photo->getPhoto(),$photo->getPhoto(),null,null,true);
+                      $photothumb->setEdition($edition);                          
+                      $photothumb->setPhotoFile($thumbfile);//Vichuploader gère l'enregistrement dans le bon dossier, le renommage du fichier
+                       $em->persist($photothumb);
+                              
+                         $em->flush();    
                         //$photothumb->setPhoto($photo->getPhoto());//enregistre le même nom que celui de la photo   
                          //$em->persist($photothumb);
                          //$photothumb->setEquipe($equipe);
@@ -187,7 +211,19 @@ class PhotosController extends  AbstractController
                          //$photo->setUpdatedAt(new \DateTime('now'));
                              
                          //
+                         $filesystem = new Filesystem();
+                         
+                         
+                          $filesystem->remove($paththumbtmp.'/'.$photo->getPhoto()); 
+                         $photo->setThumb($photothumb);
+                         $em->persist($photo);
+                         $em->flush();
+                         
                        
+                         
+                          
+                          
+                         
                      }
                      $request->getSession()
                          ->getFlashBag()
@@ -263,18 +299,15 @@ class PhotosController extends  AbstractController
              $repositoryEquipesadmin= $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');
-             $repositoryPhotos=$this->getDoctrine()
+             $repositoryPhotosinter=$this->getDoctrine()
                                    ->getManager()
-                                   ->getRepository('App:Photos');
+                                   ->getRepository('App:Photosinter');
              $Edition=$repositoryEdition->find(['id'=>$edition]);
              $liste_centres=$repositoryCentrescia->findAll();
-             $qb =$repositoryPhotos->createQueryBuilder('p')
-                               ->andWhere('p.edition =:edition')
-                                ->andWhere('p.national =: national')
-                                ->setParameter('edition', $Edition)
-                               ->setParameter('national', 'FALSE')
-                               ->leftJoin('p.equipe','eq')
-                               ->orderBy('eq.centre', 'ASC');
+             $qb =$repositoryPhotosinter->createQueryBuilder('t')
+                               ->where('t.edition =:edition')
+                                ->setParameter('edition', $Edition);
+                               
              $liste_photos=$qb->getQuery()->getResult();
              
              if ($liste_photos){
@@ -304,11 +337,13 @@ class PhotosController extends  AbstractController
              $repositoryEquipesadmin= $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');
-            
-             
              $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
-                                   ->getRepository('App:Photos');
+                                   ->getRepository('App:Photosinter');
+             
+             $repositoryPhotoscn=$this->getDoctrine()
+                                   ->getManager()
+                                   ->getRepository('App:Photoscn');
              $Edition=$repositoryEdition->find(['id'=>$edition]);
              
              $qb1=$repositoryEquipesadmin->createQueryBuilder('e')
@@ -318,15 +353,12 @@ class PhotosController extends  AbstractController
              
              
              
-             $qb2 =$repositoryPhotos->createQueryBuilder('p')
+             $qb2 =$repositoryPhotoscn->createQueryBuilder('p')
                      ->leftJoin('p.equipe', 'e')
-                     ->andWhere('e.selectionnee = TRUE')
-                     ->orderBy('e.lettre','ASC') 
-                     ->andWhere('p.national =: national')
-                     ->setParameter('national',TRUE)
+                     ->orderBy('e.lettre','ASC')
                      ->andWhere('p.edition =:edition')
                      ->setParameter('edition', $Edition);
-                    
+            
              $liste_photos=$qb2->getQuery()->getResult();
              
              //dd($liste_photos);
@@ -365,7 +397,12 @@ class PhotosController extends  AbstractController
                                    ->getManager()
                                    ->getRepository('App:Photosinter');
              
-            
+             $repositoryPhotoscn=$this->getDoctrine()
+                                   ->getManager()
+                                   ->getRepository('App:Photoscn');
+             $repositoryPhotosinter=$this->getDoctrine()
+                                   ->getManager()
+                                   ->getRepository('App:Photosinter');
               $repositoryCentrescia=$this->getDoctrine()
                                    ->getManager()
                                    ->getRepository('App:Centrescia');
@@ -381,12 +418,11 @@ class PhotosController extends  AbstractController
                          ->setParameter('centre',$centre);
                  $liste_equipes=$qb->getQuery()->getResult();
                 
-                $qb2=$repositoryPhotos->createQueryBuilder('p')
+                $qb2=$repositoryPhotosinter->createQueryBuilder('p')
                          ->join('p.equipe','r')
-                         ->andWhere('r.centre =:centre')
+                         ->where('r.centre =:centre')
                          ->setParameter('centre', $centre)
-                        ->orderBy('r.numero','ASC')
-                        ->andWhere('p.national = FALSE');
+                        ->orderBy('r.numero','ASC');
                   $liste_photos=$qb2->getQuery()->getResult();  
           
              }
@@ -394,11 +430,9 @@ class PhotosController extends  AbstractController
              If ($concours=='national'){
              
              $equipe= $repositoryEquipesadmin->findOneBy(['id'=>$concourseditioncentre[2]]);
-                 $qb= $repositoryPhotos->createQueryBuilder('p')
-                          ->andWhere('p.equipe =:equipe')
-                         ->setParameter('equipe',$equipe)
-                         ->andWhere('p.national = TRUE')
-                         ;
+                 $qb= $repositoryPhotoscn->createQueryBuilder('p')
+                          ->where('p.equipe =:equipe')
+                         ->setParameter('equipe',$equipe);
                    
                  $liste_photos=$qb->getQuery()->getResult();                 
              }
@@ -434,9 +468,14 @@ class PhotosController extends  AbstractController
 		->getRepository('App:Equipesadmin');
              $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
-                                   ->getRepository('App:Photos');
+                                   ->getRepository('App:Photosinter');
              
-             
+             $repositoryPhotoscn=$this->getDoctrine()
+                                   ->getManager()
+                                   ->getRepository('App:Photoscn');
+             $repositoryPhotosinter=$this->getDoctrine()
+                                   ->getManager()
+                                   ->getRepository('App:Photosinter');
               $repositoryCentrescia=$this->getDoctrine()
                                    ->getManager()
                                    ->getRepository('App:Centrescia');
@@ -453,11 +492,10 @@ class PhotosController extends  AbstractController
                          ->setParameter('centre',$centre);
                  $liste_equipes=$qb->getQuery()->getResult();
                 
-                $qb2=$repositoryPhotos->createQueryBuilder('p')
+                $qb2=$repositoryPhotosinter->createQueryBuilder('p')
                          ->join('p.equipe','r')
-                         ->andWhere('r.centre =:centre')
+                         ->where('r.centre =:centre')
                          ->setParameter('centre', $centre)
-                        ->andWhere('p.national = FALSE')
                         ->orderBy('r.numero','ASC');
                   $liste_photos=$qb2->getQuery()->getResult();  
                  
@@ -468,9 +506,8 @@ class PhotosController extends  AbstractController
              If ($concours=='national'){
              
              $equipe= $repositoryEquipesadmin->findOneBy(['id'=>$concourseditioncentre[2]]);
-                 $qb= $repositoryPhotos->createQueryBuilder('p')
+                 $qb= $repositoryPhotoscn->createQueryBuilder('p')
                           ->where('p.equipe =:equipe')
-                         ->andWhere('p.national = FALSE')
                          ->setParameter('equipe',$equipe);
                    
                  $liste_photos=$qb->getQuery()->getResult();                 
@@ -503,11 +540,16 @@ class PhotosController extends  AbstractController
                       //dd($request);
                      //dd($Form[$i]);
                    if ($request->request->has('Form'.$i)) {
-                 
-                            $photo= $repositoryPhotos->find(['id'=>$id]);
+                   if ($concours=='national'){
+                            $photo= $repositoryPhotoscn->find(['id'=>$id]);
                       //dd($photo);
                            // $file_path = $this->getParameter('app.path.photosnat').'/'.$photo->getPhoto();
-                   
+                   }
+                   if ($concours=='cia'){
+                            $photo= $repositoryPhotosinter->find(['id'=>$id]);
+                      //dd($photo);
+                           // $file_path = $this->getParameter('app.path.photosnat').'/'.$photo->getPhoto();
+                   }
                    
                            //dd('Form'.$i);
                             if ( $Form[$i]->get('sauver')->isClicked())
@@ -562,17 +604,25 @@ class PhotosController extends  AbstractController
          public function confirme_efface_photo(Request $request, $concours_photoid_infos){
               
              $photoid_concours =explode(':',$concours_photoid_infos);
-             $photoId=$photoid_concours[1];
+             $photoid=$photoid_concours[1];
              $concours=$photoid_concours[0];
              $infos=$photoid_concours[2];
              
              
-             $repositoryPhotos=$this->getDoctrine()
+             $repositoryPhotosinter=$this->getDoctrine()
                                    ->getManager()
-                                   ->getRepository('App:Photos');
+                                   ->getRepository('App:Photosinter');
              
-                 $photo=$repositoryPhotos-> find(['id'=>$photoId]);
-                        
+             $repositoryPhotoscn=$this->getDoctrine()
+                                   ->getManager()
+                                   ->getRepository('App:Photoscn');
+             if( $concours=='cia'){
+                 $photo=$repositoryPhotosinter-> find(['id'=>$photoid]);
+             }
+              if( $concours=='national'){
+                 $photo=$repositoryPhotoscn-> find(['id'=>$photoid]);
+             }
+             
             
               $Form=$this->createForm(ConfirmType::class);  
               $Form->handleRequest($request);
@@ -601,52 +651,6 @@ class PhotosController extends  AbstractController
                                    
              
          }
-         /**
-         * 
-         * @IsGranted("ROLE_SUPER_ADMIN")
-         * @Route("/photos/transpose_photos", name="photos_transpose_photos")
-         * 
-         */  
-        public function transpose_photos(Request $request) {
-            $repositoryPhotos=$this->getDoctrine()
-                                   ->getManager()
-                                   ->getRepository('App:Photos');
-            $repositoryPhotosinter=$this->getDoctrine()
-                                   ->getManager()
-                                   ->getRepository('App:Photosinter');
-            $repositoryPhotoscn=$this->getDoctrine()
-                                   ->getManager()
-                                   ->getRepository('App:Photoscn');
-            $em=$this->getDoctrine()->getManager();
-            $liste_photosinter = $repositoryPhotosinter->findAll();
-            $liste_photoscn = $repositoryPhotoscn->findAll();
-         foreach($liste_photosinter as $photointer){
-                $photo= new Photos();
-                $photo->setNational(FALSE);
-                $photo->setEdition($photointer->getEdition());
-                $photo->setEquipe($photointer->getEquipe());
-                $photo->setPhoto($photointer->getPhoto());
-                $filesystem = new Filesystem();
-                $filesystem->copy($this->getParameter('app.path.photosinter').'/'.$photointer->getPhoto(),$this->getParameter('app.path.photos').'/'.$photointer->getPhoto()); 
-                $filesystem->copy($this->getParameter('app.path.photosinterthumb').'/'.$photointer->getPhoto(),$this->getParameter('app.path.photos').'/thumbs/'.$photointer->getPhoto()); 
-                $em->persist($photo);
-                $em->flush();
-            }
-            foreach($liste_photoscn as $photocn){
-                $photo= new Photos();
-                $photo->setNational(TRUE);
-                $photo->setEdition($photocn->getEdition());
-                $photo->setEquipe($photocn->getEquipe());
-                $photo->setPhoto($photocn->getPhoto());
-                $filesystem = new Filesystem();
-                $filesystem->copy($this->getParameter('app.path.photosnat').'/'.$photocn->getPhoto(),$this->getParameter('app.path.photos').'/'.$photocn->getPhoto()); 
-                $filesystem->copy($this->getParameter('app.path.photosnatthumb').'/'.$photocn->getPhoto(),$this->getParameter('app.path.photos').'/thumbs/'.$photocn->getPhoto()); 
-                $em->persist($photo);
-                $em->flush();
-            }
-            return $this->redirectToRoute('core_home');
-         
-        }
            
          }
 

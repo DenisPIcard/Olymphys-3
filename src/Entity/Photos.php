@@ -19,25 +19,20 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Naming\NamerInterface;
 use Vich\UploaderBundle\Naming\PropertyNamer;
 use App\Entity\Edition;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 /**
  * Photos
  * @Vich\Uploadable
- * @ORM\Table(name="photosinter")
- * @ORM\Entity(repositoryClass="App\Repository\PhotosinterRepository")
+ * @ORM\Table(name="photos")
+ * @ORM\Entity(repositoryClass="App\Repository\PhotosRepository")
  * 
  */
 
 
 
-class Photosinter
+class Photos
 {    
-    private $session;
-  
-    public function __construct(SessionInterface $session)
-        {
-            $this->session = $session;
-        }
+   
     
     
 
@@ -79,18 +74,20 @@ class Photosinter
       */
      private $edition;
      
-     /**
-       *  
-       * @ORM\OneToOne(targetEntity="App\Entity\Photosinterthumb")
-       * @ORM\JoinColumn(name="thumb_id",  referencedColumnName="id" )
-       */
-      private $thumb;
+    
      /**
         * @ORM\Column(type="string", length=125,  nullable=true)
         * 
         * @var string
         */
       private $coment;
+      
+       /**
+        * @ORM\Column(type="boolean",  nullable=true)
+        * 
+        * @var boolean
+        */
+      private $national;
      
      /**
        * 
@@ -165,27 +162,24 @@ class Photosinter
         return $this;
     }
     
-     public function getThumb()
+     public function getNational()
     {
-        return $this->thumb;
+        return $this->national;
     }
 
-    public function setThumb($thumb)
+    public function setNational($national)
     {
-        $this->thumb = $thumb;
+        $this->national = $national;
         return $this;
     }
-public function directoryName(): string
-     {  
-       $path='/'.$this->getEdition()->getEd().'/int';
-          
-          return $path;
-     }
+
 public function personalNamer()    //permet à vichuploeder et à easyadmin de renommer le fichier, ne peut pas être utilisé directement
  {         $edition=$this->getEdition()->getEd();
            $equipe=$this->getEquipe();
            $centre=$equipe->getCentre()->getCentre();
            $numero_equipe=$equipe->getNumero();
+           $lettre_equipe=$equipe->getLettre();
+           $national=$this->getNational();
            $nom_equipe=$equipe->getTitreProjet();
            $nom_equipe= str_replace("à","a",$nom_equipe);
            $nom_equipe= str_replace("ù","u",$nom_equipe);
@@ -204,9 +198,12 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
            //$nom_equipe= str_replace("`","",$nom_equipe);
             
            //$nom_equipe= str_replace("?","",$nom_equipe);     
+           if ($national == FALSE){
            $fileName=$edition.'-'.$centre.'-eq-'.$numero_equipe.'-'.$nom_equipe.'.'.uniqid();
-               
-          
+           }
+           if ($national == TRUE){
+           $fileName=$edition.'-CN-eq-'.$lettre_equipe.'-'.$nom_equipe.'.'.uniqid();
+           }
            
            return $fileName;
  }
@@ -231,15 +228,7 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
 
         return $this;
    }
-   public function getNom_equipe($lettre){
-       $nom_equipe=$this->getDoctrine()
-    ->getRepository(Totalequipes::class)
-    -> getTotEquipesNom($lettre);
-       
-       return $nom_equipe;
-       
-   }
-
+  
    public function getUpdatedAt()
    {
        return $this->updatedAt;

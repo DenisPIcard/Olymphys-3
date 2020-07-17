@@ -51,7 +51,7 @@ class EquipesadminController extends EasyAdminController
             'class' => Edition::class,
             'query_builder' => function (EntityRepository $er) {
                             return $er->createQueryBuilder('u')
-                                    ->orderBy('u.ed', 'DESC');
+                                    ->addOrderBy('u.ed', 'DESC');
                                      },
            'choice_label' => 'getEd',
             'multiple'=>false,]);
@@ -59,7 +59,7 @@ class EquipesadminController extends EasyAdminController
                          'class' => Centrescia::class,
                          'query_builder' => function (EntityRepository $er) {
                                          return $er->createQueryBuilder('u')
-                                                 ->orderBy('u.centre', 'ASC');
+                                                 ->addOrderBy('u.centre', 'ASC');
 
                                                   },
                         'choice_label' => function($centre){return $centre->getCentre();},
@@ -78,7 +78,9 @@ class EquipesadminController extends EasyAdminController
         
     }
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
-           $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+           
+        
+        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
         /* @var DoctrineQueryBuilder */
@@ -88,12 +90,13 @@ class EquipesadminController extends EasyAdminController
             ->leftJoin('entity.edition','edition')
             ->where('edition.ed =:edition')
             ->setParameter('edition', $edition->getEd())
-           ->orderBy('entity.centre', 'ASC');
+           ->addOrderBy('entity.centre', 'ASC')
+           ->addOrderBy('entity.'.$sortField,$sortDirection);
             return $queryBuilder;
          
       }
     
-    
+  
     
 }
 

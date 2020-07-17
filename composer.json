@@ -10,7 +10,6 @@
         "laminas/laminas-code": "^3.4",
         "league/flysystem-ziparchive": "^1.0",
         "league/html-to-markdown": "^4.9",
-        "league/oauth2-server": "^8.1",
         "liip/imagine-bundle": "^2.3",
         "lncd/oauth2": "*",
         "nyholm/psr7": "^1.3",
@@ -44,7 +43,6 @@
         "symfony/validator": "5.0.*",
         "symfony/web-link": "5.0.*",
         "symfony/yaml": "5.0.*",
-        "trikoder/oauth2-bundle": "^3.1",
         "twig/cssinliner-extra": "^3.0",
         "twig/extra-bundle": "^3.0",
         "vich/uploader-bundle": "^1.10"
