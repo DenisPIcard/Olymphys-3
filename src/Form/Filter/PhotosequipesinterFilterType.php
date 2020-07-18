@@ -15,7 +15,7 @@ use App\Entity\Elevesinter;
 
 
 
-class PhotosinterFilterType extends FilterType
+class PhotosequipesinterFilterType extends FilterType
 { 
     
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
@@ -27,13 +27,16 @@ class PhotosinterFilterType extends FilterType
       if(method_exists($datas['edition'], 'getId')){
             
          $queryBuilder->andWhere( 'entity.edition =:edition')
+                                 ->andWhere('entity.national =:national')
+                                 ->setParameter('national', 'FALSE')  
                               ->setParameter('edition',$datas['edition']);
        }     
        if(method_exists($datas['centre'],'getId')){
                   
            $queryBuilder->andWhere( 'eq.centre=:centre')
-                              ->setParameter('centre',$datas['centre']);
-                           
+                              ->setParameter('centre',$datas['centre'])
+                             ->andWhere('entity.national =:national')
+                              ->setParameter('national', 'FALSE')  ;
              
                   } 
                  
@@ -42,6 +45,7 @@ class PhotosinterFilterType extends FilterType
                     
            $queryBuilder->andWhere( 'entity.equipe =:equipe')
                                ->setParameter('equipe',$datas['equipe'])
+                               ->andWhere( 'entity.national = FALSE')
                                ->addOrderBy('eq.numero','ASC');
                                           
        }

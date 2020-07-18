@@ -12,6 +12,7 @@ imports :
       - { resource: easy_admin/edition.yml }  
       - { resource: easy_admin/classement.yml }
       - { resource: easy_admin/photosinter.yml }  
+      - { resource: easy_admin/photosequipesinter.yml }  
       - { resource: easy_admin/photoscn.yml }  
       - { resource: easy_admin/centrescia.yml } 
       - { resource: easy_admin/elevesinter.yml } 

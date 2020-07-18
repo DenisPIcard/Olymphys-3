@@ -16,13 +16,13 @@ vich_uploader:
             namer: 
                 service: vich_uploader.namer_property
                 options: { property: 'personalNamer'}       
+        
         photos:
             uri_prefix: '%app.path.photos%'
             upload_destination: '%app.path.photos%'
             inject_on_load: true
             delete_on_update: true
             delete_on_remove: true
-            
             namer: 
                 service: vich_uploader.namer_property
                 options: { property: 'personalNamer'}

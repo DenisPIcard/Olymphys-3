@@ -32,10 +32,6 @@ use App\Entity\Edition;
 
 class Photos
 {    
-   
-    
-    
-
     /**
      * @var int
      * 
@@ -62,7 +58,7 @@ class Photos
     /**
      *  
      *  @var File 
-     *  @Vich\UploadableField(mapping="photosinter", fileNameProperty="photo")
+     *  @Vich\UploadableField(mapping="photos", fileNameProperty="photo")
      *    
      */
      private $photoFile;
