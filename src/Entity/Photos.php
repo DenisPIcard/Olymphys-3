@@ -16,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 use App\Service\FileUploader;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 use Vich\UploaderBundle\Naming\NamerInterface;
 use Vich\UploaderBundle\Naming\PropertyNamer;
 use App\Entity\Edition;
@@ -120,9 +121,31 @@ class Photos
          if ($photo) {
             // if 'updatedAt' is not defined in your entity, use another property
             $this->updatedAt = new \DateTimeImmutable();
-       
-        //return $this;
+             list($width_orig, $height_orig) = getimagesize($this->getPhotoFile());
+                         //$headers = exif_read_data($photo->getPhotoFile());
+                         $dim=max($width_orig, $height_orig);
+                       
+                          
+                         $percent = 200/$height_orig;
+                                                
+                         
+                         
+                         $new_width = $width_orig * $percent;
+                         $new_height = $height_orig * $percent;
+                          $image =imagecreatefromjpeg($this->getPhotoFile());
+                            // Resample
+                            $thumb = imagecreatetruecolor($new_width, $new_height);
+                          // $filesystem=new Filesystem();
+                            $paththumb ='upload/photos/thumbs';
+                           //dd(getcwd());
+                            imagecopyresampled($thumb,$image, 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
+                           
+                           
+                          //dd($thumb);
+                          imagejpeg($thumb, getcwd().'/'.$paththumb.'/'.$photo); 
+        
         }
+        return $this;
     }
 
     

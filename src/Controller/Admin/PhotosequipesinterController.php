@@ -6,6 +6,11 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\Annotation\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
@@ -13,7 +18,8 @@ use Symfony\Component\Form\ChoiceList\ChoiceList;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Centrescia;
-
+use App\Entity\Photos;
+use EasyCorp\Bundle\EasyAdminBundle\Mapping\Annotation\Entity;
 use App\Form\Filter\PhotosequipesinterFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
@@ -55,10 +61,7 @@ class PhotosequipesinterController extends EasyAdminController
     }
     public function persistEntity($entity)
     {
-        
-        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-                  $entity->setEdition($edition);
+                  $entity->setNational(False);
         
          parent::persistEntity($entity);
         
@@ -90,7 +93,31 @@ class PhotosequipesinterController extends EasyAdminController
             return $queryBuilder;
          
       }
-    
+public function EnregistrerAction() {
+ 
+         
+         $repository = $this->getDoctrine()->getRepository(Photos::class);
+         $id = $this->request->query->get('id');
+         $entity = $repository->find($id);
+         $fichier=$this->getParameter('app.path.photos').'/'.$entity->getPhoto();
+         $application= 'image/jpeg';
+         $name=$entity->getPhoto();
+         $response = new BinaryFileResponse($fichier);
+         
+         $disposition = HeaderUtils::makeDisposition(
+           HeaderUtils::DISPOSITION_ATTACHMENT,
+                 
+           $name
+                 );
+         $response->headers->set('Content-Type', $application); 
+         $response->headers->set('Content-Disposition', $disposition);
+         
+        
+         //$content = $this->render('secretariat\lire_memoire.html.twig', array('repertoirememoire' => $this->getParameter('repertoire_memoire_national'),'memoire'=>$fichier));
+         return $response; 
+        
+        
+    }
     
     
 }

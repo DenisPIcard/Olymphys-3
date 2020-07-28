@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use App\Entity\Photosinter;
+use App\Entity\Photos;
 
 
 /**
@@ -19,6 +19,6 @@ class PhotosRepository extends ServiceEntityRepository
 {
      public function __construct(ManagerRegistry $registry)
                     {
-                        parent::__construct($registry, Photosinter::class);
+                        parent::__construct($registry, Photos::class);
                     }
 }

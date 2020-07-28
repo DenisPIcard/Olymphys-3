@@ -4,12 +4,13 @@ easy_admin :
              
              
              class : App\Entity\Photos
+             
              controller: App\Controller\Admin\PhotosequipesinterController
              templates:
                 list: 'Admin/customizations/list.html.twig'
              actions :
                - {name : 'new', label : 'Déposer une photo'}
-             
+               - {name : 'delete', label : 'Supprimer'}
              list :
                   max_results: 30
                   filters :
@@ -53,6 +54,7 @@ easy_admin :
                       - {property : 'edition', type: 'entity' , type_options : { class : 'App\Entity\Edition', query_builder : 'App\Repository\EditionRepository::getEdition', 'choice_label' : 'getEd'}}
                       - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getInfoequipe'}}
                       - { property : 'photoFile', label: 'Photo',  type : 'vich_file',  type_options : {}}
-                     
+             
+                 
                      # - {property : 'memoire', label: 'Fichier', type : 'file', data_class : 'null'}
     
