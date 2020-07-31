@@ -24,12 +24,12 @@ class PhotosinterFilterType extends FilterType
         
        $datas =$form->getParent()->getData();
     
-      if(method_exists($datas['edition'], 'getId')){
+      if(isset($datas['edition'])){
             
          $queryBuilder->andWhere( 'entity.edition =:edition')
                               ->setParameter('edition',$datas['edition']);
        }     
-       if(method_exists($datas['centre'],'getId')){
+       if(isset($datas['centre'])){
                   
            $queryBuilder->andWhere( 'eq.centre=:centre')
                               ->setParameter('centre',$datas['centre']);
@@ -38,7 +38,7 @@ class PhotosinterFilterType extends FilterType
                   } 
                  
                   //dd($datas['equipe']);
-       if(method_exists($datas['equipe'],'getId')){
+       if(isset($datas['equipe'])){
                     
            $queryBuilder->andWhere( 'entity.equipe =:equipe')
                                ->setParameter('equipe',$datas['equipe'])

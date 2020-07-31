@@ -22,22 +22,7 @@ class VideosequipesFilterType extends FilterType
     { 
        
        $datas =$form->getParent()->getData();
-       $listparam=array();
-        if(isset($datas['edition'])){
-                              $listparam['edition_']=$datas['edition'];
-       }     
-         if(isset($datas['centre'])){
-                             $centres = $datas['centre'];
-                              $n=0;
-                            foreach($centres as $centre){
-                                $listparam['centre'.$n]=$centre;
-                                 $n++;} 
-         unset($centre);  
-         }
-         if(isset($datas['equipe'])){
-                              $listparam['equipen_']=$datas['equipe'];
-       }     
-      
+       
       
       if(isset($datas['edition'])){
             

@@ -23,7 +23,7 @@ class ElevesinterFilterType extends FilterType
         
        $datas =$form->getParent()->getData();
       
-      if(method_exists($datas['edition'], 'getId')){
+      if(isset($datas['edition'])){
             
          $queryBuilder->Where( 'equipe.edition =:edition')
                               ->setParameter('edition',$datas['edition']);
