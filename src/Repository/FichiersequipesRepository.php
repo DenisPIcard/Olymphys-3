@@ -4,6 +4,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Fichiersequipes;
 
@@ -15,9 +16,10 @@ use App\Entity\Fichiersequipes;
  */
 class FichiersequipesRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, SessionInterface $session)
                     {
                         parent::__construct($registry, Fichiersequipes::class);
+                        $this->session = $session;
                     }
     
     
@@ -25,14 +27,30 @@ class FichiersequipesRepository extends ServiceEntityRepository
 public function getEquipesNatSansMemoire(FichiersequipesRepository $er): QueryBuilder
                 {  //A reprendre ne donne pas le bon résultat	
                       return $qb1= $er ->createQueryBuilder('f')->select('f')
-                                  ->Join('f.equipe','e')
+                                  ->leftJoin('f.equipe','e')
                                   ->where('e.selectionnee  =:selectionnee')
                                   ->setParameter('selectionnee',TRUE)
                                   ->andWhere('f.typefichier =:memoire')
                                  ->setParameter('memoire',NULL)
+                                  ->andWhere('f.edition =:edition')
+                                 ->setParameter('edition',$er->session->get('edition'))
                                   ->orWhere('f.typefichier>:type')
                                   ->setParameter('type',1)
                                   ->orderBy('e.lettre','ASC');
                  
+                }
+public function getEquipesInterSansMemoire(FichiersequipesRepository $er): QueryBuilder
+                {  //A reprendre ne donne pas le bon résultat	
+                       $qb1= $er ->createQueryBuilder('f')->select('f')
+                                  ->leftJoin('f.equipe','e')
+                                  ->andWhere('f.typefichier =:memoire')
+                                 ->setParameter('memoire',NULL)
+                                  ->andWhere('f.edition =:edition')
+                                 ->setParameter('edition',$er->session->get('edition'))
+                                  ->orWhere('f.typefichier>:type')
+                                  ->setParameter('type',1)
+                                  ->addOrderBy('e.centre','ASC')
+                                  ->addOrderBy('e.numero','ASC');
+                 return $qb1;
                 }
 }

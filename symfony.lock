@@ -118,15 +118,6 @@
     "fzaninotto/faker": {
         "version": "v1.9.1"
     },
-    "guzzlehttp/guzzle": {
-        "version": "7.0.1"
-    },
-    "guzzlehttp/promises": {
-        "version": "v1.3.1"
-    },
-    "guzzlehttp/psr7": {
-        "version": "1.6.1"
-    },
     "howtomakeaturn/pdfinfo": {
         "version": "1.1.4"
     },
@@ -276,9 +267,6 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
-    },
-    "ralouphie/getallheaders": {
-        "version": "3.0.3"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",

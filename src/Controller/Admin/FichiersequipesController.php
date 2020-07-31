@@ -15,11 +15,20 @@ use App\Entity\Centrescia;
 use App\Form\Filter\EquipesadminFilterType;
 use App\Form\Filter\FichiersequipesFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
 class FichiersequipesController extends EasyAdminController
-{   
+{   public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+            
+        }
+    
+    
+    
+    
     protected function createFiltersForm(string $entityName): FormInterface
     { 
         $form = parent::createFiltersForm($entityName);
@@ -45,14 +54,47 @@ class FichiersequipesController extends EasyAdminController
         return $form;
     }
     public function persistEntity($entity)
-    {
-        
-        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+    {  $em=$this->getDoctrine()->getManager();
+       
+           if ($this->session->get('concours')=='interacadémique')
+           {
+               $entity->setNational(0);
+           }
+           if ($this->session->get('concours')=='national')
+           {
+               $entity->setNational(1);
+           }
+         $Fichiersrepository=$this->getDoctrine()
+		->getManager()
+		->getRepository('App:Fichiersequipes');
+          $Fichiers=$Fichiersrepository->findByEquipe(['equipe'=>$entity->getEquipe()]);
+          
+          
+          $qb=$Fichiersrepository->createQueryBuilder('f')
+                  ->andWhere('f.equipe =:equipe')
+                  ->setParameter('equipe', $entity->getEquipe())
+                  ->andWhere('f.typefichier =:typefichier')
+                  ->setParameter('typefichier',$entity->getTypefichier() );
+          try {
+          $fichier = $qb->getQuery()->getSingleResult();
+                    }
+          catch(\Exception $e) {
+              
+          }          
+          if (isset($fichier)){
+              $fichier->setNational($entity->getNational());
+              $fichier->setFichierFile($entity->getFichierFile());
+              $em->persist($fichier);
+              $em->flush();
+          }
+         else{
+            $edition=$this->session->get('edition');
+            $edition=$em->merge($edition);
+            
                   $entity->setEdition($edition);
-        
-         parent::persistEntity($entity);
-        
+                  //dd($entity);
+                   parent::persistEntity($entity);
+         }
     }
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
           

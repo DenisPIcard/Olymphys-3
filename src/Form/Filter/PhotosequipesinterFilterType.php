@@ -23,16 +23,16 @@ class PhotosequipesinterFilterType extends FilterType
        
         
        $datas =$form->getParent()->getData();
-    
-      if(method_exists($datas['edition'], 'getId')){
+    //dd( $datas);
+      if(isset($datas['edition'])){
             
          $queryBuilder->andWhere( 'entity.edition =:edition')
                                  ->andWhere('entity.national =:national')
                                  ->setParameter('national', 'FALSE')  
                               ->setParameter('edition',$datas['edition']);
        }     
-       if(method_exists($datas['centre'],'getId')){
-                  
+       if(isset($datas['centre'])){
+                 
            $queryBuilder->andWhere( 'eq.centre=:centre')
                               ->setParameter('centre',$datas['centre'])
                              ->andWhere('entity.national =:national')
@@ -40,13 +40,12 @@ class PhotosequipesinterFilterType extends FilterType
              
                   } 
                  
-                  //dd($datas['equipe']);
-       if(method_exists($datas['equipe'],'getId')){
-                    
+                 
+       if(isset($datas['equipe'])){
+                     
            $queryBuilder->andWhere( 'entity.equipe =:equipe')
-                               ->setParameter('equipe',$datas['equipe'])
-                               ->andWhere( 'entity.national = FALSE')
-                               ->addOrderBy('eq.numero','ASC');
+                               ->setParameter('equipe',$datas['equipe']);
+                              
                                           
        }
        

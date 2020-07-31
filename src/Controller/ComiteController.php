@@ -106,9 +106,9 @@ class ComiteController extends AbstractController
                 {
                 $data=$form->getData();
                 $nblig=$data['nblig'];
-                dump($nblig);
+            
                 $fichier = $create->excelfrais($edition, $data, $nblig);
-                dump($fichier);
+              
                 
                 return $this->redirectToRoute('comite_envoi_frais',[ 'fichier'=> $fichier ]);
 

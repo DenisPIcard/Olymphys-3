@@ -620,8 +620,9 @@ class PhotosController extends  AbstractController
             $em=$this->getDoctrine()->getManager();
             $liste_photosinter = $repositoryPhotosinter->findAll();
             $liste_photoscn = $repositoryPhotoscn->findAll();
-         foreach($liste_photosinter as $photointer){
-                $photo= new Photos();
+       foreach($liste_photosinter as $photointer){
+             try{ 
+             $photo= new Photos();
                 $photo->setNational(FALSE);
                 $photo->setEdition($photointer->getEdition());
                 $photo->setEquipe($photointer->getEquipe());
@@ -631,8 +632,13 @@ class PhotosController extends  AbstractController
                 $filesystem->copy($this->getParameter('app.path.photosinterthumb').'/'.$photointer->getPhoto(),$this->getParameter('app.path.photos').'/thumbs/'.$photointer->getPhoto()); 
                 $em->persist($photo);
                 $em->flush();
+             }
+              catch (\Exception $e){
+                    
+                }
             }
             foreach($liste_photoscn as $photocn){
+                try{
                 $photo= new Photos();
                 $photo->setNational(TRUE);
                 $photo->setEdition($photocn->getEdition());
@@ -642,7 +648,10 @@ class PhotosController extends  AbstractController
                 $filesystem->copy($this->getParameter('app.path.photosnat').'/'.$photocn->getPhoto(),$this->getParameter('app.path.photos').'/'.$photocn->getPhoto()); 
                 $filesystem->copy($this->getParameter('app.path.photosnatthumb').'/'.$photocn->getPhoto(),$this->getParameter('app.path.photos').'/thumbs/'.$photocn->getPhoto()); 
                 $em->persist($photo);
-                $em->flush();
+                $em->flush();}
+                catch (\Exception $e){
+                    
+                }
             }
             return $this->redirectToRoute('core_home');
          

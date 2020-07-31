@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Memoiresinter;
 /**
@@ -16,24 +17,41 @@ use App\Entity\Memoiresinter;
  */
 class EquipesadminRepository extends ServiceEntityRepository
 {
-    
+
    
-  public function __construct(ManagerRegistry $registry)
-                    {
+  public function __construct(ManagerRegistry $registry,SessionInterface $session)
+                    {  
                         parent::__construct($registry, Equipesadmin::class);
+                        $this->edition=$session->get('edition');
+                       
                     }
-    
+        
+         
  public function getEquipeInter(EquipesadminRepository $er): QueryBuilder
                 {   
-		
+	    	
                     return $er ->createQueryBuilder('e')->select('e');
-                          
+                        
                              
                 }
+                
+ public function getEquipeDeposeMemoiresInter(EquipesadminRepository $er): QueryBuilder
+                {   
+	   
+                    return $er ->createQueryBuilder('e')
+                                     ->andWhere('e.edition =:edition')
+                                     ->setParameter('edition',$er->edition)
+                                     ->addOrderBy('e.centre','ASC')
+                                     ->addOrderBy('e.numero','ASC');
+                          
+                             
+                }               
    public function getEquipeNa(EquipesadminRepository $er): QueryBuilder
                 {   
 		
                     return $er ->createQueryBuilder('e')->select('e')
+                                      ->andWhere('e.edition =:edition')
+                                     ->setParameter('edition',$er->edition)
                                       ->where('e.selectionnee= TRUE')
                                        ->orderBy('e.lettre','ASC');
                           

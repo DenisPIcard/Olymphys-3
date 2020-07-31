@@ -315,15 +315,7 @@ class SecretariatadminController extends AbstractController
                                                                    ->setParameter('edition',$edition);
                     $equipe=$qb->getQuery()->getResult();
                     
-                    /* if (null!=$equipe){
-                     $date=$worksheet->getCellByColumnAndRow(21, $row)->getValue();
-                     dump($date);
-                     dd(date('Y'));
-                        if ($date>date('Y')){
-                            
-                         $equipe= new equipesadmin();                            
-                        }
-                    }*/
+                    
                    if(!$equipe){
                    $equipe= new equipesadmin(); 
                                     }

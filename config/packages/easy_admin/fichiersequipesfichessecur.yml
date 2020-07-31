@@ -29,10 +29,10 @@ easy_admin :
                   sort: ['equipe.numero','ASC']
                   
              edit :
-                  title: ' Les fichiers sont automatiquement renommés selon leur catégorie : memoire ou annexe' 
+                  title: ' Les fichiers sont automatiquement renommés selon leur catégorie fiches sécurité'
                   fields :
                       - { type: 'group', columns: 6, label: '<font color="red" > Choisir l''équipe </font> ' } 
-                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getNumero'}}
+                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeDeposeMemoiresInter', 'choice_label' : 'getNumero'}}
                       - { property : 'fichierFile', label: Choisir la fiche',  type : 'vich_file',  type_options : {'allow_delete' : false}}
                           
                  
@@ -41,8 +41,9 @@ easy_admin :
                   fields: 
                      
                       - { type: 'group', columns: 6, label: '<font color="red" > Choisir l''équipe</font> ' } 
-                      - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getInfoEquipe'}}
-                      - { type: 'group', columns: 6, label: '<font color="red" > Choisir le fichier à déposer </font>'}       
+                      - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeDeposeMemoiresInter', 'choice_label' : 'getInfoEquipe'}}
+                      - { type: 'group', columns: 6, label: '<font color="red" > Choisir le fichier à déposer </font>'}     
+                      - { property : 'typefichier', type : 'hidden', type_options :{ data : '4'}}
                       - { property : 'fichierFile', label: 'Fichier(1M maxi, .pdf, .doc,.docx,.odt,.jpg)',  type : 'vich_file',  type_options : {}}
                        
     

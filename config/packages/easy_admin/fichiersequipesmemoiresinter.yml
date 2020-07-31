@@ -39,9 +39,8 @@ easy_admin :
                          
                       
                       - { type: 'group', columns: 6, label: '<font color="red" > Choisir l''équipe </font> ' } 
-                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getInfoequipe'}}
+                     #- { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getInfoequipe'}}
                       - { type: 'group', columns: 6, label: '<font color="red" > Cocher cette case si c''est une annexe </font>'}  
-                      - { property : 'annexe' }
                       - { property : 'fichierFile', label: Choisir le mémoire ou annexe',  type : 'vich_file',  type_options : {'allow_delete' : false}} 
                      
                           
@@ -51,9 +50,9 @@ easy_admin :
                   fields: 
                      
                       - { type: 'group', columns: 6, label: '<font color="red" > Choisir le fichier à déposer </font> ' } 
-                      - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getInfoequipe'}}
+                      - {property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeDeposeMemoiresInter', 'choice_label' : 'getInfoequipe'}}
                       - { property : 'fichierFile', label: 'Memoire ou annexe',  type : 'vich_file',  type_options : {}}
                       - { type: 'group', columns: 6, label: '<font color="red" > Cocher cette case si c''est une annexe </font>'}  
-                      - { property : 'annexe' } 
+                      - { property : 'typefichier', type : 'choice', type_options :{ choices : { 'Mémoire' : 0, 'Annexe':1}}}
                      # - {property : 'memoire', label: 'Fichier', type : 'file', data_class : 'null'}
     

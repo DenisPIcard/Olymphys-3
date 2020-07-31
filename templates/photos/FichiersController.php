@@ -1069,15 +1069,13 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
             $edition = $repositoryEdition->find(['id'=>$IdEdition]);
             $edition_en_cours=$this->session->get('edition');
             $date=new \datetime('now');
-            
             if ($edition_en_cours==$edition){
                 if ($edition_en_cours->getConcourscn()>$date){
                    $request->getSession()
                     ->getFlashBag()
-                    ->add('info','Les fichiers de l\'Ã©dition '.$edition_en_cours->getEd().' ne sont pas encore publiÃ©s, patience ...') ;  
+                    ->add('info','Les fichiers de l\'édition'.$edition_en_cours->getEd().' ne sont pas encoure publiés, patience ...') ;  
        return $this->redirectToRoute('fichiers_choixedition',array('num_type_fichier'=>$num_type_fichier)); 
-                    
-                    
+                   
                 }
             }
             

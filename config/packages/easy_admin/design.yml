@@ -20,7 +20,6 @@ easy_admin :
                          - { entity : 'Fichiersequipesfichessecur', 'label' : 'Les fiches sécurités' , icon : 'book'}
                          - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
                          - { entity : 'Elevesinter', 'label' : 'Elèves inscrits', icon : 'child' }
-                         - { entity : 'Photosinter', 'label' : ' Lesphotos', icon : 'images'}
                          - { entity : 'Photosequipesinter', 'label' : ' Les photos', icon : 'images'}
                          
                     - label : 'Concours national'
