@@ -43,7 +43,7 @@
                      <center><img src=" {{asset('/upload/photos/thumbs/'~photo.photo) }}"  
                                   alt="{{photo.equipe.TitreProjet}}" width="auto"  height="200"></center>
                             
-                           <center><div style="background:black;"> <font color="white" size="-2">photo {{i}}/{{n}}</font></div></center>
+                           {#<center><div style="background:black;"> <font color="white" size="-2">photo {{i}}/{{n}}</font></div></center>#}
                  </div>
                            {% endif %}
                             {% if i>1 and i<5%}
@@ -52,7 +52,7 @@
                        <center> <img src=" {{asset('/upload/photos/thumbs/'~photo.photo) }}" 
                                      alt="{{photo.equipe.TitreProjet}}"  width="auto"  height="200" ></center>
                        
-                           <center><div style="background:black"><font color="white" size="-1">{{photo.equipe.titreProjet}} </font><br> <font color="white" size="-2"> photo {{i}}/{{n}}></font></div></center>
+                           {#<center><div style="background:black"><font color="white" size="-1">{{photo.equipe.titreProjet}} </font><br> <font color="white" size="-2"> photo {{i}}/{{n}}></font></div></center>#}
                 </div>  
                 {% endif %}
                 {% set i= i+1 %}
