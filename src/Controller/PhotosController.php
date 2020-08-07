@@ -77,12 +77,10 @@ class PhotosController extends  AbstractController
              $repositoryEquipesadmin= $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');
-             $repositoryPhotosinter=$this->getDoctrine()
+             $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
-                                   ->getRepository('App:Photosinter');
-             $repositoryPhotoscn=$this->getDoctrine()
-                                   ->getManager()
-                                   ->getRepository('App:Photoscn');
+                                   ->getRepository('App:Photos');
+             
             
             $edition = $this->session->get('edition');
             $edition=$em->merge($edition);
@@ -192,14 +190,14 @@ class PhotosController extends  AbstractController
                                    ->getManager()
                                    ->getRepository('App:Photos');
              $Edition=$repositoryEdition->find(['id'=>$edition]);
+             
              $liste_centres=$repositoryCentrescia->findAll();
              $qb =$repositoryPhotos->createQueryBuilder('p')
                                ->andWhere('p.edition =:edition')
-                                ->andWhere('p.national =: national')
+                                ->andWhere('p.national =:national')
                                 ->setParameter('edition', $Edition)
-                               ->setParameter('national', 'FALSE')
-                               ->leftJoin('p.equipe','eq')
-                               ->orderBy('eq.centre', 'ASC');
+                               ->setParameter('national', 'FALSE');
+                               
              $liste_photos=$qb->getQuery()->getResult();
              
              if ($liste_photos){
@@ -247,7 +245,7 @@ class PhotosController extends  AbstractController
                      ->leftJoin('p.equipe', 'e')
                      ->andWhere('e.selectionnee = TRUE')
                      ->orderBy('e.lettre','ASC') 
-                     ->andWhere('p.national =: national')
+                     ->andWhere('p.national =:national')
                      ->setParameter('national',TRUE)
                      ->andWhere('p.edition =:edition')
                      ->setParameter('edition', $Edition);
@@ -288,7 +286,7 @@ class PhotosController extends  AbstractController
 		->getRepository('App:Equipesadmin');
              $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
-                                   ->getRepository('App:Photosinter');
+                                   ->getRepository('App:Photos');
              
             
               $repositoryCentrescia=$this->getDoctrine()
@@ -308,6 +306,8 @@ class PhotosController extends  AbstractController
                 
                 $qb2=$repositoryPhotos->createQueryBuilder('p')
                          ->join('p.equipe','r')
+                        ->andWhere('p.edition =:edition')
+                         ->setParameter('edition', $Edition)
                          ->andWhere('r.centre =:centre')
                          ->setParameter('centre', $centre)
                         ->orderBy('r.numero','ASC')
@@ -322,6 +322,8 @@ class PhotosController extends  AbstractController
                  $qb= $repositoryPhotos->createQueryBuilder('p')
                           ->andWhere('p.equipe =:equipe')
                          ->setParameter('equipe',$equipe)
+                         ->andWhere('p.edition =:edition')
+                         ->setParameter('edition', $Edition)
                          ->andWhere('p.national = TRUE')
                          ;
                    
