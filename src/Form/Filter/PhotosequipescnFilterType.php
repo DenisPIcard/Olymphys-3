@@ -15,42 +15,36 @@ use App\Entity\Elevesinter;
 
 
 
-class PhotosequipesinterFilterType extends FilterType
+class PhotosequipescnFilterType extends FilterType
 { 
     
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
-       
+      
         
        $datas =$form->getParent()->getData();
-    //dd( $datas);
-      if(null!==$datas['edition']){
+      
+      if(null!=$datas['edition']){
             
          $queryBuilder->andWhere( 'entity.edition =:edition')
-                                 ->andWhere('entity.national =:national')
-                                 ->setParameter('national', 'FALSE')  
                               ->setParameter('edition',$datas['edition']);
+     
        }     
-       if(null!==$datas['centre']){
-                 
-           $queryBuilder->andWhere( 'eq.centre=:centre')
-                              ->setParameter('centre',$datas['centre'])
-                             ->andWhere('entity.national =:national')
-                              ->setParameter('national', 'FALSE')  ;
-             
-                  } 
-                 
-                 
+                       
+                  
        if(null!=$datas['equipe']){
-                     
-           $queryBuilder->andWhere( 'entity.equipe =:equipe')
-                                 ->setParameter('edition',$datas['equipe']->getEdition())
-                                 ->setParameter('equipe',$datas['equipe']);
-                              
-                                          
+            
+            
+            $queryBuilder->setParameter('edition',$datas['equipe']->getEdition())    
+                                  ->andWhere( 'entity.equipe =:equipe')
+                               ->setParameter('equipe',$datas['equipe'])
+                                ->addOrderBy('eq.lettre','ASC');                 
        }
        
-      
+       
+       
+       
+       
        return $queryBuilder;
          
     }

@@ -30,7 +30,11 @@ class EquipesadminRepository extends ServiceEntityRepository
  public function getEquipeInter(EquipesadminRepository $er): QueryBuilder
                 {   
 	    	
-                    return $er ->createQueryBuilder('e')->select('e');
+                    return $er ->createQueryBuilder('e')
+                                    ->addOrderBy('e.edition','DESC')
+                                     ->addOrderBy('e.centre','ASC')
+                                     ->addOrderBy('e.numero','ASC');
+                           
                         
                              
                 }
@@ -52,7 +56,7 @@ class EquipesadminRepository extends ServiceEntityRepository
                     return $er ->createQueryBuilder('e')->select('e')
                                       ->andWhere('e.edition =:edition')
                                      ->setParameter('edition',$er->edition)
-                                      ->where('e.selectionnee= TRUE')
+                                      ->andwhere('e.selectionnee= TRUE')
                                        ->orderBy('e.lettre','ASC');
                           
                              

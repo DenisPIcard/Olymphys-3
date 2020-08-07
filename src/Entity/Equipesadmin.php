@@ -308,6 +308,7 @@ class Equipesadmin
     {   
         $nomcentre='';
         $Numero=$this->getNumero();
+        $edition=$this->getEdition();
         If ($centre =$this->getCentre()){
         $nomcentre =$this->getCentre()->getCentre().'-';}
                
@@ -315,26 +316,29 @@ class Equipesadmin
         $nom_equipe=$this->getTitreProjet() ;
         $ville=$this->getLyceeLocalite();
         
-        $infoequipe= $nomcentre.'Eq '.$Numero.' - '.$nom_equipe.'-'.$ville;        
+        $infoequipe= $edition->getEd().'-'.$nomcentre.'Eq '.$Numero.' - '.$nom_equipe.'-'.$ville;        
         return $infoequipe;
     }
     public function getInfoequipenat()
     {   
-        if ($this->getSelectionnee()==TRUE){
-             
+    $edition=$this->getEdition();
+        if ($this->getSelectionnee()=='1'){
+          
         $lettre=$this->getLettre();
-        if (isset($lettre)) 
-        {
-        $Lettre=$this->getLettre();
+        
+       
         
         $nom_equipe=$this->getTitreProjet() ;
-        $ville=$this->getRneId()->getCommune();
-        
-        $infoequipe= 'Eq '.$Lettre.' - '.$nom_equipe.'-'.$ville;   
-        }   
-        if (isset($infoequipe)){
-        return $infoequipe;
+        $infoequipe=$edition->getEd().'Eq '.$lettre.' - '.$nom_equipe;
+        if ($this->getRneId()){
+        $infoequipe=$infoequipe.'-'.$this->getRneId()->getCommune();
         }
+       
+        
+       
+        
+        return $infoequipe;
+        
         }
     }
     

@@ -5,22 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 
 use Symfony\Component\Form\AbstractType;
-use App\Form\NotesType ;
-use App\Form\PhrasesType ;
-use App\Form\EquipesType ;
-use App\Form\JuresType ;
-use App\Form\CadeauxType ;
-use App\Form\ClassementType ;
-use App\Form\PrixType ;
-use App\Form\EditionType;
-use App\Form\MemoiresType;
-use App\Form\MemoiresinterType;
 use App\Form\ConfirmType;
-use App\Form\ListmemoiresinterType;
-use App\Form\ListmemoiresinterallType;
-use App\Form\FichessecurType;
-use App\Form\PhotosinterType;
-use App\Form\PhotoscnType;
 use App\Form\PhotosType;
 use App\Form\ThumbType;
 
@@ -28,19 +13,6 @@ use App\Entity\Equipes ;
 use App\Entity\Eleves ;
 use App\Entity\Edition ;
 use App\Entity\Totalequipes ;
-use App\Entity\Jures ;
-use App\Entity\Notes ;
-use App\Entity\Pamares;
-use App\Entity\Visites ;
-use App\Entity\Phrases ;
-use App\Entity\Classement ;
-use App\Entity\Prix ;
-use App\Entity\Cadeaux ;
-use App\Entity\Liaison ;
-use App\Entity\Memoires;
-use App\Entity\Memoiresinter;
-use App\Entity\Fichessecur;
-use App\Entity\Equipesadmin;
 use App\Entity \Photosinter;
 use App\Entity \Photosinterthumb;
 use App\Entity \Photoscn;
@@ -152,43 +124,19 @@ class PhotosController extends  AbstractController
                          
                          
                            $photo= $repositoryPhotos->findOneby(['photo'=>$photo->getPhoto()]);
-                          
-                          //dd($photo);
-                         //$filename=basename($photo->getPhoto());
-                         //$fileName=$edition->getEd().'-eq-'.$numero_equipe.'-'.$nom_equipe.'-'.uniqid().'.'.$file->guessExtension();//inutile avec vichuploader
                          
                          list($width_orig, $height_orig) = getimagesize($photo->getPhotoFile());
-                         //$headers = exif_read_data($photo->getPhotoFile());
+                         
                          $dim=max($width_orig, $height_orig);
-                       
-                          
                          $percent = 200/$height_orig;
-                                                
-                         
-                         
                          $new_width = $width_orig * $percent;
                          $new_height = $height_orig * $percent;
                           $image =imagecreatefromjpeg($photo->getPhotoFile());
-                            // Resample
-                            $thumb = imagecreatetruecolor($new_width, $new_height);
+                          $thumb = imagecreatetruecolor($new_width, $new_height);
                            $paththumb = $this->getParameter('app.path.photos').'/thumbs';
-                           
-                            imagecopyresampled($thumb,$image, 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
-                           
-                           
-                          //dd($thumb);
+                          imagecopyresampled($thumb,$image, 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
                           imagejpeg($thumb, $paththumb.'/'.$photo->getPhoto()); 
-                          
-                          
-                        //$photothumb->setPhoto($photo->getPhoto());//enregistre le même nom que celui de la photo   
-                         //$em->persist($photothumb);
-                         //$photothumb->setEquipe($equipe);
-                         //dd($photothumb);
-                         //$photo->setUpdatedAt(new \DateTime('now'));
-                             
-                         //
-                       
-                     }
+                             }
                      $request->getSession()
                          ->getFlashBag()
                          ->add('info', 'Votre fichier a bien été déposé. Merci !') ;
@@ -198,28 +146,13 @@ class PhotosController extends  AbstractController
                          ->getFlashBag()
                          ->add('alert', 'Pas fichier sélectionné: aucun dépôt effectué !') ;
                     }
-                
-                return $this->redirectToRoute('core_home');
-                
-                
-                
-                
-                
-                
-            }
-             
-             
-             
-             
-              return $this->render('photos/deposephotos.html.twig', [
+                 return $this->redirectToRoute('core_home');
+                }
+             return $this->render('photos/deposephotos.html.twig', [
                 'form' => $form->createView(),'session'=>$edition->getEd(),'concours'=>$concours
         ]);
+    }
         
-        
-            }
-        
-        
-            //
         /**
          * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
          * 
@@ -236,16 +169,8 @@ class PhotosController extends  AbstractController
             $Editions=$qb->getQuery()->getResult();
              return $this->render('photos/choix_edition.html.twig', [
                 'editions' => $Editions]);
-            
-            
-            
-        }
-        
-        
-        
-        
-        
-            //
+         }
+ 
         /**
          * 
          * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
@@ -500,16 +425,11 @@ class PhotosController extends  AbstractController
                   $formtab[$i]=$Form[$i]->createView();
                   
                    if ($request->isMethod('POST') ) {
-                      //dd($request);
-                     //dd($Form[$i]);
+                  
                    if ($request->request->has('Form'.$i)) {
                  
                             $photo= $repositoryPhotos->find(['id'=>$id]);
-                      //dd($photo);
-                           // $file_path = $this->getParameter('app.path.photosnat').'/'.$photo->getPhoto();
-                   
-                   
-                           //dd('Form'.$i);
+                     
                             if ( $Form[$i]->get('sauver')->isClicked())
                             {   
                                 

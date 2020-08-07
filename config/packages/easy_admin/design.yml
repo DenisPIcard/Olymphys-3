@@ -33,7 +33,8 @@ easy_admin :
                         - { entity : 'Fichiersequipespresentations', 'label' : 'Les présentations' , icon : 'book'}
                         - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
                         #- { entity: 'Eleves' , icon : 'asterisk'}
-                        - { label : 'Les photos', entity: 'Photoscn' , icon : 'images'}
+                       
+                        - { label : 'Les photos', entity: 'Photosequipescn' , icon : 'images'}
                         - label : 'Les recompenses'
                         - { entity:  'Classement' , icon : 'asterisk'}
                         - { entity:  'Prix' , icon : 'asterisk'}

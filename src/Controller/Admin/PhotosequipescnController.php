@@ -20,18 +20,18 @@ use App\Entity\Edition;
 use App\Entity\Centrescia;
 use App\Entity\Photos;
 use EasyCorp\Bundle\EasyAdminBundle\Mapping\Annotation\Entity;
-use App\Form\Filter\PhotosequipesinterFilterType;
+use App\Form\Filter\PhotosequipescnFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
-class PhotosequipesinterController extends EasyAdminController
+class PhotosequipescnController extends EasyAdminController
 {   
     protected function createFiltersForm(string $entityName): FormInterface
     { 
         $form = parent::createFiltersForm($entityName);
         
-        $form->add('edition', PhotosequipesinterFilterType::class, [
+        $form->add('edition', PhotosequipescnFilterType::class, [
             'class' => Edition::class,
             'query_builder' => function (EntityRepository $er) {
                             return $er->createQueryBuilder('u')
@@ -39,35 +39,26 @@ class PhotosequipesinterController extends EasyAdminController
                                      },
            'choice_label' => 'getEd',
             'multiple'=>false,]);
-            $form->add('centre', PhotosequipesinterFilterType::class, [
-                         'class' => Centrescia::class,
-                         'query_builder' => function (EntityRepository $er) {
-                                         return $er->createQueryBuilder('u')
-                                                 ->orderBy('u.centre','ASC');
-                                                  },
-                        'choice_label' => 'getCentre',
-                         'multiple'=>false,]);
-           $form->add('equipe', PhotosequipesinterFilterType::class, [
+           
+           $form->add('equipe', PhotosequipescnFilterType::class, [
                                'class' => Equipesadmin::class,
                                'query_builder' => function (EntityRepository $er) {
                                          return $er->createQueryBuilder('u')
-                                                 ->andWhere('u.numero >:valeur')
-                                                 ->setParameter('valeur',0)
-                                                 ->addOrderBy('u.edition', 'DESC')
-                                                 ->addOrderBy('u.numero','ASC');
+                                                     ->andWhere('u.selectionnee =:selectionnee')
+                                                     ->setParameter('selectionnee', TRUE)
+                                                     ->addOrderBy('u.edition', 'DESC')
+                                                     ->addOrderBy('u.lettre','ASC')
+                                                 ;
                                                   },
-                           'choice_label'=>'getInfoEquipe',
+                           'choice_label'=>'getInfoequipenat',
                          'multiple'=>false,]);
                                              
         return $form;
     }
     public function persistEntity($entity)
-    {             
-                 
-                 $equipe=$entity->getEquipe();
-                  $entity->setEdition($equipe->getEdition());
-                  $entity->setNational(False);
-                 
+    {
+                  $entity->setNational(True);
+        
          parent::persistEntity($entity);
         
     }
@@ -84,10 +75,7 @@ class PhotosequipesinterController extends EasyAdminController
             ->join('entity.equipe','eq')
              ->andWhere('entity.edition =:edition')
             ->setParameter('edition', $edition)  
-            ->andWhere('entity.national =:national')
-            ->setParameter('national', 'FALSE')  
-            ->addOrderBy('eq.centre', 'ASC')
-            ->addOrderBy('eq.numero', 'ASC');
+            ->addOrderBy('eq.lettre', 'ASC');
            
            
           if (!empty($dqlFilter)) {
