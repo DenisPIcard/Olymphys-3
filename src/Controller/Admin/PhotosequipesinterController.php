@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\ChoiceList\ChoiceList;
 use App\Entity\Equipesadmin;
@@ -26,7 +27,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
 class PhotosequipesinterController extends EasyAdminController
-{   
+{   public function __construct(SessionInterface $session)
+                    {  
+                        $this->session=$session;
+                       
+                    }
     protected function createFiltersForm(string $entityName): FormInterface
     { 
         $form = parent::createFiltersForm($entityName);
@@ -72,10 +77,11 @@ class PhotosequipesinterController extends EasyAdminController
         
     }
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
-          
+         
         
-        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+       
+                  $edition= $this->session->get('edition');
+         $this->session->set('edition_titre',$edition->getEd());
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $em->createQueryBuilder('l')
@@ -118,12 +124,14 @@ public function EnregistrerAction() {
          $response->headers->set('Content-Disposition', $disposition);
          
         
-         //$content = $this->render('secretariat\lire_memoire.html.twig', array('repertoirememoire' => $this->getParameter('repertoire_memoire_national'),'memoire'=>$fichier));
          return $response; 
         
         
     }
+public function listAction(){
     
+   return parent::listAction();
+}
     
 }
 

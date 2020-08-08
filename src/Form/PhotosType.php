@@ -43,12 +43,12 @@ class PhotosType extends AbstractType
                                                                  ->addOrderBy('e.numero', 'ASC')
                                                          ->addOrderBy('e.centre', 'ASC');},
                                         'choice_label'=>'getInfoequipe',
-                                        'label' => 'Choisir une équipe .',
+                                        'label' => 'Choisir une équipe',
                                          'mapped'=>false
                                          ])
                                       ->add('photoFiles', FileType::class, [
                                       'label' => 'Choisir les photos(format .jpeg)',
-                                        'mapped' => false,
+                                        'mapped' => true,
                                        'required' => false,
                                         'multiple'=>true,
                                           ])

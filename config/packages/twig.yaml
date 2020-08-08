@@ -7,3 +7,4 @@ twig:
     globals: 
          type_fichier : ['memoires','annexes','resumes','presentations','fichessecur']
          type_fichier_lit : ['mémoire','annexe','résume','présentation','fiche securité']
+        

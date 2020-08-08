@@ -5,6 +5,7 @@ namespace App\Form\Filter;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\FilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\FilterTypeTrait;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 //use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
@@ -16,7 +17,12 @@ use App\Entity\Elevesinter;
 
 
 class PhotosequipesinterFilterType extends FilterType
-{ 
+{  
+    public function __construct(SessionInterface $session)
+                    {  
+                        $this->session=$session;
+                       
+                    }
     
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
@@ -25,11 +31,12 @@ class PhotosequipesinterFilterType extends FilterType
        $datas =$form->getParent()->getData();
     //dd( $datas);
       if(null!==$datas['edition']){
-            
+             
          $queryBuilder->andWhere( 'entity.edition =:edition')
                                  ->andWhere('entity.national =:national')
                                  ->setParameter('national', 'FALSE')  
                               ->setParameter('edition',$datas['edition']);
+        $this->session->set('edition_titre',$datas['edition']->getEd()); 
        }     
        if(null!==$datas['centre']){
                  
@@ -46,7 +53,7 @@ class PhotosequipesinterFilterType extends FilterType
            $queryBuilder->andWhere( 'entity.equipe =:equipe')
                                  ->setParameter('edition',$datas['equipe']->getEdition())
                                  ->setParameter('equipe',$datas['equipe']);
-                              
+            $this->session->set('edition_titre',$datas['equipe']->getEdition()->getEd());               
                                           
        }
        

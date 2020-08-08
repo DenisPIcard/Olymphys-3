@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Bundle\MakerBundle\Str;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\EasyAdminFiltersFormType;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -24,7 +25,12 @@ class AdminController extends EasyAdminController
 {
      private $passwordEncoder;
      public $password;
-   
+   public function __construct(UserPasswordEncoderInterface $passwordEncoder,SessionInterface $session)
+     {
+         $this->passwordEncoder = $passwordEncoder;
+         $this->session=$session;
+         
+     }
     /**
      * @Route("/", name="easyadmin")
      *
@@ -43,6 +49,9 @@ class AdminController extends EasyAdminController
         if (null === $request->query->get('entity')) {
             // define this route in any of your own controllers
              $content = $this->renderView('Admin/content.html.twig',array());
+            
+            $this->session->set('edition_titre',$this->session->get('edition')->getEd());
+            
              return new Response($content);
              
         }
@@ -52,10 +61,7 @@ class AdminController extends EasyAdminController
 
 
     
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
-     {
-         $this->passwordEncoder = $passwordEncoder;
-     }
+    
    
      public function LireAction()
      {    $fichier='';

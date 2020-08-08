@@ -7,7 +7,7 @@ easy_admin :
              
              controller: App\Controller\Admin\PhotosequipesinterController
              templates:
-                list: 'Admin/customizations/list.html.twig'
+                list: 'Admin/customizations/list_photos_inter.html.twig'
              actions :
                - {name : 'new', label : 'Déposer une photo'}
                - {name : 'delete', label : 'Supprimer'}

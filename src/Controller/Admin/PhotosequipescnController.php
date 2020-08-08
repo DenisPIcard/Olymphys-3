@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
@@ -26,7 +27,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
 class PhotosequipescnController extends EasyAdminController
-{   
+{   public function __construct(SessionInterface $session)
+                    {  
+                        $this->session=$session;
+                       
+                    }
     protected function createFiltersForm(string $entityName): FormInterface
     { 
         $form = parent::createFiltersForm($entityName);
@@ -65,8 +70,8 @@ class PhotosequipescnController extends EasyAdminController
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
           
         
-        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+        $edition= $this->session->get('edition');
+         $this->session->set('edition_titre',$edition->getEd());
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $em->createQueryBuilder('l')

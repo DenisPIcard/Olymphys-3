@@ -23,9 +23,7 @@ class CoreController extends AbstractController
      */
   public function index(SessionInterface $session)
   {  
-      
-      
-    
+     
      $user=$this->getUser();
    // dump($user);
    if (null != $user)
@@ -33,7 +31,7 @@ class CoreController extends AbstractController
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
                   
      $this->session->set('edition', $edition); 
-     
+       
      $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat(); 
      $dateouverturesite=$edition->getDateouverturesite();
