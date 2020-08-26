@@ -57,6 +57,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller ;
 
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mailer\MailerInterface;
+//use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\MimeTypeGuesserInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -139,12 +140,7 @@ public function choix_centre(Request $request) {
              }
          }
     }        
-            
-            //dd($liste_centres);      
-    
-    
-    
-   
+       
      if(isset($liste_centres)) {
                    $content = $this
                  ->renderView('adminfichiers\choix_centre.html.twig', array(
@@ -158,10 +154,7 @@ public function choix_centre(Request $request) {
                                      ->getFlashBag()
                                      ->add('info', 'Pas encore de centre attribué pour le  concours interacadémique de l\'édition '.$edition->getEd()) ;
                              return $this->redirectToRoute('core_home'); 
-         
-         
-         
-         
+   
      }
     }
  
@@ -474,7 +467,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
          * @Route("/fichiers/confirme_charge_fichier, {file_equipe}", name="fichiers_confirme_charge_fichier")
          * 
          */        
-public function  confirme_charge_fichier(Request $request, $file_equipe){   
+public function  confirme_charge_fichier(Request $request, $file_equipe,MailerInterface $mailer){   
     
     $repositoryFichiersequipes= $this->getDoctrine()
                                  ->getManager()
@@ -524,7 +517,9 @@ public function  confirme_charge_fichier(Request $request, $file_equipe){
                           $request->getSession()
                             ->getFlashBag()
                             ->add('info', 'Votre fichier renommé selon : '.$nom_fichier_uploaded.' a bien été déposé. Merci !') ;   
-                            
+                          $type_fichier=$this->getParameter('type_fichier')[$num_type_fichier];
+                     
+                     $this->MailConfirmation($mailer, $type_fichier,$Equipe_choisie) ;        
                       return $this->redirectToRoute('core_home');
                     }
                 if ($form3->get('NON')->isClicked())
@@ -622,7 +617,8 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                        ]);
                                    } 
                                      $sourcefile =$file; 
-                                     $stringedPDF = file_get_contents($sourcefile, true);
+                                  
+                                   $stringedPDF = file_get_contents($sourcefile, true);
                                    $regex="/\/Page |\/Page\/|\/Page\n|\/Page\r\n|\/Page>>\r/";//selon l'outil de codage en pdf utilisé, les pages ne sont pas repérées de la m^me façon
                                    $pages=preg_match_all($regex, $stringedPDF, $title);
 
@@ -752,8 +748,9 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     // ... handle exception if something happens during file upload
                 }  
                     $id_fichier=$Fichiers[0]->getId();
-                    return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier));
-                }
+                  return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier,$mailer));
+               
+                    }
                 }
                   if (!$Fichiers){
                               
@@ -776,15 +773,17 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                
                 $user = $this->getUser();//Afin de rappeler le nom du professeur qui a envoyé le fichier dans le mail
                 $type_fichier= $this->getParameter('type_fichier')[$num_type_fichier];
-                
-               $email=(new Email())
+               /* $bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', ['typefichier' =>$type_fichier,'equipe'=>$equipe ] );
+           $mailer->sendMessage('info@olymphys.fr', 'alain.jouve@wanadoo.fr', 'Equipe '.$equipe->getNumero().'Dépôt d\'un fichier', $bodyMail);
+           $mailer->sendMessage('info@olymphys.fr','info@olymphys.fr', 'Inscription d\'un nouvel utilisateur', $bodyMail);
+              $email=(new Email())
                     ->from('info@olymphys.fr')
-                    ->to(new adress('alain.jouvealb@gmail.com','Alain')) //'webmestre2@olymphys.fr', 'Denis'
+                    ->to('alain.jouve@wanadoo.fr') //'webmestre2@olymphys.fr', 'Denis'
                     ->subject('Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe())
                     ->text('L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier : '.$type_fichier);
                    
-                $mailer->send($email);
-                $centre = $equipe->getCentre();
+                $mailer->send($email);*/
+                $this->MailConfirmation($mailer,$type_fichier,$equipe);
                 
                 return $this->redirectToRoute('core_home');     
                 }        
@@ -793,6 +792,20 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                              ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe));
             return new Response($content);                             
  }    
+ 
+ public function MailConfirmation(MailerInterface $mailer, string $type_fichier, Equipesadmin $equipe){
+     $email=(new Email())
+                    ->from('alain.jouve@wanadoo.fr')
+                    ->to('webmestre3@olymphys.fr') //'webmestre2@olymphys.fr', 'Denis'
+                    ->subject('Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe())
+                    ->text('L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier : '.$type_fichier.'en localhost');
+                   
+                $mailer->send($email);
+   
+ }
+ 
+ 
+ 
          
         /**
          * @Security("is_granted('ROLE_PROF')")
@@ -1065,9 +1078,11 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
               $repositoryEquipesadmin = $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');    
-              
+              $em=$this->getDoctrine()->getManager();
             $edition = $repositoryEdition->find(['id'=>$IdEdition]);
             $edition_en_cours=$this->session->get('edition');
+            $edition_en_cours=$em->merge($edition_en_cours);
+            
             $date=new \datetime('now');
             
             if ($edition_en_cours==$edition){

@@ -28,11 +28,11 @@ easy_admin :
                         - label: 'Equipes'
                         - { label : 'Palmares des équipes', entity: 'Equipes' , icon : 'asterisk'}
                         - { label : 'Administration des équipes' , entity : 'Selectionnees', icon : 'user-friends'}
-                        - { entity : 'Fichiersequipesmemoires', 'label' : 'Les mémoires' , icon : 'book'}
+                        - { entity : 'Fichiersequipesmemoirescn', 'label' : 'Les mémoires' , icon : 'book'}
                         - { entity : 'Fichiersequipesresumes', 'label' : 'Les résumés' , icon : 'book'}
                         - { entity : 'Fichiersequipespresentations', 'label' : 'Les présentations' , icon : 'book'}
                         - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
-                        #- { entity: 'Eleves' , icon : 'asterisk'}
+                                            #- { entity: 'Eleves' , icon : 'asterisk'}
                        
                         - { label : 'Les photos', entity: 'Photosequipescn' , icon : 'images'}
                         - label : 'Les recompenses'

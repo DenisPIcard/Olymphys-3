@@ -9,8 +9,8 @@
 <body>
     <p>
         Bonjour Webmestre, <br>
-        
-         {{nom}}  {{prenom }} de l'équipe {{equipe}} a déposé 
+       {{ user=  app.session.get('user') }} 
+         {{user.nom}}  {{user.prenom }} de l'équipe {{equipe.numero}} a déposé 
           {% if typefichier=='memoire' %} le mémoire 
          {% endif %}  
           {% if typefichier=='annexe' %} l'annexe 

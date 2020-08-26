@@ -195,9 +195,16 @@ class Photos
 public function personalNamer()    //permet à vichuploeder et à easyadmin de renommer le fichier, ne peut pas être utilisé directement
  {         $edition=$this->getEdition()->getEd();
            $equipe=$this->getEquipe();
+           $centre=' ';
+           $lettre_equipe='';
+           if ($equipe->getCentre()){
            $centre=$equipe->getCentre()->getCentre();
+           
+           }
            $numero_equipe=$equipe->getNumero();
+           if ($equipe->getLettre()){
            $lettre_equipe=$equipe->getLettre();
+           }
            $national=$this->getNational();
            $nom_equipe=$equipe->getTitreProjet();
            $nom_equipe= str_replace("à","a",$nom_equipe);

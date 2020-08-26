@@ -1,10 +1,10 @@
 easy_admin :
      entities :
-         Fichiersequipesmemoires:
+         Fichiersequipesmemoirescn:
              class : App\Entity\Fichiersequipes
              controller: App\Controller\Admin\FichiersequipesController 
              templates :                 
-                 list: 'admin/customizations/memoires_list.html.twig'
+                 list: 'Admin/customizations/list_memoirescn.html.twig'
              actions :
                - {name : 'new', label : 'Déposer un fichier'}
                - {name : 'edit',  role : ROLE_SUPER_ADMIN }
@@ -14,17 +14,18 @@ easy_admin :
              list :
                   max_results: 30
                   dql_filter : "entity.typefichier < 2  AND  entity.national = 1"
-                  filters: { property: 'typefichier' }
+                  filters:
+                      - 'edition'
                   
                   actions: [{ name: 'Lire', icon: 'eye' ,label: ''},{name : 'edit', icon : 'pencil' }]
                   batch_actions: 
                       - {name : 'telechargernat', icon : 'download'}
                     
-                  title : '<font color="red"><h2>Memoires</h2></font>' 
+                  title : '<font color="red"><h2>Concours national : Memoires </h2></font>' 
                   fields:
                     - {property : 'equipe.lettre', label: 'Lettre'}
                     - {property: 'equipe.titreProjet', label : 'Projet'}
-                    - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoires.html.twig', base_path: '%app.path.fichiers.localhost%/memoires', propertyFile: 'fichierFile'}
+                    - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoirescn.html.twig', base_path: '%app.path.fichiers.localhost%/memoires', propertyFile: 'fichierFile'}
                     - {property: 'updatedat', label : 'Déposé le ', type: 'datetime'} 
                   sort: ['equipe.lettre','ASC']
                  

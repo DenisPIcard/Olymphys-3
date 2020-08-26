@@ -6,16 +6,16 @@ easy_admin :
              class : App\Entity\Fichiersequipes
              controller: App\Controller\Admin\FichiersequipesController
              actions :
-               - {name : 'new', label : 'Déposer un résumé'}
-             filters :
-                      - 'edition'
-                      
-             dql_filter : 'entity.typefichier =3 AND national =1' 
+               - {name : 'new', label : 'Déposer une presentation'}
+            
              list :
                   max_results: 50
                   actions: [ { name: 'Lire', icon: 'eye' }]
                   batch_actions: [ {name : 'telecharger', icon : 'download'}]
-                  dql_filter : 'entity.typefichier = 3'
+                  filters :
+                      - 'edition'
+                      
+                  dql_filter : 'entity.typefichier = 3 AND national = 1' 
                   title : '<h2>Les présentations orales</h2>' 
                   fields: 
                     - {property : 'equipe.numero', label: 'Numero équipe'}

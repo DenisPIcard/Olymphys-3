@@ -6,14 +6,15 @@ easy_admin :
              class : App\Entity\Fichiersequipes
              controller: App\Controller\Admin\FichiersequipesController 
              templates:
-                        list: 'admin/customizations/memoires_list.html.twig'
+                        list: 'Admin/customizations/list_memoiresinter.html.twig'
              
              actions :
                - {name : 'new', label : 'Déposer un mémoire'}
              
              list :
                   max_results: 30
-                  actions: [  { name: 'Lire', icon: 'eye' }, '-edit', {name : 'new' , label : 'Déposer un memoire'} ]
+                  actions: [  { name: 'Lire', icon: 'eye' ,label: ''}, '-edit', {name : 'new' , label : 'Déposer un memoire'} ]
+                 
                   filters :
                       - 'edition'
                       
@@ -24,14 +25,14 @@ easy_admin :
                   batch_actions: 
                       - {name : 'telecharger', icon : 'download'}
                     
-                  title : '<font color="yellow"><h2>Memoires et annexes</h2></font>' 
+                  title : '<h2>Memoires et annexes</h2>' 
                   fields: 
                     - {property : 'equipe.numero', label: 'Numero équipe'}
                     - {property: 'equipe.centre.centre', 'label' :'Centre'}
                     - {property: 'equipe.titreprojet', label : 'Projet'}
                     - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoiresinter.html.twig', base_path: '%app.path.fichiers.localhost%/memoires',propertyFile: 'fichierFile'}
                     - {property: 'updatedAt', label : 'Déposé le' }
-                  sort: ['equipe.numero','ASC']
+                  
                   
              edit :
                   title: ' Les fichiers sont automatiquement renommés selon leur catégorie : memoire ou annexe' 

@@ -5,18 +5,17 @@ easy_admin :
              
              class : App\Entity\Fichiersequipes
              controller: App\Controller\Admin\FichiersequipesController 
-             actions :
-               - {name : 'new', label : 'Déposer une fiche sécurité'}
+            
              
              list :
                   max_results: 50
-                  actions: [{ name: 'Lire', icon: 'eye' }]
+                  actions: [{ name: 'Lire', icon: 'eye' },'-edit',{name : 'new', label : 'Déposer une fiche sécurité'}]
+                  batch_actions: [ {name : 'erase',label : 'Tout effacer', icon : 'eraser '}]
                   filters :
                       - 'edition'
                       
-                  dql_filter : 'entity.typefichier =4' 
-                  batch_actions: 
-                      - {name : 'telecharger', icon : 'download'}
+                  dql_filter : 'entity.typefichier = 4' 
+                  
                     
                   title : '<h2>Fiches sécurités</h2>' 
                   fields: 
@@ -24,7 +23,7 @@ easy_admin :
                     - {property : 'equipe.lettre', label: 'Lettre équipe'}
                     - {property : 'equipe.centre.centre', label: 'Centre'}
                     - {property: 'equipe.titreprojet', label : 'Projet'}
-                    - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoiresinter.html.twig', base_path: '%app.path.fichiers.localhost%/fichessecur'}
+                    - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoiresinter.html.twig', base_path: '%app.path.fichiers.localhost%/fichessecur',propertyFile: 'fichierFile'}
                     - {property: 'updatedat', type: 'datetime',label : 'Déposé le '} 
                   sort: ['equipe.numero','ASC']
                   

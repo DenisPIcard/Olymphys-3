@@ -5,19 +5,21 @@ easy_admin :
              
              class : App\Entity\Fichiersequipes
              controller: App\Controller\Admin\FichiersequipesController 
-             actions :
-               - {name : 'new', label : 'Déposer un résumé'}
-             
+            
+             templates:
+                        list: 'Admin/customizations/list_resumes.html.twig'
              list :
+                 
                   max_results: 50
-                  actions: [ { name: 'Lire', icon: 'eye' }]
-                  batch_actions: [ {name : 'telecharger', icon : 'download'}]
+                  actions: [ { name: 'Lire', icon: 'eye' } ,'-edit',  {name : 'new', label : 'Déposer un résumé'} ]
+                  batch_actions: [ {name : 'telecharger', icon : 'download '}]
                   filters :
                       - 'edition'
-                      
+                     
                   dql_filter : 'entity.typefichier = 2'
-                  title : '<font color="yellow"><h2>Les résumés</h2></font>' 
+                  title : '<h2>Les résumés</h2>' 
                   fields: 
+                    - {property : 'edition.ed', label: 'Edition'}
                     - {property : 'equipe.numero', label: 'Numero équipe'}
                     - {property : 'equipe.lettre', label: 'Lettre équipe'}
                     - {property : 'equipe.centre.centre', label: 'Centre'}

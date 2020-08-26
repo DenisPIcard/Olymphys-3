@@ -165,40 +165,7 @@ class AdminController extends EasyAdminController
         
     }
    
-    public function updateFichiersequipesEntity(Request $request, $entity)
-            {   $repositoryFichiersequipes = $this->getDoctrine()->getRepository('App:Fichiersequipes');
-                 $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                if(!$entity->getEdition()){
-                 
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-                  $entity->setEdition($edition);
-                }
-                 $equipe = $entity->getEquipe();
-                 
-                 $fichiers= $repositoryFichiersequipes->findByEquipe(['equipe' =>$equipe]);
-                 dd($fichiers);
-                 
-                 if ($fichiers){
-                          foreach($fichiers as $fichier) {
-                              
-                              if($fichier->getTypefichier() == 1  and $entity->getTypefichier() ==1){
-                                  
-                                  $fichier->setMemoireFile($entity->getMemoireFile());
-                                  
-                              }
-                              if($memoire->getAnnexe() ==false and $entity->getAnnexe() ==false){
-                                  $memoire->setMemoireFile($entity->getMemoireFile());
-                                  
-                              }
-                              parent::persistEntity($entity);
-                          }              
-                     
-                 }
-                 if(!$memoires){
-                     parent::persistEntity($entity);
-                 }
-                 
-            }
+   
    
   
     

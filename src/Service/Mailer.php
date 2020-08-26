@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Entity\Equipesadmin;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -32,5 +33,19 @@ class Mailer
         $this->mailer->send($email);
         return $email;
     }
+    public function sendConfirmFile(Equipesadmin $equipe, $type_fichier ){
+     $email=(new Email())
+                    ->from('alain.jouve@wanadoo.fr')
+                    ->to('webmestre3@olymphys.fr') //'webmestre2@olymphys.fr', 'Denis'
+                    ->subject('Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe())
+                    ->text('L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier : '.$type_fichier);
+                   
+       $this->mailer->send($email);
+        return $email;
+    
+    }
+    
+    
+    
 }
 
