@@ -207,6 +207,10 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
             if ($this->getTypefichier()==3){
             $fileName=$edition.'-eq-'.$libel_equipe.'-Presentation-'.$nom_equipe;
             }
+           
+            if ($this->getTypefichier()==5){
+            $fileName=$edition.'-eq-'.$libel_equipe.'-diaporama-'.$nom_equipe;
+            }
            return $fileName;
  }
     
@@ -279,6 +283,10 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
          }
           if ($this->getTypefichier()==3){
              $path= '/presentation/';
+         }
+         
+          if ($this->getTypefichier()==5){
+             $path= '/diaporamas/';
          }
           return $path;
          

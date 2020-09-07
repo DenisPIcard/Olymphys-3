@@ -14,6 +14,7 @@ use App\Entity\Edition;
 use App\Entity\Centrescia;
 use App\Form\Filter\EquipesadminFilterType;
 use App\Form\Filter\FichiersequipesFilterType;
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -88,11 +89,8 @@ class FichiersequipesController extends EasyAdminController
                          'multiple'=>false,]);
                                                   
             }
-            
-            
-            
-            
-            
+            //$form->add('submit', SubmitType::class, [ 'label' => 'Appliquer',  ]);
+         
         return $form;
     }
     public function persistEntity($entity)
@@ -185,7 +183,12 @@ class FichiersequipesController extends EasyAdminController
                       -> andWhere('entity.national = TRUE')
                        ->addOrderBy('eq.numero', 'ASC')
                       ->addOrderBy('eq.lettre', 'ASC');;;;
-              }                          
+              }  
+               if ($dqlFilter=='entity.typefichier = 5'){
+              $queryBuilder->andWhere($dqlFilter)
+                       ->addOrderBy('eq.numero', 'ASC')
+                       ->addOrderBy('eq.lettre', 'ASC');;;;
+              }
               }
       
             return $queryBuilder;

@@ -5,8 +5,8 @@ parameters:
     app.path.photos.site : /../public/upload/photos
     app.path.tempdirectory :  '%kernel.project_dir%/public/temp'
     app.path.thumbtmp :  '%kernel.project_dir%/public/upload/images/tmp'
-    type_fichier : ['memoires','annexes','resumes','presentations','fichessecur']
-    type_fichier_lit : ['mémoire','annexe','résume','présentation','fiche securité']
+    type_fichier : ['memoires','annexes','resumes','presentations','fichessecur','diaporamas']
+    type_fichier_lit : ['mémoire','annexe','résume','présentation','fiche securité','diaporama']
     app.path.fichiers : '%kernel.project_dir%/public/fichiers'
     app.path.fichiers.site : /../public/fichiers
     app.path.fichiers.localhost : /fichiers
