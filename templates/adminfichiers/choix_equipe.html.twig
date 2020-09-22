@@ -53,6 +53,9 @@
          {%if choix=='liste_video' %}
         <br>Voir les vidéos de l'une de mes équipes
         {%endif %}
+         {%if choix=='diaporama_jury' %}
+        <br>Déposer le diaporama de secours destiné au jury
+        {%endif %}
           {% endif %}  
           
           
@@ -84,7 +87,7 @@
                         </div>   
                         
                           <div class="col">  
-                                {% if(choix=='deposer') or choix=='presentation' %}
+                                {% if(choix=='deposer') or choix=='presentation' or choix=='diaporama_jury' %}
                                 <a class="btn btn-primary" href="{{ path('fichiers_charge_fichiers', {'infos': infos} ) }}" >Choisir cette équipe</a>
                                 {% endif %}
                                 {% if choix=='liste_prof'%}

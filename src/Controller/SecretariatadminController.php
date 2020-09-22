@@ -304,7 +304,7 @@ class SecretariatadminController extends AbstractController
  
                 $em = $this->getDoctrine()->getManager();
                  
-                for ($row = 2; $row <= $highestRow; ++$row) 
+                for ($row = 2; $row <= $highestRow; $row++) 
                    {                       
                    
                     $numero= $worksheet->getCellByColumnAndRow(4, $row)->getValue();
@@ -312,13 +312,18 @@ class SecretariatadminController extends AbstractController
                                                                   ->where('e.numero =:numero')
                                                                   ->setParameter('numero', $numero)
                                                                    ->andWhere('e.edition =:edition')
-                                                                   ->setParameter('edition',$edition);
-                    $equipe=$qb->getQuery()->getResult();
-                    
-                    
+                                                                   ->setParameter('edition',$edition)
+                                                                   ->setMaxResults(1);
+        
+       
+                    $equipe=$qb->getQuery()->getOneOrNullResult();;
+                  
+                   
                    if(!$equipe){
                    $equipe= new equipesadmin(); 
+                    
                                     }
+                                    
                         $equipe->setEdition($edition);
                         $equipe->setNumero($numero) ;
                         $value = $worksheet->getCellByColumnAndRow(5, $row)->getValue();

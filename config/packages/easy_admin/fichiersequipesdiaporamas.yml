@@ -7,12 +7,11 @@ easy_admin :
              controller: App\Controller\Admin\FichiersequipesController 
             
              templates:
-                        list: 'Admin/customizations/list_resumes.html.twig'
+                        list: 'Admin/customizations/list_diaporamas.html.twig'
              list :
                  
                   max_results: 50
                   actions: [ { name: 'Lire', icon: 'eye' } ,'-edit',  {name : 'new', label : 'Déposer un résumé'} ]
-                  batch_actions: [ {name : 'telecharger', icon : 'download '}]
                   filters :
                       - 'edition'
                      
