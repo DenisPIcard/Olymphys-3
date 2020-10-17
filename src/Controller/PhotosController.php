@@ -397,7 +397,7 @@ class PhotosController extends  AbstractController
              $equipe= $repositoryEquipesadmin->findOneBy(['id'=>$concourseditioncentre[2]]);
                  $qb= $repositoryPhotos->createQueryBuilder('p')
                           ->where('p.equipe =:equipe')
-                         ->andWhere('p.national = FALSE')
+                         ->andWhere('p.national = TRUE')
                          ->setParameter('equipe',$equipe);
                    
                  $liste_photos=$qb->getQuery()->getResult();                 
@@ -523,12 +523,9 @@ class PhotosController extends  AbstractController
                                    
              
          }
-         /**
-         * 
-         * @IsGranted("ROLE_SUPER_ADMIN")
-         * @Route("/photos/transpose_photos", name="photos_transpose_photos")
-         * 
-         */  
+         /*
+        
+        
         public function transpose_photos(Request $request) {
             $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
@@ -577,7 +574,7 @@ class PhotosController extends  AbstractController
             }
             return $this->redirectToRoute('core_home');
          
-        }
+        }*/
            
          }
 

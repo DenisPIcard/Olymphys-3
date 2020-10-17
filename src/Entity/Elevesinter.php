@@ -28,7 +28,7 @@ class Elevesinter
      * 
      */
     private $numsite;
-    
+    //numsite est l'id de l'élève sur le site odpf.org
     
     
     /**
@@ -71,6 +71,15 @@ class Elevesinter
      * @ORM\Column(name="courriel", type="string",length=60, nullable=true)
      */
       private $courriel;
+      
+        /**
+       *  
+       * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes")
+       * @ORM\JoinColumn( referencedColumnName="id" )
+       */
+     private $autorisationphotos;
+      
+      
 
     /**
      * Get id
@@ -217,5 +226,16 @@ class Elevesinter
 
         return $this;
     }
+     public function getAutorisationphotos()
+    {
+        return $this->autorisationphotos;
+    }
     
+    
+    public function setAutorisationphotos($autorisation)
+    {
+        $this->autorisationphotos = $autorisation;
+
+        return $this;
+    }
 }

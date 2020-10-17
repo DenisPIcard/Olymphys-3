@@ -80,9 +80,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Form\AbstractType;
+use Doctrine\ODM\PHPCR\Query\QueryException;
 
-
-
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use ZipArchive;
@@ -98,11 +98,11 @@ class SecretariatadminController extends AbstractController
 
     private $validator;
 
-    public function __construct(EntityManagerInterface $em, ValidatorInterface $validator,UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(EntityManagerInterface $em, ValidatorInterface $validator,UserPasswordEncoderInterface $passwordEncoder, SessionInterface $session)
     {
         $this->em = $em;
         $this->validator = $validator;
-
+         $this->session = $session;
        
     
         
@@ -208,10 +208,12 @@ class SecretariatadminController extends AbstractController
 			->getDoctrine()
 			->getManager()
 			->getRepository('App:Elevesinter');
-			$repositoryEquipesadmin= $this
+           $repositoryEquipesadmin= $this
 			->getDoctrine()
 			->getManager()
 			->getRepository('App:Equipesadmin');
+            $edition = $this->session->get('edition');
+            $edition=$this->em->merge($edition);
             $form->handleRequest($request);                            
             if ($form->isSubmitted() && $form->isValid()) 
                 {
@@ -221,19 +223,31 @@ class SecretariatadminController extends AbstractController
                 $worksheet = $spreadsheet->getActiveSheet();
             
                 $highestRow = $worksheet->getHighestRow();              
- 
+
                 $em = $this->getDoctrine()->getManager();
-                 
+                
                 for ($row = 2; $row <= $highestRow; ++$row) 
                    {                       
                    
-                   $value = $worksheet->getCellByColumnAndRow(1, $row)->getValue();//On lit le nom de l'élève
+                   $value = $worksheet->getCellByColumnAndRow(1, $row)->getValue();//On lit l'id de l'élève sur le site odpf
+                  
                    $numsite=$value;//idsite est l'id du site odpf
-                   $eleve=$repositoryElevesinter->findOneByNumsite(['numsite'=>$numsite]);//On vérifie si  cet élèves est déjà dans la base
-                   if(!$eleve){ // si l'éleve n'existe pas, on le crée
-                       $eleve= new elevesinter(); 
-                       $eleve->setNumsite($numsite) ;  
-                                   } //sinon on écrase les précédentes données
+                 
+                       $qb=$repositoryElevesinter->createQueryBuilder('e')
+                           ->where('e.numsite =:numsite')
+                           ->setParameter('numsite', intval($numsite));//On vérifie si  cet élèves est déjà dans la base
+                           $query= $qb->getQuery();
+                
+                   $eleves=$query->getResult();
+                  
+               if (!$eleves)
+                  {// si l'éleve n'existe pas, on le crée
+                      $eleve= new elevesinter(); 
+                       $eleve->setNumsite(intval($numsite)) ;  
+                              }
+                  else{ 
+                $eleve= $eleves[0];
+                     } //sinon on écrase les précédentes données
                                 
                         $nom = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
                         $eleve->setNom($nom) ;
@@ -245,18 +259,30 @@ class SecretariatadminController extends AbstractController
                         $eleve->setCourriel($value);
                         $value = $worksheet->getCellByColumnAndRow(6, $row)->getValue();
                         $eleve->setGenre($value);
-                        $value = $worksheet->getCellByColumnAndRow(20, $row)->getValue(); 
-                        $user=$repositoryEquipesadmin->findOneByNumero(['numero'=>$value]);
-                         if($user) {                    
-                         $eleve->setEquipe($user) ;
+                        $numero = $worksheet->getCellByColumnAndRow(20, $row)->getValue(); 
+                        
+                        $qb1=$repositoryEquipesadmin->createQueryBuilder('e')
+                                ->where('e.edition =:edition')
+                                ->andWhere('e.numero =:numero')
+                                ->setParameter('edition',$edition)
+                                ->setParameter('numero',$numero);
+                       
+                        $equipes=$qb1->getQuery()->getResult();
+                       
+                         if($equipes) {                    
+                         $eleve->setEquipe($equipes[0]) ;
                          
-                         }
+                         
+                    
                         $em->persist($eleve);
 
 
                          $em->flush();
                    
                    }
+                   
+                         }
+                
                     return $this->redirectToRoute('core_home');
                 }
         $content = $this
@@ -304,7 +330,7 @@ class SecretariatadminController extends AbstractController
  
                 $em = $this->getDoctrine()->getManager();
                  
-                for ($row = 2; $row <= $highestRow; ++$row) 
+                for ($row = 2; $row <= $highestRow; $row++) 
                    {                       
                    
                     $numero= $worksheet->getCellByColumnAndRow(4, $row)->getValue();
@@ -312,13 +338,18 @@ class SecretariatadminController extends AbstractController
                                                                   ->where('e.numero =:numero')
                                                                   ->setParameter('numero', $numero)
                                                                    ->andWhere('e.edition =:edition')
-                                                                   ->setParameter('edition',$edition);
-                    $equipe=$qb->getQuery()->getResult();
-                    
-                    
+                                                                   ->setParameter('edition',$edition)
+                                                                   ->setMaxResults(1);
+        
+       
+                    $equipe=$qb->getQuery()->getOneOrNullResult();;
+                  
+                   
                    if(!$equipe){
                    $equipe= new equipesadmin(); 
+                    
                                     }
+                                    
                         $equipe->setEdition($edition);
                         $equipe->setNumero($numero) ;
                         $value = $worksheet->getCellByColumnAndRow(5, $row)->getValue();

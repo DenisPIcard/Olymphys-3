@@ -155,6 +155,19 @@ class User implements UserInterface, \Serializable
      */
     protected $civilite;
     
+    
+    
+   
+    /**
+       *  
+       * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes")
+       * @ORM\JoinColumn( referencedColumnName="id" )
+       */
+     private $autorisationphotos;
+     
+     
+     
+    
     public function __construct()
     {
         $this->isActive = true;
@@ -586,6 +599,17 @@ class User implements UserInterface, \Serializable
         $this->lastVisit = $lastVisit;
         return $this;
     }
+     public function getAutorisationphotos()
+    {
+        return $this->autorisationphotos;
+    }
     
+    
+    public function setAutorisationphotos($autorisation)
+    {
+        $this->autorisationphotos = $autorisation;
+
+        return $this;
+    }
     
 }

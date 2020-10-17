@@ -62,7 +62,11 @@
       {%  if listevideos is defined %}
           <hr>
           <div class='well'>
-          Vidéos de l'équipe :
+                 
+          Vidéos de l'équipe
+          {% if role=='ROLE_PROF' %}
+          (pour gérer les vidéos, aller dans "voir les vidéos d'une équipe" du menu principal)
+              {% endif %}:
           <ul>
         {%  for video in listevideos%}
             <li> <a href ="{{video.lien}}" target="blank">{{ video.nom}}</a>

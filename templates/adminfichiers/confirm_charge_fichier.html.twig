@@ -1,5 +1,5 @@
 {% extends "base.html.twig" %}
-{% block title %} Fiche securité{% endblock %}
+{% block title %}Fichier{% endblock %}
 {% block titre3 %}  Transférer  
     {% if typefichier=='fichesecur' %}
         de la fiche sécurité 
@@ -14,17 +14,21 @@
      {% if typefichier=='présentation' %}
         de la présentation 
     {% endif %}
-    
+    {% if typefichier=='autorisation' %}
+        de l'autorisation photos
+    {% endif %}
+    {%  if equipe != 'prof' %}
     de l'équipe : 
 
-   {% if equipe.lettre  is defined %} 
-    {{equipe.lettre}} 
-    {% else%} 
-    
-    {{equipe.numero}} 
-     
-    {% endif %} 
+            {% if equipe.lettre  is defined %} 
+             {{equipe.lettre}} 
+             {% else%} 
+
+             {{equipe.numero}} 
+
+             {% endif %} 
     {{equipe.titreProjet}}
+    {% endif %}
 {% endblock %}
 
 {% block navigation %}

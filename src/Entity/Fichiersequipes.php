@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use App\Repository\ElevesinterRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,6 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Service\FileUploader;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Naming\NamerInterface;
@@ -26,7 +27,9 @@ use Vich\UploaderBundle\Naming\PropertyNamer;
 
 
 class Fichiersequipes //extends BaseMedia
-{
+{                   
+
+  
     /**
      * @var int
      * 
@@ -128,7 +131,8 @@ class Fichiersequipes //extends BaseMedia
             
     {  
        
-        
+        $nom=$this->getFichier();
+    
         $this->fichierFile=$fichierFile;
        if($this->fichierFile instanceof UploadedFile){
                         $this->updatedAt = new \DateTime('now');
@@ -136,7 +140,8 @@ class Fichiersequipes //extends BaseMedia
         // VERY IMPORTANT:
         // It is required that at least one field changes if you are using Doctrine,
         // otherwise the event listeners won't be called and the file is lost
-        
+        $this->fichier=$nom;
+       
     }
     
     public function getId()
@@ -163,7 +168,7 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
            $edition=$this->getEdition()->getEd();  
            $equipe=$this->getEquipe();
           
-          
+          if ($equipe){
            $lettre=$equipe->getLettre();
            $libel_equipe=$lettre;
            if ($this->getNational()==0){
@@ -186,7 +191,11 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
            //$nom_equipe= str_replace("`","",$nom_equipe);
             
            //$nom_equipe= str_replace("?","",$nom_equipe);
-            
+          }
+          else{
+              $libel_equipe='prof';
+              
+          }
        if ($this->getTypefichier()==0)
                {
                 $fileName=$edition.'-eq-'.$libel_equipe.'-memoire-'.$nom_equipe;
@@ -206,6 +215,19 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
                 
             if ($this->getTypefichier()==3){
             $fileName=$edition.'-eq-'.$libel_equipe.'-Presentation-'.$nom_equipe;
+            }
+           
+            if ($this->getTypefichier()==5){
+            $fileName=$edition.'-eq-'.$libel_equipe.'-diaporama-'.$nom_equipe;
+            }
+          
+            if ($this->getTypefichier()==6){
+              $nom=$this->fichier;
+                
+           
+       
+            
+            $fileName=$edition.'-eq-'.$libel_equipe.'-autorisation photos-'.$nom.'-'.uniqid();
             }
            return $fileName;
  }
@@ -280,6 +302,13 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
           if ($this->getTypefichier()==3){
              $path= '/presentation/';
          }
+         
+          if ($this->getTypefichier()==5){
+             $path= '/diaporamas/';
+         }
+          if ($this->getTypefichier()==6){
+             $path= '/autorisations/';
+         }
           return $path;
          
      }
@@ -303,7 +332,7 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
         return $infoequipe;
         }
     }
-     
+    
      
 }
 

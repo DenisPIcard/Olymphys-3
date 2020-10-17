@@ -1,12 +1,19 @@
 {% extends "base.html.twig" %}
 {% block title %} Fichier {% endblock %}
-{% block titre3 %}  Dépôt
-    
-        d'un fichier  de l'équipe : 
-
+{% block titre3 %}  
+    {% if choix != 'autorisation_photos' %}
+    Dépôt  d'un fichier  de l'équipe : 
    {% if donnees_equipe is defined %} 
     {{donnees_equipe}} 
     {% endif %}
+    {%  endif %} 
+     {% if choix == 'autorisation_photos' %}
+    Dépôt  de l'autorisation photos de  
+   {% if eleve is defined %} 
+     {{ eleve.prenom}} {{eleve.nom}} 
+    {% endif %}
+    {%  endif %} 
+    
 {% endblock %}
 
 {% block navigation %}

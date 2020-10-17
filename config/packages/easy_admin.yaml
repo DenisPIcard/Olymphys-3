@@ -13,15 +13,15 @@ imports :
       - { resource: easy_admin/classement.yml }
       - { resource: easy_admin/photosequipesinter.yml }  
       - { resource: easy_admin/photosequipescn.yml }  
-      - { resource: easy_admin/photoscn.yml }  
       - { resource: easy_admin/centrescia.yml } 
       - { resource: easy_admin/elevesinter.yml } 
       - { resource: easy_admin/selectionnees.yml }
-      - { resource: easy_admin/fichiersequipesmemoires.yml }
+      - { resource: easy_admin/fichiersequipesmemoirescn.yml }
       - { resource: easy_admin/fichiersequipesmemoiresinter.yml }
       - { resource: easy_admin/fichiersequipesresumes.yml }
       - { resource: easy_admin/fichiersequipesfichessecur.yml }
       - { resource: easy_admin/fichiersequipespresentations.yml }
+      - { resource: easy_admin/fichiersequipesdiaporamas.yml }
       - { resource: easy_admin/videosequipes.yml }
 easy_admin:   
     user:

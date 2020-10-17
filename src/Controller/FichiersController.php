@@ -181,6 +181,9 @@ public function choix_equipe(Request $request,$choix) {
      $repositoryCentres= $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Centrescia');   
+     $repositoryEleves=$this->getDoctrine()
+		->getManager()
+		->getRepository('App:Elevesinter');
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);       
     $centres=$repositoryCentres->findAll();
     $datelimcia = $edition->getDatelimcia();
@@ -354,9 +357,31 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                              }
    }
    
-  if ($choix=='deposer') {//pour le dépôt des fichiers autres que les présentations
+  if (($choix=='deposer') ||($choix=='diaporama_jury')||$choix=='autorisation_photos') {//pour le dépôt des fichiers autres que les présentations
       
                                             if ($role=='ROLE_PROF') {
+                                                
+                                        if ($choix=='diaporama_jury')  {
+                                            if ($dateconnect<=$datecia){
+                                              $phase= 'interacadémique';
+
+                                             $liste_equipes=$qb3->getQuery()->getResult();    
+                                            }
+                                            
+                                          if (($dateconnect<=$datecn) and ($dateconnect>$datecia)){
+                                              $phase= 'national';
+
+                                              $qb3 ->andWhere('t.selectionnee=:selectionnee')
+                                                      
+                                                                  ->setParameter('selectionnee', TRUE);     
+                                             $liste_equipes=$qb3->getQuery()->getResult();    
+                                            }
+                                        } 
+                                        
+                                        
+                                        
+                                        else{    
+                                            
                                          if (($dateconnect>$datelimcia) and ($dateconnect<=$datelimnat)) {
                                              $phase='national';
                                               $qb3 ->andWhere('t.selectionnee=:selectionnee')
@@ -369,6 +394,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
 
                                              $liste_equipes=$qb3->getQuery()->getResult();   
                                          }
+                                       }
                                            if(isset($liste_equipes)) {
 
                                              $content = $this
@@ -464,7 +490,8 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                              return $this->redirectToRoute('core_home');   
                                          }
                                              }
-         }            
+         }
+        
  }
      
  
@@ -474,7 +501,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
          * @Route("/fichiers/confirme_charge_fichier, {file_equipe}", name="fichiers_confirme_charge_fichier")
          * 
          */        
-public function  confirme_charge_fichier(Request $request, $file_equipe){   
+public function  confirme_charge_fichier(Request $request, $file_equipe,MailerInterface $mailer){   
     
     $repositoryFichiersequipes= $this->getDoctrine()
                                  ->getManager()
@@ -482,24 +509,58 @@ public function  confirme_charge_fichier(Request $request, $file_equipe){
     $repositoryEquipesadmin= $this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:Equipesadmin');
-     
+    $repositoryEleves= $this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:Elevesinter');
+    $repositoryUser= $this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:User');
+    $em=$this->getDoctrine()->getManager(); 
     $info=explode("::",$file_equipe);
     $nom_fichier=$info[0];
     $id_equipe=$info[2];
     $num_type_fichier=$info[1];
     $id_fichier=$info[3];
-    $Equipe_choisie=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
-     $Fichier =$repositoryFichiersequipes->find(['id'=>$id_fichier]);
     
+     if ($num_type_fichier==6){
+          $id_user=$info[4];
+     
+                       if ($id_equipe!='prof'){
+                        
+                             $user=$repositoryEleves->find(['id'=>$id_user]);
+                             $Equipe_choisie=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
+                             $lettre_equipe= $Equipe_choisie->getLettre();//on charge la lettre de l'équipe 
+                                if(!$lettre_equipe){                                     // si la lettre n'est pas attribuée on est en phase interac
+                                                                 //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
+                                    $numero_equipe=$Equipe_choisie->getNumero();
+                                    $TitreProjet = $Equipe_choisie->getTitreProjet();
+                                    }                  
+                             
+                         }
+                       else{
+                           $user=$repositoryUser->find(['id'=>$id_user]);
+                           $Equipe_choisie='prof';
+                       }
+     }
+     else
+     {$Equipe_choisie=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
+                             $lettre_equipe= $Equipe_choisie->getLettre();//on charge la lettre de l'équipe 
+                                if(!$lettre_equipe){                                     // si la lettre n'est pas attribuée on est en phase interac
+                                                                 //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
+                                    $numero_equipe=$Equipe_choisie->getNumero();
+                                    $TitreProjet = $Equipe_choisie->getTitreProjet();
+                                    }                  
+         
+         
+     }
+    
+     $Fichier =$repositoryFichiersequipes->find(['id'=>$id_fichier]);
+    $edition = $this->session->get('edition');
+     $edition=$em->merge($edition);
    $avertissement='Le '.$this->getParameter('type_fichier_lit')[$num_type_fichier].' existe déjà';
      
-        $lettre_equipe= $Equipe_choisie->getLettre();//on charge la lettre de l'équipe 
-        if(!$lettre_equipe){                                     // si la lettre n'est pas attribuée on est en phase interac
-                                         //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
-            $numero_equipe=$Equipe_choisie->getNumero();
-            $TitreProjet = $Equipe_choisie->getTitreProjet();
-            }                  
-        if($lettre_equipe){                                     // si la lettre est attribuée on est en phase  concours nationale
+        
+        if(isset($lettre_equipe)){                                     // si la lettre est attribuée on est en phase  concours nationale
            
                                   //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
             $TitreProjet = $Equipe_choisie->getTitreProjet();
@@ -512,18 +573,44 @@ public function  confirme_charge_fichier(Request $request, $file_equipe){
                 $filesystem = new Filesystem();
                 if ($form3->get('OUI')->isClicked())
                     {
+                    
                     $file = new UploadedFile($this->getParameter('app.path.tempdirectory').'/'.$nom_fichier, $nom_fichier,null,null,true);
+                   
+                     if ($num_type_fichier==6){
+                         $user->setAutorisationphotos(null);
+                          $em->remove($Fichier);
+                    $em->flush();
+                         $Fichier = new Fichiersequipes();
+                      $Fichier->setFichier($user->getNom().'-'.$user->getPrenom());
+                      
+                             }
+                     
                     $Fichier->setFichierFile($file);
-                   $em=$this->getDoctrine()->getManager();
+                    $Fichier->setTypefichier($num_type_fichier);
+                              $Fichier->setEdition($edition);
+                              if(isset($equipe)){
+                              $Fichier->setEquipe($equipe);
+                              }
+                              $Fichier->setNational(0);
                     $em->persist($Fichier);
                     $em->flush();
+                   
                     
+                     if ($num_type_fichier==6){
+                        
+                             $user->setAutorisationphotos($Fichier);
+                             $em->persist($user);
+                            $em->flush();                             
+                         }    
                    $nom_fichier_uploaded=$Fichier->getFichier();
                                
                     $filesystem->remove($this->getParameter('app.path.tempdirectory').'/'.$nom_fichier);        
                           $request->getSession()
                             ->getFlashBag()
-                            ->add('info', 'Votre fichier renommé selon : '.$nom_fichier_uploaded.' a bien été déposé. Merci !') ;   
+                            ->add('info', 'Votre fichier renommé selon : '.$nom_fichier_uploaded.' a bien été déposé. Merci !') ;  
+                          $type_fichier=$this->getParameter('type_fichier')[$num_type_fichier];
+                     
+                     //$this->MailConfirmation($mailer, $type_fichier,$Equipe_choisie) ;  
                             
                       return $this->redirectToRoute('core_home');
                     }
@@ -566,18 +653,43 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
     $repositoryUser= $this->getDoctrine()
                           ->getManager()
                           ->getRepository('App:User');
+    $repositoryEleve= $this->getDoctrine()
+                          ->getManager()
+                          ->getRepository('App:Elevesinter');
     
     $info=explode("-",$infos);
     $id_equipe=$info[0];
     //$type_fichier=$info[1];
     $phase=$info[1];
-    $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
+    $choix= $info[2];
     
+    if (count($info)==4){
+     $id_user= $info[3];
+        
+         if ($id_equipe !='prof'){
+                $user=$repositoryEleve->find(['id'=>$id_user]);
+                $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
+
+           }
+           else {
+             $user = $repositoryUser->find(['id'=>$id_user]);
+               }
+      }
+    
+    else{
+         $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
+        
+    }
+  
+    
+   
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
     $datelimnat=$edition->getDatelimnat();
    
       $dateconnect= new \datetime('now');
-      $form1=$this->createForm(ToutfichiersType::class);
+      
+      $form1=$this->createForm(ToutfichiersType::class, ['choix'=>$choix]);
+      if(isset($equipe)){
       $nom_equipe=$equipe->getTitreProjet();
         $lettre_equipe= $equipe->getLettre();
         
@@ -588,7 +700,13 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
         $nom_equipe=$equipe->getTitreProjet();
         $donnees_equipe=$numero_equipe.' - '.$nom_equipe;
         }
-        
+      }
+      else{
+          $donnees_equipe= $user->getPrenom().' '.$user->getNom();
+          
+          
+      }
+      
     $form1->handleRequest($request); 
     if ($form1->isSubmitted() && $form1->isValid()){
            
@@ -596,7 +714,14 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
           $file=$form1->get('fichier')->getData();
    
         $ext=$file->guessExtension();
-        
+        $num_type_fichier=$form1->get('typefichier')->getData();
+       if (!isset($num_type_fichier)){
+           
+            $this->addFlash('alert', 'Sélectionner le type de fichier !');
+                                       return $this->redirectToRoute('fichiers_charge_fichiers', [
+                                           'infos' => $infos,
+                                       ]);
+       }
         $num_type_fichier=$form1->get('typefichier')->getData();
        
         if(($num_type_fichier==0) or ($num_type_fichier==1)){
@@ -676,7 +801,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                                              return $this->redirectToRoute('fichiers_charge_fichiers',array('infos'=>$infos));
                                                                              }      
                                             }
-            if ($num_type_fichier==3){
+            if ($num_type_fichier==3 ){
                                                         if( $dateconnect>$datelimnat){
                                                            $violations = $validator->validate(
                                                                                     $file,
@@ -731,16 +856,71 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                                                 } 
              
             }
+              if($num_type_fichier==5){
+                 
+                     $violations = $validator->validate( $file,[        new NotBlank(),
+                                                                                        new File([
+                'maxSize'=> '10000k',
+                'mimeTypes' =>['application/pdf', 'application/x-pdf'
+                         ],
+                'mimeTypesMessage'=>'Veuillez télécharger un fichier du bon format'
+                                                                                  ])
+                             ]
+                             );
+                     if ($violations->count() > 0) {
+                                                                                    
+                                                                                    /** @var ConstraintViolation $violation */
+                                                                                    $violation = $violations[0];
+                                                                                    $this->addFlash('alert', $violation->getMessage());
+                                                                                    return $this->redirectToRoute('fichiers_charge_fichiers', [
+                                                                                        'infos' => $infos,
+                                                                                    ]);
+                                                                                }
+            
+             
+             
+            }
+             if($num_type_fichier==6){
+                 
+                     $violations = $validator->validate( $file,[        new NotBlank(),
+                                                                                        new File([
+                'maxSize'=> '1000k',
+                'mimeTypes' =>['application/pdf', 'application/x-pdf'
+                         ],
+                'mimeTypesMessage'=>'Veuillez télécharger un fichier du bon format'
+                                                                                  ])
+                             ]
+                             );
+                     if ($violations->count() > 0) {
+                                                                                    
+                                                                                    /** @var ConstraintViolation $violation */
+                                                                                    $violation = $violations[0];
+                                                                                    $this->addFlash('alert', $violation->getMessage());
+                                                                                    return $this->redirectToRoute('fichiers_charge_fichiers', [
+                                                                                        'infos' => $infos,
+                                                                                    ]);
+                                                                                }
+            
+             
+             
+            }
           
             $em=$this->getDoctrine()->getManager();
             $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-           
+           if ($num_type_fichier!=6){
             $qb= $repositoryFichiersequipes->createQueryBuilder('f');
                  $Fichiers=$qb->where('f.equipe=:equipe')
                                                      ->setParameter('equipe',$equipe)
                                                      ->andWhere('f.typefichier =:type')
                                                     ->setParameter('type',$num_type_fichier)
                                                     ->getQuery()->getResult();
+           }
+           if ($num_type_fichier==6){
+            $Fichiers=$user->getAutorisationphotos();
+           
+           }
+                 
+                 
                 if($Fichiers){
                      if ($file) {
                 try {
@@ -751,23 +931,44 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 } catch (FileException $e) {
                     // ... handle exception if something happens during file upload
                 }  
+                   if ($num_type_fichier!=6){
                     $id_fichier=$Fichiers[0]->getId();
-                    return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier));
-                }
+                    return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier,$mailer));
+                   }
+                    if ($num_type_fichier==6){
+                    $id_fichier=$Fichiers->getId();
+                  
+                   
+                    return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier.'::'.$id_user,$mailer));
+                } }
                 }
                   if (!$Fichiers){
                               
                                $fichier= new Fichiersequipes();
                               $fichier->setTypefichier($num_type_fichier);
                               $fichier->setEdition($edition);
+                              if (isset($equipe)){
                               $fichier->setEquipe($equipe);
+                                  }
                               $fichier->setNational(0);
+                            
+                              
+                              
                            if ($phase=='national'){
                           $fichier->setNational(1);
                            }
+                            if ($num_type_fichier==6){
+                           $fichier->setFichier($user->getNom().'-'.$user->getPrenom());
+                            }
                           $fichier->setFichierFile($file);
                           $em->persist($fichier);
                             $em->flush();
+                             if ($num_type_fichier==6){
+                               
+                             $user->setAutorisationphotos($fichier);
+                             $em->persist($user);
+                            $em->flush();                             
+                         }    
                             $nom_fichier = $fichier->getFichier();
                      
                     $request->getSession()
@@ -777,22 +978,110 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 $user = $this->getUser();//Afin de rappeler le nom du professeur qui a envoyé le fichier dans le mail
                 $type_fichier= $this->getParameter('type_fichier')[$num_type_fichier];
                 
-               $email=(new Email())
+                $type_fichier= $this->getParameter('type_fichier_lit')[$num_type_fichier];
+               /* $bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', ['typefichier' =>$type_fichier,'equipe'=>$equipe ] );
+           $mailer->sendMessage('info@olymphys.fr', 'alain.jouve@wanadoo.fr', 'Equipe '.$equipe->getNumero().'DÃ©pÃ´t d\'un fichier', $bodyMail);
+           $mailer->sendMessage('info@olymphys.fr','info@olymphys.fr', 'Inscription d\'un nouvel utilisateur', $bodyMail);
+              $email=(new Email())
                     ->from('info@olymphys.fr')
-                    ->to(new adress('alain.jouvealb@gmail.com','Alain')) //'webmestre2@olymphys.fr', 'Denis'
-                    ->subject('Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe())
-                    ->text('L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier : '.$type_fichier);
+                    ->to('alain.jouve@wanadoo.fr') //'webmestre2@olymphys.fr', 'Denis'
+                    ->subject('Depot du '.$type_fichier.'de l\'Ã©quipe '.$equipe->getInfoequipe())
+                    ->text('L\'equipe '. $equipe->getInfoequipe().' a dÃ©posÃ© un fichier : '.$type_fichier);
                    
-                $mailer->send($email);
-                $centre = $equipe->getCentre();
+                $mailer->send($email);*/
+               // $this->MailConfirmation($mailer,$type_fichier,$equipe);
                 
                 return $this->redirectToRoute('core_home');     
                 }        
     }
+    
+            if ($choix == 'autorisation_photos'){
+                 $content = $this
+                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe,'eleve'=>$user, 'choix'=>$choix));
+            }
+            else {
              $content = $this
-                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe));
+                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe, 'choix'=>$choix ));
+            }
             return new Response($content);                             
- }    
+ }
+ 
+ 
+public function MailConfirmation(MailerInterface $mailer, string $type_fichier, Equipesadmin $equipe){
+     $email=(new Email())
+                    ->from('info@olymphys.fr')
+                     //->to('alain.jouve@wanadoo.fr')
+                   ->cc('webmestre3@olymphys.fr')
+                   ->to('webmestre2@olymphys.fr')
+                    ->subject('Depot du '.$type_fichier.' de l\'équipe '.$equipe->getInfoequipe())
+                    ->text('L\'equipe "'. $equipe->getInfoequipe().'" a déposé un fichier : '.$type_fichier.'.');
+                   
+                $mailer->send($email);
+   
+ }
+ 
+  /**
+         * @Security("is_granted('ROLE_PROF')")
+         * 
+         * @Route("/fichiers/autorisation_photos/,{infos}", name="fichiers_autorisations_photos")
+         * 
+         */          
+public function autorisations_photos(Request $request , $infos )
+{
+     $info=explode("-",$infos);
+    $id_equipe=$info[0];
+    //$type_fichier=$info[1];
+    $phase=$info[1];
+    $choix= $info[2];
+   $repositoryEquipes= $this->getDoctrine()
+                                  ->getManager()
+                                  ->getRepository('App:Equipesadmin');
+   $repositoryEleves= $this->getDoctrine()
+                                  ->getManager()
+                                  ->getRepository('App:Elevesinter');
+   $repositoryUser= $this->getDoctrine()
+                                  ->getManager()
+                                  ->getRepository('App:User');
+   $equipe=$repositoryEquipes->find(['id'=>$id_equipe]);
+    $user = $this->getUser();
+    $id_user=$user->getId(); 
+    $roles=$user->getRoles();
+    $role=$roles[0];
+      
+   $qb=$repositoryEleves->createQueryBuilder('e')
+           ->where('e.equipe =:equipe')
+           ->setParameter('equipe',$equipe);
+   $eleves= $qb->getQuery()->getResult();
+   
+   $liste_prof[1]= $repositoryUser->find(['id'=>$equipe->getIdProf1()]) ;
+   if (null!=$equipe->getIdProf2()){
+   $liste_prof[2]=$repositoryUser->find(['id'=>$equipe->getIdProf2()]) ;
+      }
+    
+
+    if(isset($eleves)) {
+                   $content = $this
+                 ->renderView('adminfichiers\autorisations_photos.html.twig', array(
+                     'eleves'=>$eleves,'infos'=>$infos,'equipe'=>$equipe,'phase'=>$phase, 'role'=>$role, 'choix'=>$choix,'liste_prof'=>$liste_prof
+                    )
+                                );
+        return new Response($content);  
+     }
+     else{
+         $request->getSession()
+                                     ->getFlashBag()
+                                     ->add('info', 'Pas encore d\élève indiqué pour cette équipe') ;
+                             return $this->redirectToRoute('core_home'); 
+       
+     }
+   
+   
+}
+ 
+ 
+ 
+ 
+ 
          
         /**
          * @Security("is_granted('ROLE_PROF')")

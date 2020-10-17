@@ -26,12 +26,12 @@ class CoreController extends AbstractController
      
      $user=$this->getUser();
    // dump($user);
-   if (null != $user)
-    { $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+   $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
                   
      $this->session->set('edition', $edition); 
-       
+    if (null != $user)
+    {    
      $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat(); 
      $dateouverturesite=$edition->getDateouverturesite();

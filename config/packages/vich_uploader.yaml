@@ -29,53 +29,7 @@ vich_uploader:
         
         
         
-        photosinter :
-            uri_prefix: '%app.path.photosinter%'
-            upload_destination: '%app.path.photosinter%'
-            inject_on_load: true
-            delete_on_update: true
-            delete_on_remove: true
-            directory_namer: 
-                service: vich_uploader.namer_directory_property
-                options: { property: 'directoryName'}
-            namer: 
-                service: vich_uploader.namer_property
-                options: { property: 'personalNamer'}
-                
-        photosinterthumb :
-            uri_prefix: '%app.path.photosinterthumb%'
-            upload_destination: '%app.path.photosinterthumb%'
-            inject_on_load: false
-            delete_on_update: true
-            delete_on_remove: true
-            directory_namer: 
-                service: vich_uploader.namer_directory_property
-                options: { property: 'directoryName'}
-            namer: 
-                service: vich_uploader.namer_property
-                options: { property: 'personalNamer'}
         
-        photoscn :
-            uri_prefix: '%app.path.photosnat%'
-            upload_destination: '%app.path.photosnat%'
-            inject_on_load: true
-            delete_on_update: true
-            delete_on_remove: true
-            
-            namer: 
-                service: vich_uploader.namer_property
-                options: { property: 'personalNamer'}
-                
-        photoscnthumb :
-            uri_prefix: '%app.path.photosnatthumb%'
-            upload_destination: '%app.path.photosnatthumb%'
-            inject_on_load: true
-            delete_on_update: true
-            delete_on_remove: true
-            
-            namer: 
-                service: vich_uploader.namer_property
-                options: { property: 'personalNamer'}
                 
        
 
