@@ -82,6 +82,29 @@
            </div>
               
           {%endif     %}
+          {%  if liste_autorisations is defined %}
+          <hr>
+          <div class='well'>
+                 
+          Autorisations photos
+        {% if role=='ROLE_PROF' %}
+          (pour gérer les autorisations, aller dans "déposer et gérer les autorisations photos" du menu principal)
+              {% endif %}:
+          <ul>
+        {%  for autorisation in  liste_autorisations%}
+            <li> <a href ="{{asset('/fichiers/autorisations/'~autorisation.fichier)}}" target="blank">{{ autorisation.fichier}}</a>
+          
+          
+         {%  endfor %}
+         
+          </ul>
+          </div>
+          {% else %}
+              <div class="alert alert-light">
+           Cette équipe n'a pas encore déposé d'autorisations photos
+           </div>
+              
+          {%endif     %}
           <div class="well">
         {% if (role== 'ROLE_JURY') or (role== 'ROLE_COMITE') or (role== 'ROLE_JURYCIA') or (role== 'ROLE_ORGACIA') or (role== 'ROLE_SUPER_ADMIN')%}   
              

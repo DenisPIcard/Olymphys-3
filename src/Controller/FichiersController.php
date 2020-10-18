@@ -1117,12 +1117,15 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     $equipe_choisie= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
      $centre=$equipe_choisie->getCentre();
     
-    $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')
+    $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')//Les fichiers sans les autorisations photos
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
                               ->andWhere('e.edition =:edition')
                              ->setParameter('edition', $edition)
-                             ->setParameter('id_equipe', $id_equipe);
+                             ->setParameter('id_equipe', $id_equipe)
+                             ->andWhere('t.typefichier <:type')
+                             ->setParameter('type', 6);
+    
     
     $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le comité fichiers cia
                              ->LeftJoin('t.equipe', 'e')
@@ -1143,13 +1146,20 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->setParameter('type', 4)
                              ->andWhere('t.national =:national')
                              ->setParameter('national', TRUE) ;
-       
+    $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')//Les  autorisations photos uniquement
+                             ->LeftJoin('t.equipe', 'e')
+                             ->Where('e.id=:id_equipe')
+                              ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition)
+                             ->setParameter('id_equipe', $id_equipe)
+                             ->andWhere('t.typefichier =:type')
+                             ->setParameter('type', 6);  
     $roles=$this->getUser()->getRoles();
         $role=$roles[0];
                               
       if(($role=='ROLE_PROF') or($role=='ROLE_ORGACIA') or ($role=='ROLE_COMITE') or ($role=='ROLE_SUPER_ADMIN')) {               
         $liste_fichiers=$qb1->getQuery()->getResult();    
-       
+        $autorisations=$qb4->getQuery()->getResult();
       }
        if ($role=='ROLE_JURYCIA'){         
            $qb1->andWhere('t.typefichier <:type')
@@ -1247,6 +1257,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                     }
                 }
             }
+            
         if(isset($formtab )){      
             $fichier=new Fichiersequipes();
             $formBuilder=$this->get('form.factory')->createNamedBuilder('FormAll', ListefichiersType::class,$fichier);  
@@ -1254,10 +1265,21 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
             $Form=$formBuilder->getForm();
             $formtab[$i]=$Form->createView();//Ajoute le bouton  tout télécharger
         }
+         if(!isset($formtab)) {
+             $formtab=[];
+         }
+          if($listevideos==null) {
+             $listevideos=[];
+         }
+          if($autorisations==null) {
+             $autorisations=[];
+         }
         
+         
+       /*  
         if((isset($formtab)) and ($listevideos!=null)){
             $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,
+                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
                                                         'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
                                             ); 
             return new Response($content); 
@@ -1277,8 +1299,8 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                                             ); 
             return new Response($content); 
             }
-            
-        if((!isset($formtab)) and ($listevideos==null)){
+            */
+        if(($formtab==null) and ($listevideos==null) and ($autorisations==null)){
          
                 if ($role=='ROLE_PROF'){
                     $num_equipe='n° '.$equipe_choisie->getNumero();
@@ -1304,14 +1326,28 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                          
                          
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'liste_cn_comite')); 
-                 }}
+                 }
+                 
+                 
+                 
+                 
+                 
+                     }
                      if ($role=='ROLE_ORGACIA' || $role=='ROLE_JURYCIA'){
                          $request->getSession()
                     ->getFlashBag()
                     ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe n°'.$equipe_choisie->getNumero()) ;
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'centre')  );
                              }
-            }     
+            }
+            
+             $content = $this
+                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
+                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
+                                            ); 
+            return new Response($content); 
+            
+            
 }
  
        /**
