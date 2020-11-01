@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\FilterTypeTrait;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Edition ;
 use App\Entity\Equipesadmin;
 use App\Entity\Centrescia;
@@ -17,29 +18,39 @@ use App\Entity\Videosequipes;
 
 class VideosequipesFilterType extends FilterType
 { use FilterTypeTrait;
-    
+    public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+            
+        }
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
        
        $datas =$form->getParent()->getData();
-       
+      if(!isset($datas['edition'])){
+          
+           $this->session->set('edition_titre',$this->session->get('edition')->getEd()); 
+      }
       
       if(isset($datas['edition'])){
             
          $queryBuilder->andWhere( 'entity.edition =:edition')
                               ->setParameter('edition',$datas['edition']);
+         $this->session->set('edition_titre',$datas['edition']->getEd()); 
        }     
        if(isset($datas['centre'])){
                     
            $queryBuilder->andWhere( 'eq.centre =:centre')
                               ->setParameter('centre',$datas['centre'])
                               ->orderBy('eq.numero','ASC');
+           
        }
         if(isset($datas['equipe'])){
                     
            $queryBuilder->andWhere( 'eq.id =:id')
                               ->setParameter('id',$datas['equipe'])
                               ->orderBy('eq.numero','ASC');
+          
        }
        
        return $queryBuilder;

@@ -22,8 +22,20 @@
   {% for message in app.session.flashbag.get('success') %}
     <div class="alert alert-info"> {{ message }}</div>
   {% endfor %}
-    
-    <div class="well">
+  <div class="well">
+ {% if liste_videos != null %} 
+     Vidéos déjà déposées : 
+        <ul>
+        {% for  video in liste_videos%}
+           
+                               
+                                   <li><a href="{{ video.lien}}" target="blank">{{ video.nom }}</a> <h8><i>(Dernière mise à jour : {{ video.updatedAt|date('Y-m-d : H:i:s')}})</i></h8> 
+                           
+                          {% endfor %}
+        </ul>
+    {%  endif %}
+    <hr>
+    <center>Déposer une nouvelle vidéo</center>
          {{ form_start(form) }}
     <div class="my-custom-class-for-errors">
         {{ form_errors(form) }}

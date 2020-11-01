@@ -9,8 +9,8 @@
     {%  endif %} 
      {% if choix == 'autorisation_photos' %}
     Dépôt  de l'autorisation photos de  
-   {% if eleve is defined %} 
-     {{ eleve.prenom}} {{eleve.nom}} 
+   {% if citoyen is defined %} 
+     {{ citoyen.prenom}} {{citoyen.nom}} 
     {% endif %}
     {%  endif %} 
     
@@ -56,7 +56,15 @@
                 
              <div class="form-group col-md-6">
              {{ form_widget(form.save, { 'label': 'Déposer le fichier' }) }}
+              {% if choix == 'autorisation_photos' %}
+                  <a href="{{ path('fichiers_choix_equipe',{choix: 'autorisation_photos' })  }}" type="button" class="btn btn-danger">Annuler</a>
+                  {%  endif %}
+                    {% if choix == 'diaporama_jury' %}
+                  <a href="{{ path('fichiers_choix_equipe',{choix: 'diaporama_jury' })  }}" type="button" class="btn btn-danger">Annuler</a>
+                  {%  endif %} 
+                  {%  if   choix == 'deposer' %}
              <a href="{{ path('fichiers_choix_equipe',{choix: 'deposer' })  }}" type="button" class="btn btn-danger">Annuler</a>
+             {%  endif %}
              </div>
 {{ form_end(form) }}
        

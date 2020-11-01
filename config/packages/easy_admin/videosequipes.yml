@@ -7,7 +7,8 @@ easy_admin :
              controller: App\Controller\Admin\VideosequipesController 
              actions :
                - {name : 'new', label : 'Déposer une vidéo'}
-             
+             templates:
+                        list: 'Admin/customizations/list_videos.html.twig'  
              list :
                   filters :
                      - 'edition'

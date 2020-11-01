@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Filter\Type\FilterTypeTrait;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Edition ;
 use App\Entity\Equipesadmin;
 use App\Entity\Centrescia;
@@ -17,14 +18,23 @@ use App\Entity\Centrescia;
 
 class EquipesadminFilterType extends FilterType
 { use FilterTypeTrait;
-    
+    public function __construct(SessionInterface $session)
+                    {  
+                        $this->session=$session;
+                       
+                    }
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
         
        $datas =$form->getParent()->getData();
        $listparam=array();
+        if(!isset($datas['edition'])){
+          
+           $this->session->set('edition_titre',$this->session->get('edition')->getEd()); 
+      }
         if(isset($datas['edition'])){
                               $listparam['edition_']=$datas['edition'];
+       $this->session->set('edition_titre',$datas['edition']->getEd()); 
        }     
          if(isset($datas['centre'])){
                              $centres = $datas['centre'];
@@ -33,6 +43,7 @@ class EquipesadminFilterType extends FilterType
                                 $listparam['centre'.$n]=$centre;
                                  $n++;} 
          unset($centre);  
+         ; 
          }
        //$queryBuilder->expr()->eq();
       
@@ -41,12 +52,14 @@ class EquipesadminFilterType extends FilterType
             
          $queryBuilder->Where( 'entity.edition =:edition')
                               ->setParameter('edition',$datas['edition']);
+        
        }     
        if(isset($datas['centre'])){
                     
            $queryBuilder->andWhere( 'entity.centre =:centre')
                               ->setParameter('centre',$datas['centre'])
                               ->addOrderBy('entity.numero','ASC');
+          
        }
      
          

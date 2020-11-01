@@ -21,6 +21,7 @@ easy_admin :
                          - { entity : 'Fichiersequipesdiaporamas', 'label' : 'Les diaporamas' , icon : 'book'}
                          - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
                          - { entity : 'Elevesinter', 'label' : 'Elèves inscrits', icon : 'child' }
+                         - { entity : 'Fichiersequipesautorisations', 'label' : ' Les autorisations photos', icon : 'balance-scale'}
                          - { entity : 'Photosequipesinter', 'label' : ' Les photos', icon : 'images'}
                          
                     - label : 'Concours national'

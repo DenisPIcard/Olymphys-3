@@ -81,23 +81,30 @@
            Cette équipe n'a pas encore déposé de vidéo.
            </div>
               
-          {%endif     %}
+          {%   endif     %}
           {%  if liste_autorisations is defined %}
           <hr>
           <div class='well'>
-                 
+         {% if role != 'ROLE_JURYCIA' %}        
           Autorisations photos
-        {% if role=='ROLE_PROF' %}
+        {% if (role=='ROLE_PROF' ) %}
           (pour gérer les autorisations, aller dans "déposer et gérer les autorisations photos" du menu principal)
-              {% endif %}:
+              {% endif %}
           <ul>
         {%  for autorisation in  liste_autorisations%}
             <li> <a href ="{{asset('/fichiers/autorisations/'~autorisation.fichier)}}" target="blank">{{ autorisation.fichier}}</a>
           
-          
          {%  endfor %}
+         <hr>
+         {% for prof in liste_prof %}
+             {%    if prof.autorisationphotos != null %}
+             <li> <a href ="{{asset('/fichiers/autorisations/'~prof.autorisationphotos.fichier)}}" target="blank">{{ prof.autorisationphotos.fichier}}</a>
+             {% endif %}
+             
+             {% endfor %}
          
           </ul>
+             {% endif %}
           </div>
           {% else %}
               <div class="alert alert-light">

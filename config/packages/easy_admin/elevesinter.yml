@@ -4,6 +4,8 @@ easy_admin :
             class :  App\Entity\Elevesinter
             label : 'Eleves'
             controller: App\Controller\Admin\ElevesciaController
+            templates:
+                        list: 'Admin/customizations/list_eleves.html.twig' 
             list :
                 permission: 'ROLE_COMITE'
                 filters :
@@ -21,6 +23,7 @@ easy_admin :
                     - {property :  'equipe.numero', label : ' Numéro équipe'}
                     - {property : 'equipe.titreProjet', label : 'Projet'}
                     - {property : 'equipe.lyceeLocalite', label : 'ville'}
+                    - {property : 'autorisationphotos.fichier', label : 'Autorisations photos'}
                 sort : ['equipe.numero', ASC]
                 #form:  # <-- 'form' is applied to both 'new' and 'edit' views
             form :

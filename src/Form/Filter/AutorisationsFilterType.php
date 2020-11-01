@@ -13,10 +13,10 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Edition ;
 use App\Entity\Equipesadmin;
 use App\Entity\Centrescia;
+use App\Entity\Elevesinter;
 
 
-
-class FichiersequipesFilterType extends FilterType
+class AutorisationsFilterType extends FilterType
 {   public function __construct(SessionInterface $session)
         {
             $this->session = $session;
@@ -25,19 +25,19 @@ class FichiersequipesFilterType extends FilterType
     
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
-       
+        
+       $qb= $queryBuilder;
         $datas =$form->getParent()->getData();
-    
-      if(null!==$datas['edition']){
-            
-         $queryBuilder->andWhere( 'entity.edition =:edition')
-                              ->setParameter('edition',$datas['edition']);
-         $this->session->set('edition_titre',$datas['edition']->getEd()); 
-       }     
-       if(isset($datas['centre'])){
-           if(null!==$datas['centre'])   {    
-           $queryBuilder->andWhere( 'eq.centre=:centre')
-                              ->setParameter('centre',$datas['centre']);
+        
+          
+           $this->session->set('edition_titre',$this->session->get('edition')->getEd()); 
+ 
+      
+       if(isset($datas['eleve'])){
+           if(null!==$datas['eleve'])   {    
+           $queryBuilder->andWhere( 'entity.eleve =:eleve')
+                                       ->setParameter('eleve',$datas['eleve']);
+                              
            }
                   } 
      if(isset($datas['equipe'])){
@@ -49,6 +49,18 @@ class FichiersequipesFilterType extends FilterType
            
                   } 
      }
+    
+     if(isset($datas['prof'])){
+         
+       if(null!==$datas['prof']){
+                    
+                   $queryBuilder->andWhere( 'entity.prof =:prof')
+                                       ->setParameter('prof',$datas['prof']);
+          
+                  } 
+     }
+     
+     
        return $queryBuilder;
          
     }
@@ -56,8 +68,9 @@ class FichiersequipesFilterType extends FilterType
      public function configureOptions(OptionsResolver $resolver)
     {    $resolver->setDefaults([
             'choice_label' => [
-                'Edition' => 'edition',
-                'Centre' => 'centre',
+                'Eleve' => 'eleve',
+                'Professeur' => 'prof',
+                'Equipe'=>'equipe'
                 // ...
             ],
         ]);

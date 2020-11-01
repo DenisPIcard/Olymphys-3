@@ -6,19 +6,11 @@ parameters:
     app.path.tempdirectory :  '%kernel.project_dir%/public/temp'
     app.path.thumbtmp :  '%kernel.project_dir%/public/upload/images/tmp'
     type_fichier : ['memoires','annexes','resumes','presentations','fichessecur','diaporamas','autorisations']
-    type_fichier_lit : ['mémoire','annexe','résume','présentation','fiche securité','diaporama','autorisations']
+    type_fichier_lit : ['mémoire','annexe','résume','présentation','fiche securité','diaporama','autorisation']
     app.path.fichiers : '%kernel.project_dir%/public/fichiers'
     app.path.fichiers.site : /../public/fichiers
     app.path.fichiers.localhost : /fichiers
-    
-    
-    
-    
-    
-    
-    
-    
-    
+ 
     
 services:
     # default configuration for services in *this* file
@@ -38,7 +30,7 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
     
-    
+   
 
 
     # add more service definitions when explicit configuration is needed

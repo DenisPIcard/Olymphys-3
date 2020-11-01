@@ -79,7 +79,10 @@ class Elevesinter
        */
      private $autorisationphotos;
       
-      
+     public function __toString(){
+         return $this->getNomPrenom();
+         
+     }
 
     /**
      * Get id
@@ -238,4 +241,11 @@ class Elevesinter
 
         return $this;
     }
+    public function getNomPrenom(){
+        $NomPrenom='Equipe'.$this->equipe->getNumero().'-'.$this->nom.' '.$this->prenom;
+        
+        return $NomPrenom;        
+    }
+    
+    
 }

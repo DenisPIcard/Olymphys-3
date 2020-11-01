@@ -64,6 +64,8 @@ class PhotosController extends  AbstractController
             
         }
     
+        
+        
       /**
          *  @IsGranted("ROLE_ORGACIA")
          * 
@@ -88,7 +90,8 @@ class PhotosController extends  AbstractController
            
              $Photos = new Photos($this->session);
              //$Photos->setSession($session);
-             $form = $this->createForm(PhotosType::class, null);
+             $form = $this->createForm(PhotosType::class, null,['concours'=>$concours]);
+             
               $form->handleRequest($request);
            
             if ($form->isSubmitted() && $form->isValid()) {

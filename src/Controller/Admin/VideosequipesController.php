@@ -5,6 +5,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType ;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -20,7 +21,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
 class VideosequipesController extends EasyAdminController
-{   
+{   public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+            
+        }
     protected function createFiltersForm(string $entityName): FormInterface
     { 
         $form = parent::createFiltersForm($entityName);
@@ -67,7 +72,8 @@ class VideosequipesController extends EasyAdminController
         
     }
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
-          
+          $edition= $this->session->get('edition');
+         $this->session->set('edition_titre',$edition->getEd());
         
         $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);

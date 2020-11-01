@@ -28,12 +28,11 @@ class PhotosType extends AbstractType
         {
             $this->session = $session;
         }
-    
-    
-    
+   
     public function buildForm(FormBuilderInterface $builder, array $options)
-    {    $concours=$this->session->get('concours');
-         if( $concours=='interacadémique' ){
+    {   
+         
+         if( $options['concours']=='inter' ){
         $builder->add('equipe',EntityType::class,[
                                        'class' => 'App:Equipesadmin',
                                        'query_builder'=>function (EntityRepository $ea) {
@@ -54,18 +53,18 @@ class PhotosType extends AbstractType
                                           ])
                                      ->add('Valider', SubmitType::class);
          }
-          if( $concours=='national' ){
+          if( $options['concours']=='cn' ){
         $builder->add('equipe',EntityType::class,[
                                        'class' => 'App:Equipesadmin',
                                        'query_builder'=>function (EntityRepository $ea) {
                                                         return $ea->createQueryBuilder('e')
                                                                 ->andWhere('e.edition =:edition')
                                                                 ->setParameter('edition',$this->session->get('edition'))
-                                                                ->andWhere('e.selectionnee =: selectionnee')
+                                                                ->andWhere('e.selectionnee =:selectionnee')
                                                                 ->setParameter('selectionnee', 'TRUE')
                                                                  ->addOrderBy('e.lettre', 'ASC');
                                                                                                },
-                                        'choice_label'=>'getInfoequipe',
+                                        'choice_label'=>'getInfoequipenat',
                                         'label' => 'Choisir une équipe .',
                                          'mapped'=>false
                                          ])
@@ -74,13 +73,10 @@ class PhotosType extends AbstractType
                                         'mapped' => false,
                                        'required' => false,
                                         'multiple'=>true,
-                                          ]);
+                                          ])
+                                       ->add('Valider', SubmitType::class);;
           }   
-         
-         
-         
-         
-    }
+       }
     
     
      /**
@@ -88,7 +84,8 @@ class PhotosType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => null,
-        ]);
+        $resolver->setDefaults(['data_class' => null, 'concours' => '',
+        ]); 
+        $resolver->setAllowedTypes('concours', 'string');
     }
 }

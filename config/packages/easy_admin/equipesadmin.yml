@@ -4,6 +4,8 @@ easy_admin :
             class : App\Entity\Equipesadmin
             label : '<h2> Les équipes des CIA</h2>'
             controller: App\Controller\Admin\EquipesadminController 
+            templates:
+                        list: 'Admin/customizations/list_equipescia.html.twig'
             list : 
                 filters : 
                     

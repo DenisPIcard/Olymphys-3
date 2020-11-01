@@ -227,7 +227,7 @@ public function choix_equipe(Request $request,$choix) {
    if ($dateconnect>$datelimcia) {
         $phase='national';
    }
-    if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datelimcia)) {
+    if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datecia)) {
         $phase= 'interacadémique';
     }
              
@@ -327,16 +327,19 @@ public function choix_equipe(Request $request,$choix) {
                                          return $this->redirectToRoute('core_home');
                                           }
                                        }
-if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
+if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$choix=='autorisation_photos'){
+                                         
                                           if ($phase=='interacadémique')     {
                                          $liste_equipes=$qb3->getQuery()->getResult();    
+                                        
                                           }
 
-                                         if ($dateconnect>$datelimcia) {
+                                         if ($dateconnect>$datecia) {
                                              $qb3->andWhere('t.selectionnee=:selectionnee')
                                                      ->setParameter('selectionnee', TRUE)
                                                      ->orderBy('t.lettre', 'ASC');                                                    
                                             $liste_equipes=$qb3->getQuery()->getResult();     
+                                            
                                          }
 
                                          if($liste_equipes!=null) {
@@ -357,7 +360,7 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                              }
    }
    
-  if (($choix=='deposer') ||($choix=='diaporama_jury')||$choix=='autorisation_photos') {//pour le dépôt des fichiers autres que les présentations
+  if (($choix=='deposer') ||($choix=='diaporama_jury')) {//pour le dépôt des fichiers autres que les présentations
       
                                             if ($role=='ROLE_PROF') {
                                                 
@@ -395,7 +398,8 @@ if (($choix=='liste_prof') || ($choix=='video' || ($choix=='liste_video'))){
                                              $liste_equipes=$qb3->getQuery()->getResult();   
                                          }
                                        }
-                                           if(isset($liste_equipes)) {
+                                       
+                                           if($liste_equipes!=null) {
 
                                              $content = $this
                                                       ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -521,13 +525,13 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
     $id_equipe=$info[2];
     $num_type_fichier=$info[1];
     $id_fichier=$info[3];
-    
+  
      if ($num_type_fichier==6){
           $id_user=$info[4];
      
                        if ($id_equipe!='prof'){
                         
-                             $user=$repositoryEleves->find(['id'=>$id_user]);
+                             $citoyen=$repositoryEleves->find(['id'=>$id_user]);
                              $Equipe_choisie=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
                              $lettre_equipe= $Equipe_choisie->getLettre();//on charge la lettre de l'équipe 
                                 if(!$lettre_equipe){                                     // si la lettre n'est pas attribuée on est en phase interac
@@ -538,7 +542,7 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                              
                          }
                        else{
-                           $user=$repositoryUser->find(['id'=>$id_user]);
+                           $citoyen=$repositoryUser->find(['id'=>$id_user]);
                            $Equipe_choisie='prof';
                        }
      }
@@ -577,11 +581,8 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                     $file = new UploadedFile($this->getParameter('app.path.tempdirectory').'/'.$nom_fichier, $nom_fichier,null,null,true);
                    
                      if ($num_type_fichier==6){
-                         $user->setAutorisationphotos(null);
-                          $em->remove($Fichier);
-                    $em->flush();
-                         $Fichier = new Fichiersequipes();
-                      $Fichier->setFichier($user->getNom().'-'.$user->getPrenom());
+                         
+                      $Fichier->setNomautorisation($citoyen->getNom().'-'.$citoyen->getPrenom());
                       
                              }
                      
@@ -598,8 +599,8 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                     
                      if ($num_type_fichier==6){
                         
-                             $user->setAutorisationphotos($Fichier);
-                             $em->persist($user);
+                             $citoyen->setAutorisationphotos($Fichier);
+                             $em->persist($citoyen);
                             $em->flush();                             
                          }    
                    $nom_fichier_uploaded=$Fichier->getFichier();
@@ -664,15 +665,15 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
     $choix= $info[2];
     
     if (count($info)==4){
-     $id_user= $info[3];
+     $id_citoyen= $info[3];
         
          if ($id_equipe !='prof'){
-                $user=$repositoryEleve->find(['id'=>$id_user]);
+                $citoyen=$repositoryEleve->find(['id'=>$id_citoyen]);
                 $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
 
            }
            else {
-             $user = $repositoryUser->find(['id'=>$id_user]);
+             $citoyen = $repositoryUser->find(['id'=>$id_citoyen]);
                }
       }
     
@@ -702,7 +703,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
         }
       }
       else{
-          $donnees_equipe= $user->getPrenom().' '.$user->getNom();
+          $donnees_equipe= $citoyen->getPrenom().' '.$citoyen->getNom();
           
           
       }
@@ -916,7 +917,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                     ->getQuery()->getResult();
            }
            if ($num_type_fichier==6){
-            $Fichiers=$user->getAutorisationphotos();
+            $Fichiers=$citoyen->getAutorisationphotos();
            
            }
                  
@@ -939,7 +940,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     $id_fichier=$Fichiers->getId();
                   
                    
-                    return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier.'::'.$id_user,$mailer));
+                    return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier.'::'.$id_citoyen,$mailer));
                 } }
                 }
                   if (!$Fichiers){
@@ -958,16 +959,22 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                           $fichier->setNational(1);
                            }
                             if ($num_type_fichier==6){
-                           $fichier->setFichier($user->getNom().'-'.$user->getPrenom());
+                           $fichier->setNomautorisation($citoyen->getNom().'-'.$citoyen->getPrenom());
+                            if ($id_equipe !='prof'){
+                                $fichier->setEleve($citoyen);
+                              }
+                              else{
+                                  $fichier->setProf($citoyen);
+                                                                }
                             }
                           $fichier->setFichierFile($file);
                           $em->persist($fichier);
                             $em->flush();
                              if ($num_type_fichier==6){
                                
-                             $user->setAutorisationphotos($fichier);
-                             $em->persist($user);
-                            $em->flush();                             
+                             $citoyen->setAutorisationphotos($fichier);
+                             $em->persist($citoyen);
+                             $em->flush();                             
                          }    
                             $nom_fichier = $fichier->getFichier();
                      
@@ -997,7 +1004,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
     
             if ($choix == 'autorisation_photos'){
                  $content = $this
-                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe,'eleve'=>$user, 'choix'=>$choix));
+                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe,'citoyen'=>$citoyen, 'choix'=>$choix));
             }
             else {
              $content = $this
@@ -1099,7 +1106,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     $repositoryEquipesadmin= $this->getDoctrine()
                                   ->getManager()
                                   ->getRepository('App:Equipesadmin');
-    
+     $repositoryUser= $this->getDoctrine()
+                                  ->getManager()
+                                  ->getRepository('App:User');
       $repositoryEdition= $this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:Edition');
@@ -1146,9 +1155,18 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->setParameter('type', 4)
                              ->andWhere('t.national =:national')
                              ->setParameter('national', TRUE) ;
-    $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')//Les  autorisations photos uniquement
+    
+    $liste_prof[1]= $repositoryUser->find(['id'=>$equipe_choisie->getIdProf1()]) ;
+   if (null!=$equipe_choisie->getIdProf2()){
+   $liste_prof[2]=$repositoryUser->find(['id'=>$equipe_choisie->getIdProf2()]) ;
+      }
+      
+      $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')//Les  autorisations photos uniquement
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
+                             ->orWhere('e.idProf1 >:valeur')
+                             ->orWhere('e.idProf2 >:valeur')
+                             ->setParameter('valeur',NULL)
                               ->andWhere('e.edition =:edition')
                              ->setParameter('edition', $edition)
                              ->setParameter('id_equipe', $id_equipe)
@@ -1160,11 +1178,14 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
       if(($role=='ROLE_PROF') or($role=='ROLE_ORGACIA') or ($role=='ROLE_COMITE') or ($role=='ROLE_SUPER_ADMIN')) {               
         $liste_fichiers=$qb1->getQuery()->getResult();    
         $autorisations=$qb4->getQuery()->getResult();
+        
+        //dd($autorisations);
       }
        if ($role=='ROLE_JURYCIA'){         
            $qb1->andWhere('t.typefichier <:type')
                    ->setParameter('type', 4);
-        $liste_fichiers=$qb1->getQuery()->getResult();    
+        $liste_fichiers=$qb1->getQuery()->getResult();
+        $autorisations=[];
       } 
     if($role=='ROLE_JURY'){
          $liste_fichiers=$qb3->getQuery()->getResult();    
@@ -1274,32 +1295,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
           if($autorisations==null) {
              $autorisations=[];
          }
-        
-         
-       /*  
-        if((isset($formtab)) and ($listevideos!=null)){
-            $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
-                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
-                                            ); 
-            return new Response($content); 
-            }
-          if((!isset($formtab)) and ($listevideos!=null)){
-            $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array( 'listevideos'=>$listevideos,
-                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
-                                            ); 
-            return new Response($content); 
-            }   
-            
-          if((isset($formtab)) and ($listevideos==null)){
-            $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 
-                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
-                                            ); 
-            return new Response($content); 
-            }
-            */
+       
         if(($formtab==null) and ($listevideos==null) and ($autorisations==null)){
          
                 if ($role=='ROLE_PROF'){
@@ -1310,7 +1306,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                     $request->getSession()
                     ->getFlashBag()
                     ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$num_equipe) ;
-                     return $this->redirectToRoute('core_home');   }
+                     return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'liste_prof'));   }
                 
                  if ($role=='ROLE_COMITE' || $role=='ROLE_SUPER_ADMIN' || $role=='ROLE_JURY'){
                      if ($concours=='interacadémique'){
@@ -1343,7 +1339,8 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
             
              $content = $this
                           ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
-                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role)
+                                                        'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role,
+                                                         'liste_prof'=>$liste_prof)
                                             ); 
             return new Response($content); 
             

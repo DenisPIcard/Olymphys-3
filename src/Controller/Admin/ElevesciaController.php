@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Elevesinter;
@@ -18,7 +19,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
 class ElevesciaController extends EasyAdminController
-{   
+{    public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+            
+        }
     
     protected function createFiltersForm(string $entityName): FormInterface
     { 
@@ -36,7 +41,8 @@ class ElevesciaController extends EasyAdminController
                          'class' => Equipesadmin::class,
                          'query_builder' => function (EntityRepository $er) {
                                          return $er->createQueryBuilder('u')
-                                                         ->orderBy('u.numero', 'ASC');
+                                                        ->addOrderBy('u.edition','DESC')
+                                                         ->addOrderBy('u.numero', 'ASC');
 
                                                   },
                         'choice_label' => function($equipe){return $equipe->getInfoequipe();},
@@ -47,7 +53,8 @@ class ElevesciaController extends EasyAdminController
    
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
            $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+            $edition= $this->session->get('edition');
+                 // $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $em->createQueryBuilder()

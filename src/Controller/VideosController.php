@@ -91,9 +91,19 @@ public function liens_videos(Request $request, $infos){
         $em->flush();
         return $this->redirectToRoute('videos_liste_videos',['infos'=>$infos]);
                 }
-   
+    
+                $qb=$repositoryVideosequipes->createQueryBuilder('v')
+                                                     ->where('v.equipe =:equipe')
+                                                     ->setParameter('equipe',$equipe)
+                                                     ->orderBy('v.nom','ASC');
+      $liste_videos=$qb->getQuery()->getResult();
+     
+      if ($liste_videos===null){
+          $liste_videos=[];
+          
+      }
     return $this->render('adminfichiers/liens_videos.html.twig', [
-            'form' => $form->createView(),'donnees_equipe'=>$donnees_equipe,'choix'=>$choix
+            'form' => $form->createView(),'donnees_equipe'=>$donnees_equipe,'choix'=>$choix, 'liste_videos'=>$liste_videos
         ]);
     }
 /**

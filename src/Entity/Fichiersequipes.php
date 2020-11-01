@@ -16,6 +16,7 @@ use App\Service\FileUploader;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Naming\NamerInterface;
 use Vich\UploaderBundle\Naming\PropertyNamer;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 /**
  * Memoires
  * @Vich\Uploadable
@@ -41,7 +42,7 @@ class Fichiersequipes //extends BaseMedia
        /**
        *  
        * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
-       * @ORM\JoinColumn(name="edition_id",  referencedColumnName="id" )
+       * @ORM\JoinColumn(name="edition_id",  referencedColumnName="id", nullable=true)
        */
       private $edition;
       /**
@@ -92,7 +93,32 @@ class Fichiersequipes //extends BaseMedia
        */
     private $updatedAt;
     
+    /**
+       * 
+       * 
+       * @ORM\OneToOne(targetEntity="App\Entity\Elevesinter")
+       * @ORM\JoinColumn(name="eleve_id",  referencedColumnName="id", nullable=true )
+       */
+    private $eleve;
     
+    /**
+       * 
+       * 
+       * @ORM\OneToOne(targetEntity="App\Entity\User")
+       * @ORM\JoinColumn(name="user_id",  referencedColumnName="id", nullable=true )
+       */
+    private $prof;
+    
+     /**
+       * 
+       * 
+       *@ORM\Column(type="string", length=255,  nullable=true)
+       * @var string
+       */
+    private $nomautorisation;
+    
+   
+   
     
     
       public function getEdition()
@@ -122,16 +148,24 @@ class Fichiersequipes //extends BaseMedia
         if ($fichier) {
             // if 'updatedAt' is not defined in your entity, use another property
             $this->updatedAt = new \DateTime('now');
-       
-        return $this;
         }
+        if ($this->typefichier==6){
+            $citoyen=$this->getEleve();
+            if (!$citoyen){
+                $citoyen=$this->getProf();              
+            }
+          
+           $citoyen->setAutorisationphotos($this);
+            
+        }
+        return $this;
     }
 
     public function setFichierFile(File $fichierFile = null)
             
     {  
        
-        $nom=$this->getFichier();
+        //$nom=$this->getFichier();
     
         $this->fichierFile=$fichierFile;
        if($this->fichierFile instanceof UploadedFile){
@@ -140,7 +174,7 @@ class Fichiersequipes //extends BaseMedia
         // VERY IMPORTANT:
         // It is required that at least one field changes if you are using Doctrine,
         // otherwise the event listeners won't be called and the file is lost
-        $this->fichier=$nom;
+        //$this->fichier=$nom;
        
     }
     
@@ -159,7 +193,16 @@ class Fichiersequipes //extends BaseMedia
         $this->equipe = $equipe;
         return $this;
     }
-    
+    public function getNomautorisation()
+    {
+        return $this->nomautorisation;
+    }
+
+    public function setNomautorisation($nom)
+    {
+        $this->nomautorisation = $nom;
+        return $this;
+    }
 
     
 public function personalNamer()    //permet à easyadmin de renonnmer le fichier, ne peut pas être utilisé directement
@@ -222,10 +265,8 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
             }
           
             if ($this->getTypefichier()==6){
-              $nom=$this->fichier;
-                
-           
-       
+              $nom=$this->getNomautorisation();
+                 
             
             $fileName=$edition.'-eq-'.$libel_equipe.'-autorisation photos-'.$nom.'-'.uniqid();
             }
@@ -312,6 +353,26 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
           return $path;
          
      }
+     
+     public function getEleve()
+   {
+       return $this->eleve;
+   }
+    public function setEleve($eleve)
+   {
+      $this->eleve=$eleve;
+   }
+    public function getProf()
+   {
+       return $this->prof;
+   }
+    public function setProf($prof)
+   {
+      $this->prof=$prof;
+   } 
+     
+     
+     
       public function getInfoequipenat()
     {   
         if ($this->getEquipe()->getSelectionnee()==TRUE){

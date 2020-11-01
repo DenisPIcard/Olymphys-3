@@ -5,7 +5,8 @@ easy_admin :
              
              class : App\Entity\Fichiersequipes
              controller: App\Controller\Admin\FichiersequipesController 
-            
+             templates:
+                        list: 'Admin/customizations/list_fiches_secur.html.twig' 
              
              list :
                   max_results: 50

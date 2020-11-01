@@ -26,10 +26,7 @@ class Edition
      */
     private $date;
 
-    /**
-     * @ORM\Column(type="integer",  nullable=true)
-     */
-    private $edition;
+   
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -72,7 +69,7 @@ class Edition
         *  @ORM\Column(name="concours_cn", type="date",nullable=true)
         */    
         protected $concourscn;
-    
+   
        
 
     public function getId(): ?int
@@ -104,17 +101,7 @@ class Edition
         return $this;
     }
 
-    public function getEdition(): ?int
-    {
-        return $this->edition;
-    }
-
-    public function setEdition(int $edition): self
-    {
-        $this->edition = $edition;
-
-        return $this;
-    }
+   
 
     public function getVille(): ?string
     {

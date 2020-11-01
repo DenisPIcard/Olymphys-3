@@ -203,7 +203,7 @@ class AdminController extends EasyAdminController
     public function telechargerBatchAction(array $ids)
     {
         $class = $this->entity['class'];
-        
+       
         $repository = $this->getDoctrine()->getRepository($class);
         $zipFile = new \ZipArchive();
          if ($class==Fichessecur::class) { 
@@ -219,7 +219,9 @@ class AdminController extends EasyAdminController
         if ($class==Photosinter::class) { 
             $FileName= 'photos'.date('now');
         }
-        
+         if ($class==Fichiersequipesautorisarions::class) { 
+            $FileName= 'autorisationsphotos'.date('now');
+        }
         
         if ($zipFile->open($FileName, ZipArchive::CREATE) === TRUE)
         {
@@ -237,6 +239,8 @@ class AdminController extends EasyAdminController
                     $fichier=$this->getParameter('repertoire_resumes').'/'.$entity->getResume();}
                     if ($class==Photosinter::class) {
                     $fichier=$this->getParameter('repertoire_photosinter').'/'.$entity->getPhoto();}
+                     if ($class==Fichiersequipesautorisations::class) {
+                    $fichier=$this->getParameter('app.path.fichiers ').'/autorisations/'.$entity->getFichier();}
                     //$nom_memoire=$entity->getMemoire();
                     //$filenameFallback = iconv('UTF-8','ASCII//TRANSLIT',$nom_memoire);
                     $zipFile->addFromString(basename($fichier),  file_get_contents($fichier));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
@@ -271,10 +275,7 @@ class AdminController extends EasyAdminController
         {
          
            $repositoryElevesinter = $this->getDoctrine()->getRepository('App:Elevesinter');
-           $repositoryEquipesadmin = $this->getDoctrine()->getRepository('App:Equipesadmin');
-          $repositoryFichessecur = $this->getDoctrine()->getRepository('App:Fichessecur');
-           $repositoryMemoiresinter = $this->getDoctrine()->getRepository('App:Memoiresinter');
-           $repositoryResumes = $this->getDoctrine()->getRepository('App:Resumes');
+           
            $id = $this->request->query->get('id');
           $equipe = $repositoryEquipesadmin->find($id);
           $equipe->setCentre(null);
@@ -287,29 +288,6 @@ class AdminController extends EasyAdminController
                    
                }
            }
-           $fichessecur= $repositoryFichessecur->findOneBy(['equipe'=>$equipe]);
-           if($fichessecur){
-               $fichessecur->setEquipe(null);
-              $entityManager->remove($fichessecur);
-               $entityManager->flush();
-           }
-             $memoires= $repositoryMemoiresinter->findByEquipe(['equipe'=>$equipe]);
-             
-             
-           if($memoires){
-               foreach($memoires as $memoire)
-              
-              $memoire->setEquipe(null);
-              $entityManager->remove($memoire);
-               $entityManager->flush();
-          }        
-           $resume= $repositoryResumes->findOneByEquipe(['equipe'=>$equipe]);
-           if($resume){
-               $resume->setEquipe(null);
-              $entityManager->remove($resume);
-               $entityManager->flush();
-        
-          }
         }
         if ($class== 'App\Entity\Centrescia')
         {
@@ -355,6 +333,44 @@ class AdminController extends EasyAdminController
             
             
         }
+        
+         if ($class=='App\Entity\Fichiersequipes'){
+            $repositoryFichiers=$this->getDoctrine()->getRepository(Fichiersequipes::class);
+            $id= $this->request->query->get('id');
+            dd($this->entity);
+            $fichier= $repositoryFichiers->find(['id'=>$id]);
+            $repositoryEleves = $this->getDoctrine()->getRepository(Elevesinter::class);
+            $repositoryUser = $this->getDoctrine()->getRepository(User::class);
+            if($fichier->getTypefichier()==6)
+            $eleve=$repositoryEleves->findOneByAutorisationphotos(['autorisationphotos'=>$fichier]);
+                $prof= $repositoryUser->findOneByAutorisationphotos(['autorisationphotos'=>$this->entity]);
+                dump($eleve);
+                dd($prof);
+                if (($eleve) and (!$prof)){
+                $eleve->setAutorisationphotos(null);
+                $entityManager->persist($eleve);
+                
+               $this->entityr->setEquipe(null);   
+                 }
+                   if ((!$eleve) and ($prof)){
+                $prof->setAutorisationphotos(null);
+                $entityManager->persist($prof);
+                              
+                 }
+                $this->entity->setEdition(null);
+                $entityManager->remove($this->entity);
+                $entityManager->flush();
+            
+            
+        }
+        
+        
+        
+        
+        
+        
+        
+        
       return parent::deleteAction();
     }
     

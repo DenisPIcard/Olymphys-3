@@ -160,8 +160,8 @@ class User implements UserInterface, \Serializable
    
     /**
        *  
-       * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes")
-       * @ORM\JoinColumn( referencedColumnName="id" )
+       * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes", cascade={"persist"})
+       * @ORM\JoinColumn( referencedColumnName="id", )
        */
      private $autorisationphotos;
      
@@ -611,5 +611,9 @@ class User implements UserInterface, \Serializable
 
         return $this;
     }
-    
+    public function getNomPrenom()
+    {
+        return $this->nom.' '.$this->prenom;
+        
+    }
 }

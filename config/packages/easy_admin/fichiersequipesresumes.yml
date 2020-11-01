@@ -31,19 +31,18 @@ easy_admin :
              edit :
                   title: ' Les fichiers sont automatiquement renommés' 
                   fields :
-                         
-                      
-                      - { type: 'group', columns: 6, label: '<font color="red" > Choisir l''équipe </font> ' } 
-                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin',query_builder : 'App\Repository\EquipesadminRepository::getEquipeDeposeMemoiresInter', 'choice_label' : 'getInfoequipe'}}
+                      - { type: 'group', columns: 6, label: '<font color="red" > Modifier le résumé </font> ' } 
+                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin',query_builder : 'App\Repository\EquipesadminRepository::getEquipe', 'choice_label' : 'getInfoequipe'}}
+                     
                       - { property : 'fichierFile', label: Choisir le résumé',  type : 'vich_file',  type_options : {'allow_delete' : false}}
                           
                  
              new :
                   title : ' Les fichiers sont automatiquement renommés '
                   fields: 
-                      - { type: 'group', columns: 6, label: '<font color="red" > Choisir le fichier à déposer </font> ' } 
-                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin', query_builder : 'App\Repository\EquipesadminRepository::getEquipeDeposeMemoiresInter', 'choice_label' : 'getInfoequipe'}}
-                      - { property : 'typefichier', type : 'hidden', type_options :{ data : '2'}}
-                      - { property : 'fichierFile', label: 'Résumé',  type : 'vich_file',  type_options : {}}
-                       
+                      - { type: 'group', columns: 6, label: '<font color="red" > Déposer un nouvau résumé </font> ' } 
+                      - { property : 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin',query_builder : 'App\Repository\EquipesadminRepository::getEquipe', 'choice_label' : 'getInfoequipe'}}
+                     
+                      - { property : 'fichierFile', label: Choisir le résumé',  type : 'vich_file',  type_options : {'allow_delete' : false}}
+                      
     
