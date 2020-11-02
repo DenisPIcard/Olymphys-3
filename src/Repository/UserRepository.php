@@ -36,32 +36,15 @@ class UserRepository extends ServiceEntityRepository
        //dd($qb1);
           return $qb1;
      }               
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+    public function getProfesseur(UserRepository $er): QueryBuilder//Liste des prof sans autorisation photos
+     {   
+         
+         $qb=$er->createQueryBuilder('p');
+          $qb1 =$er->createQueryBuilder('u')
+                  ->andWhere($qb->expr()->like('u.roles',':roles'))
+                  ->setParameter('roles','%i:0;s:9:"ROLE_PROF";i:2;s:9:"ROLE_USER";%')
+                  ->addOrderBy('u.nom','ASC');
+       //dd($qb1);
+          return $qb1;
+     }            
 }

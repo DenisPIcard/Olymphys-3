@@ -5,7 +5,7 @@ easy_admin :
             label : 'Utilisateurs'
             list :
                 permission: 'ROLE_SUPER_ADMIN'
-                fields : ['email', 'roles',{ property: 'is_active',  type: 'boolean' }]
+                fields : ['email', 'roles',{ property: 'is_active',  type: 'boolean' }, 'nomPrenom', 'username']
             
                 #form:  # <-- 'form' is applied to both 'new' and 'edit' views
             new :
@@ -13,7 +13,10 @@ easy_admin :
                       - 'email'
                       - { property: 'roles', type: 'choice',type_options: { multiple: true, choices:{ 'ROLE_SUPER_ADMIN':'ROLE_SUPER_ADMIN','ROLE_ADMIN':'ROLE_ADMIN','ROLE_PROF': 'ROLE_PROF', 'ROLE_COMITE': 'ROLE_COMITE', 'ROLE_JURY': 'ROLE_JURY', 'ROLE_ORGACIA':'ROLE_ORGACIA', 'ROLE_JURYCIA':'ROLE_JURYCIA'} } }
                       - { property: 'password', type : 'password',}
-                      - { property : 'centre', type: 'entity' , type_options : { class : 'App\Entity\Centrescia', query_builder : 'App\Repository\CentresciaRepository::getCentres', 'choice_label' : 'getCentre'}}
+                      - 'nom'
+                      - 'prenom'
+                      - 'rne'
+                      
                       
             password_encoding: { algorithm: 'auto' }
              
@@ -22,5 +25,4 @@ easy_admin :
                        - 'email'
                        - { property: 'roles',required: false, type: 'choice', type_options: { multiple: true, choices: { 'ROLE_SUPER_ADMIN':'ROLE_SUPER_ADMIN', 'ROLE_ADMIN':'ROLE_ADMIN', 'ROLE_PROF' : 'ROLE_PROF',  'ROLE_COMITE': 'ROLE_COMITE' , 'ROLE_JURY': 'ROLE_JURY', 'ROLE_ORGACIA':'ROLE_ORGACIA', 'ROLE_JURYCIA':'ROLE_JURYCIA'} } }
                        - { property: 'is_active', type: 'checkbox'}
-                       - { property : 'centre', type: 'entity' , type_options : { class : 'App\Entity\Centrescia', query_builder : 'App\Repository\CentresciaRepository::getCentres', 'choice_label' : 'getCentre'}}
-            
+                       - { property : 'nomPrenom'}

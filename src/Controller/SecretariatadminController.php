@@ -379,7 +379,7 @@ class SecretariatadminController extends AbstractController
                         $nomProf2 = $worksheet->getCellByColumnAndRow(25, $row)->getValue();
                         $equipe->setNomProf2($nomProf2) ;
                         $rneid=$repositoryRne->findOneBy(['rne'=>$rne]);
-                        //dd($rneid);
+                        
                         $equipe->setRneId($rneid);
                         
                         $repositoryUser= $this->getDoctrine()
@@ -480,21 +480,23 @@ class SecretariatadminController extends AbstractController
                         $value = $worksheet->getCellByColumnAndRow(6, $row)->getValue();//email
                         $user->setEmail($value);
                        
-                        $value = $worksheet->getCellByColumnAndRow(8, $row)->getValue(); //password request at
+                        $value = $worksheet->getCellByColumnAndRow(7, $row)->getValue(); //password request at
                         $user->setPasswordRequestedAt($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //rne
+                       
+                        $value = $worksheet->getCellByColumnAndRow(8, $row)->getValue(); //rne
+                        
                         $user->setrne($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue(); //adresse
+                        $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //adresse
                         $user->setAdresse($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue(); //ville
+                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue(); //ville
                         $user->setVille($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue();//code
+                        $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue();//code
                         $user->setCode($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(13, $row)->getValue(); //nom
+                        $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue(); //nom
                         $user->setNom($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//prenom
+                        $value = $worksheet->getCellByColumnAndRow(13, $row)->getValue();//prenom
                         $user->setPrenom($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(15, $row)->getValue();//phone
+                        $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//phone
                         $user->setPhone($value) ;
                         $errors = $this->validator->validate($user);
                         if (count($errors) > 0) {
