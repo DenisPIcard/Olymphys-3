@@ -433,7 +433,7 @@ class SecretariatadminController extends AbstractController
          */
         
         
-        public function charge_user(Request $request)
+        public function charge_user(Request $request, ValidatorInterface $validator)
         {
              $defaultData = ['message' => 'Charger le fichier '];
             $form = $this->createFormBuilder($defaultData)
@@ -464,7 +464,7 @@ class SecretariatadminController extends AbstractController
                    $value = $worksheet->getCellByColumnAndRow(2, $row)->getValue();//on récupère le username
                    $username=$value;
                    $user=$repositoryUser->findOneByUsername($username);
-                   if(!$user){
+                   if($user==null){
                    $user= new user(); 
                    
                             } //si l'user n'est pas existant on le crée sinon on écrase les anciennes valeurs pour une mise à jour 
@@ -498,11 +498,13 @@ class SecretariatadminController extends AbstractController
                         $user->setPrenom($value) ;
                         $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//phone
                         $user->setPhone($value) ;
-                        $errors = $this->validator->validate($user);
+                       
+                       
+                        /*$errors = $this->validator->validate($user);
                         if (count($errors) > 0) {
                                     $errorsString = (string) $errors;
                                     throw new \Exception($errorsString);
-                                }
+                                }*/
                         $em->persist($user);
 
 

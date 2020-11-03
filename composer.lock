@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c03e1a0fd7875d5b37a8d5337f401c03",
+    "content-hash": "39511f70e69f6bea1e9e4ff0fd621ab8",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1217,6 +1217,7 @@
                 "reflection",
                 "static"
             ],
+            "abandoned": "roave/better-reflection",
             "time": "2020-10-27T21:46:55+00:00"
         },
         {
@@ -1355,6 +1356,12 @@
                 "admin",
                 "backend",
                 "generator"
+            ],
+            "funding": [
+                {
+                    "url": "https://github.com/javiereguiluz",
+                    "type": "github"
+                }
             ],
             "time": "2020-10-30T09:44:28+00:00"
         },
@@ -7991,6 +7998,7 @@
                 "faker",
                 "fixtures"
             ],
+            "abandoned": true,
             "time": "2019-12-12T13:22:17+00:00"
         },
         {
