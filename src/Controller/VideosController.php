@@ -54,9 +54,19 @@ public function liens_videos(Request $request, $infos){
     $choix=$Infos[2];
     if ($choix=='modifier'){
     $id_video=$Infos[3];
-    $videoequipe=$repositoryVideosequipes->find(['id'=>$id_video]);
+    $videoequipe=$repositoryVideosequipes->find(['id'=>intval($id_video)]);
     }
-   $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
+    if ($choix !='modifier'){
+    $videoequipe= new Videosequipes();
+   }
+     if (count($Infos)==5){
+        $request->getSession()
+                    ->getFlashBag()
+                    ->add('alert',  $Infos[4]);
+         $infos=$Infos[0].'-'.$Infos[1].'-'.$Infos[2].'-'.$Infos[3];
+       }
+   
+   $equipe= $repositoryEquipesadmin->find(['id'=>intval($id_equipe)]);
    
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
     $nom_equipe=$equipe->getTitreProjet();
@@ -68,9 +78,7 @@ public function liens_videos(Request $request, $infos){
         $nom_equipe=$equipe->getTitreProjet();
         $donnees_equipe=$numero_equipe.' - '.$nom_equipe;
         }
-   if ($choix !='modifier'){
-    $videoequipe= new Videosequipes();
-   }
+   
    
     $form = $this->createFormBuilder($videoequipe)
            
@@ -82,9 +90,20 @@ public function liens_videos(Request $request, $infos){
     if ($form->isSubmitted() && $form->isValid()) 
                 { 
         $em=$this->getDoctrine()->getManager();
-         $lien=$form->get('lien')->getData();
+         $url=$form->get('lien')->getData();
+        
+         $file_headers = @get_headers($url);
+       
+          if(($file_headers==false ) || ($file_headers[9] != 'Server: YouTube Frontend Proxy')|| (count($file_headers) >17)){          //  'HTTP/1.1 404 Not Found'){
+            
+              $infos=$infos.'-'.'Le lien saisi n\'est pas valide';
+              
+            return $this->redirectToRoute('videos_liens_videos',['infos'=>$infos])
+        ;
+          }
+         
          $nom=$form->get('nom')->getData();
-        $videoequipe->setLien($lien);
+        $videoequipe->setLien($url);
         $videoequipe->setNom($nom);
         $videoequipe->setEquipe($equipe);
         $em->persist($videoequipe);
@@ -128,6 +147,9 @@ public function liens_videos(Request $request, $infos){
     $id_equipe=$Infos[0];
     $concours=$Infos[1];
     $choix=$Infos[2];
+   
+    
+    
      $equipe= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
       $qb=$repositoryVideosequipes->createQueryBuilder('v')
                                                      ->where('v.equipe =:equipe')
@@ -253,7 +275,7 @@ public function liens_videos(Request $request, $infos){
                 }
             $request->getSession()
                     ->getFlashBag()
-                    ->add('info', $avertissement.' Cette opération est défintive, sans possibilité de récupération.') ;
+                    ->add('info', $avertissement.' Cette opération est définitive, sans possibilité de récupération.') ;
             $content = $this
                             ->renderView('adminfichiers\confirm_supr_video.html.twig', array(
                                                     'form'=>$form3->createView(), 
