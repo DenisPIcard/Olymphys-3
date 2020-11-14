@@ -67,7 +67,7 @@ class PhotosController extends  AbstractController
         
         
       /**
-         *  @IsGranted("ROLE_ORGACIA")
+         *  @IsGranted("ROLE_PROF")
          * 
          * @Route("/photos/deposephotos,{concours}", name="photos_deposephotos")
          * 
@@ -86,11 +86,14 @@ class PhotosController extends  AbstractController
             
             $edition = $this->session->get('edition');
             $edition=$em->merge($edition);
-           
+           $user = $this->getUser();
+            $id_user=$user->getId(); 
+           $roles=$user->getRoles();
+            $role=$roles[0];
            
              $Photos = new Photos($this->session);
              //$Photos->setSession($session);
-             $form = $this->createForm(PhotosType::class, null,['concours'=>$concours]);
+             $form = $this->createForm(PhotosType::class, null,['concours'=>$concours, 'role'=>$role, 'id'=>$id_user]);
              
               $form->handleRequest($request);
            

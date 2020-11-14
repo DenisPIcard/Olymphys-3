@@ -996,7 +996,15 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     ->text('L\'equipe '. $equipe->getInfoequipe().' a dÃ©posÃ© un fichier : '.$type_fichier);
                    
                 $mailer->send($email);*/
-               // $this->MailConfirmation($mailer,$type_fichier,$equipe);
+                if (isset($equipe)){
+                    
+                   $info_equipe='L\'equipe '. $equipe->getInfoequipe();
+                }
+                else{
+                    
+                     $info_equipe='prof '. $citoyen->getNomPrenom();
+                }
+                $this->MailConfirmation($mailer,$type_fichier,$info_equipe);
                 
                 return $this->redirectToRoute('core_home');     
                 }        
@@ -1014,15 +1022,17 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
  }
  
  
-public function MailConfirmation(MailerInterface $mailer, string $type_fichier, Equipesadmin $equipe){
-     $email=(new Email())
+public function MailConfirmation(MailerInterface $mailer, string $type_fichier, string $info_equipe){
+  
+    $email=(new Email())
                     ->from('info@olymphys.fr')
-                     //->to('alain.jouve@wanadoo.fr')
-                   ->cc('webmestre3@olymphys.fr')
-                   ->to('webmestre2@olymphys.fr')
-                    ->subject('Depot du '.$type_fichier.' de l\'équipe '.$equipe->getInfoequipe())
-                    ->text('L\'equipe "'. $equipe->getInfoequipe().'" a déposé un fichier : '.$type_fichier.'.');
-                   
+                    ->to('alain.jouve@wanadoo.fr')
+                  // ->cc('webmestre3@olymphys.fr')
+                  // ->to('webmestre2@olymphys.fr')
+                 
+                    ->subject('Depot du '.$type_fichier.' de l\'équipe '.$info_equipe)
+                    ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.');
+                  
                 $mailer->send($email);
    
  }

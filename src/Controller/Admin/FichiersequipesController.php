@@ -321,15 +321,17 @@ class FichiersequipesController extends EasyAdminController
                 if($eleve){
                 $eleve->setAutorisationphotos(null);
                 $em->persist($eleve);
+                $em->flush();
                 $fichier->setEquipe(null);
                 $fichier->setEdition(null);
                }
                if(!$eleve){
                  $prof=$repositoryUser->findOneByAutorisationphotos(['autorisationphotos'=>$fichier]);
-                 
+                 if ($prof){
                 $prof->setAutorisationphotos(null);
                 $em->persist($prof);
-                
+                $em->flush();
+                 }
                }
                 $em->remove($fichier);
                 $em->flush();

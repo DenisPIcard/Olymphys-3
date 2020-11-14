@@ -56,6 +56,7 @@ public function liens_videos(Request $request, $infos){
     $id_video=$Infos[3];
     $videoequipe=$repositoryVideosequipes->find(['id'=>intval($id_video)]);
     }
+    
     if ($choix !='modifier'){
     $videoequipe= new Videosequipes();
    }
@@ -92,10 +93,10 @@ public function liens_videos(Request $request, $infos){
         $em=$this->getDoctrine()->getManager();
          $url=$form->get('lien')->getData();
         
-         $file_headers = @get_headers($url);
+         $file_headers = get_headers($url);
        
           if(($file_headers==false ) || ($file_headers[9] != 'Server: YouTube Frontend Proxy')|| (count($file_headers) >17)){          //  'HTTP/1.1 404 Not Found'){
-            
+             //dd($file_headers);
               $infos=$infos.'-'.'Le lien saisi n\'est pas valide';
               
             return $this->redirectToRoute('videos_liens_videos',['infos'=>$infos])

@@ -457,18 +457,21 @@ class SecretariatadminController extends AbstractController
                 $highestRow = $worksheet->getHighestRow();              
  
                 $em = $this->getDoctrine()->getManager();
-                 
+              
                 for ($row = 2; $row <= $highestRow; ++$row) 
                    {                       
-                   
+                  
                    $value = $worksheet->getCellByColumnAndRow(2, $row)->getValue();//on récupère le username
                    $username=$value;
-                   $user=$repositoryUser->findOneByUsername($username);
+                   
+                   if ($username!= null) {
+                       $user=$repositoryUser->findOneByUsername($username);
                    if($user==null){
                    $user= new user(); 
                    
                             } //si l'user n'est pas existant on le crée sinon on écrase les anciennes valeurs pour une mise à jour 
                         $user->setUsername($username) ;
+                        
                         $value = $worksheet->getCellByColumnAndRow(3, $row)->getValue();//on récupère le role
                         ($value);
                         $user->setRoles([$value]);
@@ -509,6 +512,8 @@ class SecretariatadminController extends AbstractController
 
 
                          $em->flush();
+                        }
+                        
                    }
                    
                     return $this->redirectToRoute('core_home');
