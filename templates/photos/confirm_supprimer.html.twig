@@ -19,12 +19,9 @@
      {% for message in app.session.flashbag.get('info') %}
     <div class="alert alert-danger" role="alert"> {{ message }}</div>
   {% endfor %}
-  {% if concours=='cia' %}
-  <img src="{{asset('/upload/images/'~photo.edition.ed~'/int/thumb/'~photo.photo)}}">
-{% endif %}
- {% if concours=='national' %}
-  <img src="{{asset('/upload/images/'~photo.edition.ed~'/nat/thumb/'~photo.photo)}}">
-{% endif %}
+
+  <img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}">
+
   {{ form_start(form) }}  
 
     <div class="form-group row">

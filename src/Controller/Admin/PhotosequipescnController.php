@@ -23,6 +23,7 @@ use App\Entity\Photos;
 use EasyCorp\Bundle\EasyAdminBundle\Mapping\Annotation\Entity;
 use App\Form\Filter\PhotosequipescnFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use Symfony\Component\Filesystem\Filesystem;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
@@ -116,7 +117,15 @@ public function EnregistrerAction() {
         
         
     }
+    public function deleteAction(){
+          $filesystem = new Filesystem();
+     $repositoryPhotoscn=$this->getDoctrine()->getRepository('App:Photos');
+            $id= $this->request->query->get('id');
+            $image= $repositoryPhotoscn->find(['id'=>$id]);
+            $filesystem->remove('/upload/photos/thumbs/'.$image->getPhoto());
+    return parent::deleteAction();
     
+}
     
 }
 

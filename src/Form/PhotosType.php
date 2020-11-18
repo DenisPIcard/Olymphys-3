@@ -31,75 +31,26 @@ class PhotosType extends AbstractType
    
     public function buildForm(FormBuilderInterface $builder, array $options)
     {  
-         $id=$options['id'];
-          $this->session->set('idProf',$id);
+        
+       if ($options['role']!= 'ROLE_PROF'){   
          if( $options['concours']=='inter' ){
-              if ($options['role']!= 'ROLE_PROF'){
-        $builder->add('equipe',EntityType::class,[
-                                       'class' => 'App:Equipesadmin',
-                                       'query_builder'=>function (EntityRepository $ea) {
-                                                        return $ea->createQueryBuilder('e')
-                                                                ->andWhere('e.edition =:edition')
-                                                                ->setParameter('edition',$this->session->get('edition'))
-                                                                 ->addOrderBy('e.numero', 'ASC')
-                                                         ->addOrderBy('e.centre', 'ASC');},
-                                        'choice_label'=>'getInfoequipe',
-                                        'label' => 'Choisir une équipe',
-                                         'mapped'=>false
-                                         ]);
-              }  
-               if ($options['role']== 'ROLE_PROF'){
-                   $builder->add('equipe',EntityType::class,[
-                                       'class' => 'App:Equipesadmin',
-                                       'query_builder'=>function (EntityRepository $ea) {
-                                                        return $ea->createQueryBuilder('e')
-                                                                ->andWhere('e.idProf1 =:id')
-                                                                ->orWhere('e.idProf2 =:id')
-                                                                ->setParameter('id', $this->session->get('idProf'))
-                                                                ->andWhere('e.edition =:edition')
-                                                                ->setParameter('edition',$this->session->get('edition'))
-                                                                 ->addOrderBy('e.numero', 'ASC')
-                                                                         ->addOrderBy('e.centre', 'ASC');},
-                                        'choice_label'=>'getInfoequipe',
-                                        'label' => 'Choisir une équipe',
-                                         'mapped'=>false
-                                         ]);
-                   
-                   
-               }
-                $builder ->add('photoFiles', FileType::class, [
-                                      'label' => 'Choisir les photos(format .jpeg)',
-                                        'mapped' => true,
-                                       'required' => false,
-                                        'multiple'=>true,
-                                          ])
-                                     ->add('Valider', SubmitType::class);
-                                               
-    
-                                       }
-          if( $options['concours']=='cn' ){
-            if ($options['role']== 'ROLE_PROF'){
-                   $builder->add('equipe',EntityType::class,[
-                                       'class' => 'App:Equipesadmin',
-                                       'query_builder'=>function (EntityRepository $ea) {
-                                                        return $ea->createQueryBuilder('e')
-                                                                ->andWhere('e.idProf1 =:id')
-                                                                ->orWhere('e.idProf2 =:id')
-                                                                ->setParameter('id', $this->session->get('idProf'))
-                                                                ->andWhere('e.edition =:edition')
-                                                                ->setParameter('edition',$this->session->get('edition'))
-                                                                ->andWhere('e.selectionnee =:selectionnee')
-                                                                ->setParameter('selectionnee', 'TRUE')
-                                                                 ->addOrderBy('e.lettre', 'ASC');
-                                                                  },
-                                        'choice_label'=>'getInfoequipe',
-                                        'label' => 'Choisir une équipe',
-                                         'mapped'=>false
-                                         ]);
-                                  }   
               
-          if ($options['role']!= 'ROLE_PROF'){     
         $builder->add('equipe',EntityType::class,[
+                                       'class' => 'App:Equipesadmin',
+                                       'query_builder'=>function (EntityRepository $ea) {
+                                                        return $ea->createQueryBuilder('e')
+                                                                ->andWhere('e.edition =:edition')
+                                                                ->setParameter('edition',$this->session->get('edition'))
+                                                                ->addOrderBy('e.centre', 'ASC')
+                                                                 ->addOrderBy('e.numero', 'ASC')
+                                                        ;},
+                                        'choice_label'=>'getInfoequipe',
+                                        'label' => 'Choisir une équipe',
+                                         'mapped'=>false
+                                         ]);
+              }
+          if( $options['concours']=='cn' ){    
+              $builder->add('equipe',EntityType::class,[
                                        'class' => 'App:Equipesadmin',
                                        'query_builder'=>function (EntityRepository $ea) {
                                                         return $ea->createQueryBuilder('e')
@@ -114,17 +65,58 @@ class PhotosType extends AbstractType
                                          'mapped'=>false
                                          ]);
           }
-                                      $builder->add('photoFiles', FileType::class, [
+       }  
+               if ($options['role']== 'ROLE_PROF'){
+                   $id=$options['id'];
+          $this->session->set('idProf',$id);
+          if( $options['concours']=='inter' ){
+                   $builder->add('equipe',EntityType::class,[
+                                       'class' => 'App:Equipesadmin',
+                                       'query_builder'=>function (EntityRepository $ea) {
+                                                        return $ea->createQueryBuilder('e')
+                                                                ->andWhere('e.idProf1 =:id')
+                                                                ->orWhere('e.idProf2 =:id')
+                                                                ->setParameter('id', $this->session->get('idProf'))
+                                                                ->andWhere('e.edition =:edition')
+                                                                ->setParameter('edition',$this->session->get('edition'))
+                                                                 ->addOrderBy('e.numero', 'ASC');
+                                                                 },
+                                        'choice_label'=>'getInfoequipe',
+                                        'label' => 'Choisir une équipe',
+                                         'mapped'=>false
+                                         ]);
+          }
+          
+           if( $options['concours']=='cn' ){
+                   $builder->add('equipe',EntityType::class,[
+                                       'class' => 'App:Equipesadmin',
+                                       'query_builder'=>function (EntityRepository $ea) {
+                                                        return $ea->createQueryBuilder('e')
+                                                                ->andWhere('e.idProf1 =:id')
+                                                                ->orWhere('e.idProf2 =:id')
+                                                                ->setParameter('id', $this->session->get('idProf'))
+                                                                ->andWhere('e.edition =:edition')
+                                                                ->setParameter('edition',$this->session->get('edition'))
+                                                                ->andWhere('e.selectionnee = TRUE')
+                                                                 ->addOrderBy('e.lettre', 'ASC');
+                                                      },
+                                        'choice_label'=>'getInfoequipenat',
+                                        'label' => 'Choisir une équipe',
+                                         'mapped'=>false
+                                         ]);
+          }
+        }
+                $builder ->add('photoFiles', FileType::class, [
                                       'label' => 'Choisir les photos(format .jpeg)',
-                                        'mapped' => false,
+                                        'mapped' => true,
                                        'required' => false,
                                         'multiple'=>true,
                                           ])
-                                       ->add('Valider', SubmitType::class);;
-          }   
-       }
+                                     ->add('Valider', SubmitType::class);
+                                               
     
-    
+                                       }
+      
      /**
      * {@inheritdoc}
      */

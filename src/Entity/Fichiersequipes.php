@@ -17,6 +17,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Vich\UploaderBundle\Naming\NamerInterface;
 use Vich\UploaderBundle\Naming\PropertyNamer;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\String\UnicodeString;
 /**
  * Memoires
  * @Vich\Uploadable
@@ -112,7 +113,7 @@ class Fichiersequipes //extends BaseMedia
      /**
        * 
        * 
-       *@ORM\Column(type="string", length=255,  nullable=true)
+       *@ORM\Column(type="string", length=255,  nullable=true, )
        * @var string
        */
     private $nomautorisation;
@@ -199,7 +200,8 @@ class Fichiersequipes //extends BaseMedia
     }
 
     public function setNomautorisation($nom)
-    {
+    {    $nom= $this->code($nom);
+        
         $this->nomautorisation = $nom;
         return $this;
     }
@@ -219,17 +221,8 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
                $libel_equipe=$equipe->getNumero();
            }
            $nom_equipe=$equipe->getTitreProjet();
-           $nom_equipe= str_replace("à","a",$nom_equipe);
-           $nom_equipe= str_replace("ù","u",$nom_equipe);
-           $nom_equipe= str_replace("è","e",$nom_equipe);
-           $nom_equipe= str_replace("é","e",$nom_equipe);
-           $nom_equipe= str_replace("ë","e",$nom_equipe);
-           $nom_equipe= str_replace("ê","e",$nom_equipe);
-            $nom_equipe= str_replace("?"," ",$nom_equipe);
-             $nom_equipe= str_replace("ï","i",$nom_equipe);
-               $nom_equipe= str_replace(":","_",$nom_equipe);
-            setLocale(LC_CTYPE,'fr_FR');
-           $nom_equipe = iconv('UTF-8','ASCII//TRANSLIT',$nom_equipe);
+          $nom_equipe=$this->code($nom_equipe);
+           
             //$nom_equipe= str_replace("'","",$nom_equipe);
            //$nom_equipe= str_replace("`","",$nom_equipe);
             
@@ -273,7 +266,22 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
            return $fileName;
  }
     
-    
+    public function code($nom){
+         $nom= str_replace("à","a",$nom);
+           $nom= str_replace("ù","u",$nom);
+           $nom= str_replace("è","e",$nom);
+           $nom= str_replace("é","e",$nom);
+           $nom= str_replace("ë","e",$nom);
+           $nom= str_replace("ê","e",$nom);
+            $nom= str_replace("?"," ",$nom);
+             $nom= str_replace("ï","i",$nom);
+               $nom= str_replace(":","_",$nom);
+            setLocale(LC_CTYPE,'fr_FR');
+           $nom = iconv('UTF-8','ASCII//TRANSLIT',$nom);
+        
+        
+        return $nom;
+    }
  
 
 

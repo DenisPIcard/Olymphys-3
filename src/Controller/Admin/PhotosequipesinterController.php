@@ -23,6 +23,7 @@ use App\Entity\Photos;
 use EasyCorp\Bundle\EasyAdminBundle\Mapping\Annotation\Entity;
 use App\Form\Filter\PhotosequipesinterFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use Symfony\Component\Filesystem\Filesystem;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
@@ -132,6 +133,16 @@ public function listAction(){
     
    return parent::listAction();
 }
-    
+public function deleteAction(){
+     $filesystem = new Filesystem();
+    $repositoryPhotosinter=$this->getDoctrine()->getRepository('App:Photos');
+            $id= $this->request->query->get('id');
+            $image= $repositoryPhotosinter->find(['id'=>$id]);
+           $filesystem->remove('/upload/photos/thumbs/'.$image->getPhoto());
+    return parent::deleteAction();
+}
+
+
+
 }
 

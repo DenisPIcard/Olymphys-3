@@ -6,6 +6,7 @@ easy_admin :
             controller: App\Controller\Admin\ElevesciaController
             templates:
                         list: 'Admin/customizations/list_eleves.html.twig' 
+          
             list :
                 permission: 'ROLE_COMITE'
                 filters :
@@ -13,8 +14,8 @@ easy_admin :
                     
                     
                 dql_filter : 
-                    
-                batch_actions: ['delete']
+               
+                batch_actions: ['delete',{name : 'extract_tableau_excel_Elevesns', 'label' : 'Extraire les élèves non sélectionnés'}]
                 fields : 
                     - {property : 'nom'}
                     - {property : 'prenom '}

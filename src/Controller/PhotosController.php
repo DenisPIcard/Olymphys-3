@@ -116,9 +116,10 @@ class PhotosController extends  AbstractController
                                      
                        
                         $photo->setEdition($edition);
-                        if ($this->session->get('concours')=='interacadémique'){
+                        if ($concours=='inter'){
                         $photo->setNational(FALSE);}
-                        if ($this->session->get('concours')=='national'){
+                        if ($concours=='cn'){
+                            
                         $photo->setNational(TRUE);}
                         $photo->setPhotoFile($file);//Vichuploader gère l'enregistrement dans le bon dossier, le renommage du fichier
                          $photo->setEquipe($equipe);
@@ -488,7 +489,7 @@ class PhotosController extends  AbstractController
          * 
          */    
          public function confirme_efface_photo(Request $request, $concours_photoid_infos){
-              
+              $filesystem = new Filesystem();
              $photoid_concours =explode(':',$concours_photoid_infos);
              $photoId=$photoid_concours[1];
              $concours=$photoid_concours[0];
@@ -512,6 +513,7 @@ class PhotosController extends  AbstractController
              $em=$this->getDoctrine()->getManager();
                                  $em->remove($photo);
                                  $em->flush(); 
+             $filesystem->remove('/upload/photos/thumbs/'.$photo->getPhoto());                    
              return $this->redirectToRoute('photos_gestion_photos', array('infos'=>$infos));                
              }
               if( $Form->get('NON')->isClicked()){

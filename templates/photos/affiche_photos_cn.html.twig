@@ -30,7 +30,7 @@
       {%  if n >0 %}         
           <div class="col-lg-2   col-sm-3">
               {%  set titre = equipe.titreProjet[0:40] %}
-              <a href="{{path('photos_galleryphotos',{infos: 'national-'~edition.id~'-'~equipe.id})}}"><h8> <button type="button" class="btn btn-primary"><font size="-2">{{equipe.lettre}} -{{ titre}}</font> </button> </h8> </a>
+              <a href="{{path('photos_galleryphotos',{infos: 'national-'~edition.id~'-'~equipe.id})}}"><h8> <button type="button" class="btn btn-primary"><font size="-2">{{equipe.lettre}} {{ titre}}</font> </button> </h8> </a>
           
     <div id="carousel{{equipe.lettre}}" class="carousel slide" data-ride="carousel">
        

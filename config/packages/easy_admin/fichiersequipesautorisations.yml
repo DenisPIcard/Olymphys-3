@@ -8,7 +8,7 @@ easy_admin :
              templates:
                         list: 'Admin/customizations/list_autorisations.html.twig' 
              actions :
-               - {name : 'new', label : 'Déposer une presentation'}
+               - {name : 'new', label : 'Déposer une autorisation'}
             
              list :
                   max_results: 50

@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use ZipArchive;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
+use Symfony\Component\String\UnicodeString;
 
 class FichiersequipesController extends EasyAdminController
 {   public function __construct(SessionInterface $session)
@@ -270,13 +271,19 @@ class FichiersequipesController extends EasyAdminController
                  $fichier= $this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[0].'/'.$entity->getFichier();
              }
              else{
-                 $fichier= $this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[$entity->getTypefichier()].'/'.$entity->getFichier();
+                 $nom_fichier=$entity->getFichier();
+                
+                 $fichier= $this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[$entity->getTypefichier()].'/'.$nom_fichier;
+                 
              }
                
                  $file=new File($fichier);
                  try{
+                     
+                     
+                    
                     $response = new BinaryFileResponse($fichier);
-                 
+                    
                  
                  
                     $disposition = HeaderUtils::makeDisposition(
@@ -286,12 +293,14 @@ class FichiersequipesController extends EasyAdminController
                             );
                     $response->headers->set('Content-Type', $file->guessExtension()); 
                     $response->headers->set('Content-Disposition', $disposition);
+                 
                   return $response; 
                  }
                     catch(\Exception $e){
                  
                  $this->session->getFlashBag()
-                    ->add('alert', 'Erreur de lecture du fichier' ) ;
+                    ->add('alert', 'Erreur de lecture du fichier : '.$e ) ;
+                 return  $this->redirectToRoute('easyadmin');
                  }
                  
                
@@ -435,10 +444,16 @@ class FichiersequipesController extends EasyAdminController
                  return $response; 
           } 
     public function persistEntity($entity){
+        $request=Request::createFromGlobals();
+        
+        
+        
        $em=$this->getDoctrine()->getManager();
        $edition=$this->session->get('edition');
        $edition=$em->merge($edition);
        $entity->setEdition($edition);
+     
+       if ($request->query->get('entity')== 'Fichiersequipesautorisations'){
        $entity->setTypefichier(6);         
         $entity->setNational(0);
        $citoyen = $entity->getEleve();
@@ -453,7 +468,7 @@ class FichiersequipesController extends EasyAdminController
        } 
        $citoyen->setAutorisationphotos($entity);
       $entity->setNomautorisation($citoyen->getNom().'-'.$citoyen->getPrenom());
-     
+        }
            return parent::persistEntity($entity);
    
     }

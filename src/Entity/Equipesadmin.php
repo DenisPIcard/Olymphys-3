@@ -308,6 +308,7 @@ class Equipesadmin
     {   
         $nomcentre='';
         $Numero=$this->getNumero();
+        
         $edition=$this->getEdition();
         If ($centre =$this->getCentre()){
         $nomcentre =$this->getCentre()->getCentre().'-';}

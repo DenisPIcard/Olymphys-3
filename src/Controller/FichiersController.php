@@ -582,7 +582,7 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                    
                      if ($num_type_fichier==6){
                          
-                      $Fichier->setNomautorisation($citoyen->getNom().'-'.$citoyen->getPrenom());
+                      $Fichier->setNomautorisation(iconv('UTF-8','ASCII//TRANSLIT',  $citoyen->getNom().'-'.$citoyen->getPrenom()));
                       
                              }
                      
@@ -611,7 +611,6 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                             ->add('info', 'Votre fichier renommé selon : '.$nom_fichier_uploaded.' a bien été déposé. Merci !') ;  
                           $type_fichier=$this->getParameter('type_fichier')[$num_type_fichier];
                      
-                     //$this->MailConfirmation($mailer, $type_fichier,$Equipe_choisie) ;  
                             
                       return $this->redirectToRoute('core_home');
                     }
@@ -959,7 +958,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                           $fichier->setNational(1);
                            }
                             if ($num_type_fichier==6){
-                           $fichier->setNomautorisation($citoyen->getNom().'-'.$citoyen->getPrenom());
+                           $fichier->setNomautorisation( $citoyen->getNom().'-'.$citoyen->getPrenom());
                             if ($id_equipe !='prof'){
                                 $fichier->setEleve($citoyen);
                               }
@@ -1031,8 +1030,11 @@ public function MailConfirmation(MailerInterface $mailer, string $type_fichier, 
                   // ->to('webmestre2@olymphys.fr')
                  
                     ->subject('Depot du '.$type_fichier.' de l\'équipe '.$info_equipe)
-                    ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.');
-                  
+                    ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.')
+                    ->getHeaders()->addTextHeader([
+  'name' => 'file.txt',
+  'charset' => 'iso-8859-1'
+   ]);
                 $mailer->send($email);
    
  }
