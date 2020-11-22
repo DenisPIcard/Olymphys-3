@@ -44,9 +44,9 @@ class Equipesadmin
           
      /**
      * 
-     * 
+     * @var int
      * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
-     * @ORM\JoinColumn(name ="centre_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name ="centre_id", referencedColumnName="id", nullable=true, unique=false)
      */
     private $centre; 
     

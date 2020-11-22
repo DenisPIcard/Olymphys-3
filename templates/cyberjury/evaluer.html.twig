@@ -3,11 +3,13 @@
 
 {% block titre3 %} <span {% if (progression) %} class ="btn btn-outline-primary btn-lg" {% else %} class ="btn btn-primary btn-lg" {% endif %} > 
 	{{equipe.lettre}} </span>  {{ equipe.titreProjet}} 
+        {% if memoires!=null %}
     {% for key,mem in memoires %}
         {%if key == lettre %}          
             <a href="https://olymphys.fr/public/upload/equipes/memoires/nat/{{ mem.memoire }}" class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
         {% endif %} 
-    {% endfor %}
+       
+    {% endfor %} {% endif %}
 <a href="{{ path('cyberjury_infos_equipe', {'id': equipe.id} ) }}" class="fas fa-info-circle" title="En savoir plus sur cette équipe"> </a>
 
 <a href="{{ path('cyberjury_phrases_amusantes', {'id': equipe.id} ) }}" class="fas fa-pencil-alt" title="Les phrases amusantes" > </a>

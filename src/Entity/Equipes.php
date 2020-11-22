@@ -126,8 +126,11 @@ class Equipes
      */
     private $nbNotes=0;  
   
-    
-     
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Fichiersequipes", mappedBy="equipe")
+     * @ORM\Column( type="array" ) 
+     */
+     private $memoire;
     /**
      * Constructor
      */
@@ -135,7 +138,7 @@ class Equipes
     {
         $this->notess = new ArrayCollection();
         $this->eleves = new ArrayCollection();
-        
+        $this->memoire = new ArrayCollection();
     }
     
 
@@ -587,9 +590,9 @@ class Equipes
         return $this->memoire;
     }
 
-    public function setMemoire($memoire)
+    public function setMemoire(array $memoires)
     {
-        $this->memoire = $memoire;
+        $this->memoire = $memoires;
 
         return $this;
     }

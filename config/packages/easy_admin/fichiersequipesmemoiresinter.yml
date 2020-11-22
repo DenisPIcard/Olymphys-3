@@ -13,7 +13,7 @@ easy_admin :
              
              list :
                   max_results: 30
-                  actions: [  { name: 'Lire', icon: 'eye' ,label: ''}, '-edit', {name : 'new' , label : 'Déposer un memoire'} ]
+                  actions: [  { name: 'Lire', icon: 'eye' ,label: ''}, 'edit', {name : 'new' , label : 'Déposer un memoire'} ]
                  
                   filters :
                       - 'edition'

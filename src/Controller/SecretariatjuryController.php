@@ -72,13 +72,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bundle\SwiftmailerBundle\Swiftmailer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\RichText\Run;
     
 class SecretariatjuryController extends AbstractController 
-{
+{                   public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+            
+        }
+    
+    
+    
+    
+    
 	/**
 	* @Security("is_granted('ROLE_SUPER_ADMIN')")
          * 
@@ -86,36 +96,45 @@ class SecretariatjuryController extends AbstractController
          * 
 	*/
 	public function accueil(Request $request)
-        {
-		$repositoryEquipesadmin = $this ->getDoctrine()
+        {        
+            
+            
+                 $em=$this->getDoctrine()->getManager();
+                  $edition=$this->session->get('edition');
+                 
+                   $edition=$em->merge($edition);
+$repositoryEquipesadmin = $this ->getDoctrine()
                                                 ->getManager()
                                                 ->getRepository('App:Equipesadmin');
                 $repositoryEleves = $this->getDoctrine()
                                          ->getManager()
-                                         ->getRepository('App:Eleves');
+                                         ->getRepository('App:Elevesinter');
                 $repositoryUser=$this->getDoctrine()
                                      ->getManager()
                                      ->getRepository('App:User');
                 $repositoryRne=$this->getDoctrine()
                                      ->getManager()
                                      ->getRepository('App:Rne');
-		$listEquipes=$repositoryEquipesadmin ->createQueryBuilder('e')
+	$listEquipes=$repositoryEquipesadmin ->createQueryBuilder('e')
                                                      ->select('e')
-                                                     ->where('e.selectionnee= TRUE')
+                                                     ->where('e.selectionnee = TRUE')
+                                                     ->andWhere('e.edition =:edition')
+                                                     ->setParameter('edition',$edition)    
+                                                     ->andWhere('e.lettre IS NOT NULL')
                                                      ->orderBy('e.lettre','ASC')
                                                      ->getQuery()
                                                      ->getResult();
 		foreach ($listEquipes as $equipe) 
                     {
                     $lettre=$equipe->getLettre();
-                    $lesEleves[$lettre] = $repositoryEleves->findByLettreEquipe($lettre);
+                    $lesEleves[$lettre] = $repositoryEleves->findByEquipe(['equipe'=>$equipe]);
                     $rne = $equipe->getRne();
                     $lycee[$lettre]= $repositoryRne->findByRne($rne);
                     }
  
                 $tableau=[$listEquipes,$lesEleves,$lycee];
-                $session=new Session();
-                $session->set('tableau',$tableau);    
+                
+                $this->session->set('tableau',$tableau);    
            	$content = $this->renderView('secretariatjury/accueil.html.twig', 
 			array(''));
 
@@ -130,8 +149,8 @@ class SecretariatjuryController extends AbstractController
 	*/
 	public function accueilJury(Request $request)
 	{
-                $session=new Session();
-                $tableau=$session->get('tableau');
+               
+                $tableau=$this->session->get('tableau');
                 $listEquipes=$tableau[0];
                 $lesEleves=$tableau[1];
                 $lycee=$tableau[2];
@@ -169,7 +188,7 @@ class SecretariatjuryController extends AbstractController
                                 ->getRepository('App:Edition');
         $ed = $repositoryEdition->findOneByEd('ed');     
         $em = $this->getDoctrine()->getManager();
-
+            dd($ed);
         $form = $this->createForm(EditionType::class, $ed);
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) 
             {
@@ -227,8 +246,10 @@ class SecretariatjuryController extends AbstractController
 		->getManager()
 		->getRepository('App:Equipes')
 		;
-		$listEquipes = $repositoryEquipes->findAll();
-
+		$listEquipes = $repositoryEquipes->createQueryBuilder('e')
+                                                                                          ->addOrderBy('e.lettre','ASC')
+                                                                                          ->getQuery()->getResult();
+                                   
 		$nbre_equipes = 0; 
 		foreach ($listEquipes as $equipe)
 		{
@@ -289,12 +310,15 @@ class SecretariatjuryController extends AbstractController
 		$repositoryNotes = $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Notes');
-
+                                    $repositoryClassement = $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Classement');
 		$em=$this->getDoctrine()->getManager();
 		$listEquipes = $repositoryEquipes->findAll();
 
 		foreach ($listEquipes as $equipe)
-		{
+		{                   
+                                                       
 			$listesNotes=$equipe->getNotess();
 			$nbre_notes = $equipe->getNbNotes(); 
 
@@ -344,7 +368,28 @@ class SecretariatjuryController extends AbstractController
 			$em->persist($equipe);	
 		}
                 $em->flush();
-
+                                    $liste_equipes=$qb->select('e')->addOrderBy('e.rang','ASC')->getQuery()->getResult();
+                                    
+                 $nbr1=$repositoryClassement->findOneByNiveau(['niveau'=>'1er'])->getNbreprix();
+                 $nbr2=$repositoryClassement->findOneByNiveau(['niveau'=>'2ème'])->getNbreprix();
+                 $nbr3=$repositoryClassement->findOneByNiveau(['niveau'=>'3ème'])->getNbreprix();
+                foreach($liste_equipes as $equipe){
+                    if($equipe->getRang()<=$nbr1){
+                        $equipe->setClassement('1er');
+                       $em->persist($equipe);
+                    }
+                     if(($equipe->getRang()>$nbr1) AND ($equipe->getRang()<=$nbr1+$nbr2))   {
+                        $equipe->setClassement('2ème');
+                        $em->persist($equipe);
+                    }
+                     if($equipe->getRang()>$nbr1+$nbr2)   {
+                        $equipe->setClassement('3ème');
+                        $em->persist($equipe);
+                    }
+                     $em->flush();
+                }
+                
+                
 		$content = $this->renderView('secretariatjury/classement.html.twig', 
 			array('classement' => $classement )
 			);
@@ -698,10 +743,14 @@ public function RaZ(Request $request)
     $repositoryPrix = $this->getDoctrine()
                            ->getManager()
                            ->getRepository('App:Prix');
+     $repositoryCadeaux = $this->getDoctrine()
+                           ->getManager()
+                           ->getRepository('App:Cadeaux');
     $ListPrix = $repositoryPrix->findAll();
     $prix = $repositoryPalmares->findOneByCategorie('prix');
     $em=$this->getDoctrine()->getManager();
     $ListeEquipes = $repositoryEquipes->findAll();
+    $listecadeaux=  $repositoryCadeaux->findAll();
     foreach ($ListeEquipes as $equipe)
     	{
         $equipe->setPrix(null);
@@ -714,12 +763,18 @@ public function RaZ(Request $request)
             {
             $prix = $prix->$method(null);
             $em->persist($prix);
+            
             } 
         }
     foreach ($ListPrix as $Prix)
         {
-        $Prix->setAttribue(0);
+        $Prix->setAttribue(FALSE);
+        $em->persist($Prix);
         }
+    foreach ($listecadeaux as $cadeau){
+        $cadeau->setAttribue(FALSE);
+        $em->persist($cadeau);
+    }
     $em->flush();    
     $content = $this->renderView('secretariatjury/RaZ.html.twig');
     return new Response($content);
@@ -762,12 +817,16 @@ public function RaZ(Request $request)
                                    ->getManager()
                                    ->getRepository('App:Palmares');
         $ListEquipes = $repositoryEquipes->findByClassement($niveau_court); 
+        
         $NbrePrix=$repositoryClassement->findOneByNiveau($niveau_court)
                                        ->getNbreprix(); 
         /*$qb = $repositoryPrix->createQueryBuilder('p')
                              ->where('p.classement=:niveau')
                              ->setParameter('niveau', $niveau_court);
         $listPrix=$repositoryPrix->findOneByClassement($niveau_court)->getPrix();*/
+        
+        
+        
         $prix = $repositoryPalmares->findOneByCategorie('prix');
         $i=0;	
 	foreach ($ListEquipes as $equipe) 
@@ -788,12 +847,14 @@ public function RaZ(Request $request)
                 {                                                
                 $qb2[$i]->andwhere('p.attribue = :attribue')
                         ->setParameter('attribue', $attribue);                    
-                }                           
+                }     
+          
                 $formBuilder[$i]=$this->get('form.factory')->createBuilder(FormType::class, $prix);
                 $lettre=strtoupper($equipe->getLettre());
                 $titre=$equipe->getTitreProjet();  
+        
                 //$titre_form[$i]=$lettre." : ".$titre.".  Prix :  ".$intitule_prix;
-                $formBuilder[$i]->add($lettre, EntityType::class, [
+                $formBuilder[$i]->add($lettre,EntityType::class, [
                                                 'class' => 'App:Prix',
                                                 'query_builder' => $qb2[$i],
                                                 'choice_label'=> 'getPrix',
@@ -806,41 +867,36 @@ public function RaZ(Request $request)
                 $formtab[$i]=$form[$i]->createView();
                 if ($request->isMethod('POST') && $form[$i]->handleRequest($request)->isValid()) 
                     {
+                   
                     $em=$this->getDoctrine()->getManager();
                     foreach (range('A','Z') as $lettre_equipe)
                         {
                         if (isset($form[$i][$lettre_equipe] ))
-                            { 
+                            {
                             $equipe = $repositoryEquipes->findOneByLettre($lettre_equipe);
                             if ($form[$i]->get('Enregistrer')->isClicked())
-                                {
-                                $method = 'get'.ucfirst($lettre_equipe);
-                                if (method_exists($prix, $method))
-                                    {   
-                                    $pprix = $prix->$method();
-                                    $equipe->setPrix($pprix);
+                                {  $prix = $form[$i]->get($lettre)->getData();;
+                                    $equipe->setPrix($prix);
                                     $em->persist($equipe);
-                                    $pprix->setAttribue(1);
-                                    $em->persist($pprix);
+                                    $prix->setAttribue(1);
+                                    $em->persist($prix);
                                     $em->flush();
                                     $request -> getSession()->getFlashBag()->add('notice', 'Prix bien enregistrés');
                                     return $this->redirectToroute('secretariatjury_attrib_prix', array('niveau'=> $niveau));
-                                    }
+                                  
                                 } 
                             if ($form[$i]->get('Effacer')->isClicked())
                                 {
-                                $method = 'get'.ucfirst($lettre_equipe);
-                                if (method_exists($prix, $method))
-                                    {   
-                                    $pprix = $prix->$method();
-                                    $pprix->setAttribue(0);
-                                    $em->persist($pprix);
+            
+                                    $prix = $equipe->getPrix();
+                                    $prix->setAttribue(0);
+                                    $em->persist($prix);
                                     $equipe->setPrix(null);
                                     $em->persist($equipe);
                                     $em->flush();
                                     $request -> getSession()->getFlashBag()->add('notice', 'Prix bien effacé');
                                     return $this->redirectToroute('secretariatjury_attrib_prix', array('niveau'=> $niveau));                                                                         
-                                    }        
+                                           
                                 }                            
                             }
                         }
@@ -868,8 +924,10 @@ public function RaZ(Request $request)
 		$listEquipes = $this->getDoctrine()
 			->getManager()
 			->getRepository('App:Equipes')
-			->getEquipesPrix()
-                        ;
+                                                    ->createQueryBuilder('e')
+                                                    ->addOrderBy('e.lettre','ASC')
+                                                    ->getQuery()->getResult();
+                       
 		$content = $this->renderView('secretariatjury/edition_prix.html.twig', array('listEquipes' => $listEquipes));
 		return new Response($content);
 	}
@@ -1680,5 +1738,57 @@ public function tableau_excel_palmares_jury(Request $request)
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
         $writer->save('php://output');
     }
+    
+    /**
+	* @Security("is_granted('ROLE_SUPER_ADMIN')")
+         * 
+         * @Route("/secretariatjury/remplissage_nbnotes_equipes", name="secretariatjury_remplissage_nbnotes_equipes")
+         * 
+	*/
+    
+    public function remplissage_nbnotes_equipes(){//lors de  la conception pour simuler la saisie des notes par les jurés
+        $em=$this->getDoctrine()->getManager(); 
+        $equipesRepositiory=$this->getDoctrine()
+                                      ->getManager()
+                                      ->getRepository('App:Equipes');
+        
+          $notesRepository=$this->getDoctrine()
+                                      ->getManager()
+                                      ->getRepository('App:Notes');
+            $repositoryPrix = $this->getDoctrine()
+                               ->getManager()
+                               ->getRepository('App:Prix');
+         
+         $listeEquipes= $equipesRepositiory->findAll();
+        
+         foreach($listeEquipes as $equipe){
+             $nombrenotes=0;
+             $total=0;
+            $listenotes=$notesRepository->createQueryBuilder('n')
+                      ->where('n.equipe =:equipe')
+                    ->setParameter('equipe',$equipe)
+                    ->getQuery()->getResult();
+            foreach($listenotes as $notes){
+                $total=$total+$notes->getPoints();
+                
+                $nombrenotes=$nombrenotes+(($notes->getEcrit())? 6:5 );
+                
+            }
+           
+            $equipe->setNbNotes($nombrenotes);
+            $equipe->setTotal($total);
+            
+            $em->persist($equipe);
+            $em->flush();
+           
+         }
+         return $this->redirectToRoute('secretariatjury_accueil');
+         
+          
+        
+        
+    }
+    
+    
 }
 

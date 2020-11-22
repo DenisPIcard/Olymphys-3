@@ -7,32 +7,22 @@ easy_admin:
             list:
                 title : 'Le palmares des  équipes au concours national'
                 max_results: 30
-                fields: ['lettre', 'titreprojet', 'classement',  'prix.prix', 'visite.intitule','cadeau.contenu']
+                fields: ['lettre', 'titreprojet', 'classement',  'prix.prix', 'visite.intitule','cadeau.contenu', 'heure', 'salle']
                 sort: ['classement','ASC']
+                actions : ['-delete']
             edit:
                 title: 'Modifier les récompenses de l''équipe'
                 
                        
                 fields: 
                        - { property : 'lettre', type : 'text' , type_options :{disabled: true}}
-                       - { property : 'titreprojet', type : 'text' , type_options :{disabled: false}}
+                       - { property : 'titreprojet', type : 'text' , type_options :{disabled: true}}
                        - { property : 'classement', type : 'text'}
                        - { property : 'prix', type : 'easyadmin_autocomplete'}
                        - { property : 'prix', label: 'Prix' ,type : 'entity' , type_options : { class : 'App\Entity\Prix', query_builder : 'App\Repository\PrixRepository::getListPrix', 'choice_label' : 'getPrix'}} 
                        - { property : 'cadeau', type : 'entity' , type_options : { class : 'App\Entity\Cadeaux', query_builder : 'App\Repository\CadeauxRepository::getCadeaux', 'choice_label' : 'getContenu'}}
                        - { property : 'visite', type : 'entity' , type_options : { class : 'App\Entity\Visites', query_builder : 'App\Repository\VisitesRepository::getVisites', 'choice_label' : 'getIntitule'}}
-                       - { property : 'ordre', type : 'text'}
-                       - { property : 'heure', type : 'text'}
-                       - { property : 'salle', type : 'integer'}
-            new :
-                title: 'Nouvelle équipe'
-                   
-                fields: 
-                       - { property : 'lettre', type : 'text' , type_options :{disabled: false}}
-                       - { property : 'titreprojet', type : 'text' , type_options :{disabled: false}}
-                       - { property : 'classement', type : 'text' , type_options :{disabled: true}}
-                       - { property : 'memoire', type : 'entity' , type_options : { class : 'App\Entity\Memoires', query_builder : 'App\Repository\MemoiresRepository::getMemoire', 'choice_label' : 'getMemoire'}}      
-                         #{ property : 'prix', type : 'easyadmin_autocomplete'}]
-                       - { property : 'prix', label: 'Prix' ,type : 'entity' , type_options : { class : 'App\Entity\Prix', query_builder : 'App\Repository\PrixRepository::getListPrix', 'choice_label' : 'getPrix'}} 
-                       - { property : 'cadeau', type : 'entity' , type_options : { class : 'App\Entity\Cadeaux', query_builder : 'App\Repository\CadeauxRepository::getCadeaux', 'choice_label' : 'getContenu'}}
-                       - { property : 'visite', type : 'entity' , type_options : { class : 'App\Entity\Visites', query_builder : 'App\Repository\VisitesRepository::getVisites', 'choice_label' : 'getIntitule'}}                 
+                       - { property : 'ordre', }
+                       - { property : 'heure', label : 'Heure de passage jury'}
+                       - { property : 'salle' , label : 'Salle'}
+           

@@ -1,18 +1,30 @@
 easy_admin :
     entities :
         Selectionnees :
-            class : App\Entity\Equipesadmin
+            class : App\Entity\Equipes
             label : '<h2> Les équipes du CN</h2>'
-
+            #controller: App\Controller\Admin\EquipesadminController 
             list : 
-                dql_filter: "entity.selectionnee = '1' "
-                max_results: 50
+                #dql_filter: "entity.selectionnee = '1' "
+                actions : ['-delete']
+                max_results: 25
                 sort: ['lettre', 'ASC']
                 fields :
-                  - 'numero'
+                  
                   - 'lettre'
-                  - { property : 'titreProjet', label : 'Projet'}
-                  - { property : 'lyceeAcademie' , label : 'Académie'}
-                  - { property : 'Lycee', label : 'Lycée'}
-                  - { property : 'Prof1', label : 'Professeur1'}
-                  - { property : 'Prof2', label : 'Professeur2'}
+                  #- { property : 'titreProjet', label : 'Projet'}
+                  - { property : 'infoequipe.lyceeAcademie' , label : 'Académie'}
+                  - { property : 'infoequipe.Lycee', label : 'Lycée'}
+                  - { property : 'infoequipe.TitreProjet', label : 'Projet'}
+                  - { property : 'heure', label : 'Heure de passage jury'}
+                  - { property : 'salle', label : 'Salle'}
+            edit :
+                  fields :
+                  
+                  - 'lettre'
+                  #- { property : 'titreProjet', label : 'Projet'}
+                  - { property : 'infoequipe.lyceeAcademie' , label : 'Académie',disabled : true}
+                  - { property : 'infoequipe.Lycee', label : 'Lycée', disabled : true}
+                  - { property : 'infoequipe.TitreProjet', label : 'Projet', disabled : true}
+                  - { property : 'heure', label : 'Heure de passage jury'}
+                  - { property : 'salle', label : 'Salle'}

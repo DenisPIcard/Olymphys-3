@@ -43,11 +43,11 @@ class Eleves
 
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="lettre_equipe", type="string",length=1, nullable=true)
+      * @ORM\ManyToOne(targetEntity="App\Entity\Equipesadmin")
+       * @ORM\JoinColumn(name="equipe_id",  referencedColumnName="id" )
+       *
      */
-    private $lettreEquipe;
+    private $equipe;
     
 
 

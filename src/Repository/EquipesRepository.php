@@ -22,13 +22,10 @@ class EquipesRepository extends \Doctrine\ORM\EntityRepository
                           //->where('e.lettre = :lettre')
                           //->setParameter('lettre',$lettre);    
                 }
-                  public function getEquipeNa(EquipesRepository $er): QueryBuilder
-                {   
-		
-                    return $er ->createQueryBuilder('e')->select('e');
+                 
                           
                              
-                }
+               
 	public function getEquipesVisites()
 	{
 		$query=$this->createQueryBuilder('e')

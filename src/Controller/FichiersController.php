@@ -200,7 +200,7 @@ public function choix_equipe(Request $request,$choix) {
     
          if($role=='ROLE_JURY'){
              $nom=$user->getUsername();
-             
+            
              $repositoryJures = $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Jures');
@@ -1159,7 +1159,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     
     $qb3 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le comité fichiers cn sans les fiches securité
                              ->LeftJoin('t.equipe', 'e')
-                             ->Where('e.id=:id_equipe')
+                             ->Where('e.id =:id_equipe')
                              ->setParameter('id_equipe', $id_equipe)
                               ->andWhere('e.edition =:edition')
                              ->setParameter('edition', $edition)
@@ -1167,23 +1167,22 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->setParameter('type', 4)
                              ->andWhere('t.national =:national')
                              ->setParameter('national', TRUE) ;
-    
+    $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le jurys cn resumé mémoire annexes
+                             ->LeftJoin('t.equipe', 'e')
+                             ->Where('e.id =:id_equipe')
+                             ->setParameter('id_equipe', $id_equipe)
+                              ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition)
+                             ->andWhere('t.typefichier < 2 ')
+                             ->andWhere('t.national =:national')
+                             ->setParameter('national', TRUE) ;
     $liste_prof[1]= $repositoryUser->find(['id'=>$equipe_choisie->getIdProf1()]) ;
    if (null!=$equipe_choisie->getIdProf2()){
    $liste_prof[2]=$repositoryUser->find(['id'=>$equipe_choisie->getIdProf2()]) ;
       }
       
-      $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')//Les  autorisations photos uniquement
-                             ->LeftJoin('t.equipe', 'e')
-                             ->Where('e.id=:id_equipe')
-                             ->orWhere('e.idProf1 >:valeur')
-                             ->orWhere('e.idProf2 >:valeur')
-                             ->setParameter('valeur',NULL)
-                              ->andWhere('e.edition =:edition')
-                             ->setParameter('edition', $edition)
-                             ->setParameter('id_equipe', $id_equipe)
-                             ->andWhere('t.typefichier =:type')
-                             ->setParameter('type', 6);  
+     
+                            
     $roles=$this->getUser()->getRoles();
         $role=$roles[0];
                               
@@ -1200,7 +1199,8 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
         $autorisations=[];
       } 
     if($role=='ROLE_JURY'){
-         $liste_fichiers=$qb3->getQuery()->getResult();    
+         $liste_fichiers=$qb4->getQuery()->getResult();    
+         
         }
       
     $infoequipe=$equipe_choisie->getInfoequipe();
@@ -1301,10 +1301,10 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
          if(!isset($formtab)) {
              $formtab=[];
          }
-          if($listevideos==null) {
+          if(!isset($listevideos)) {
              $listevideos=[];
          }
-          if($autorisations==null) {
+          if(!isset($autorisations)) {
              $autorisations=[];
          }
        

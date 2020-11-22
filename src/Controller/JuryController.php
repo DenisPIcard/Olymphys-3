@@ -71,19 +71,29 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bundle\SwiftmailerBundle\Swiftmailer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\RichText\Run;
 
 class JuryController extends AbstractController
-{
+{           public function __construct(SessionInterface $session){
+    
+            $this->session=$session;
+    
+}
+    
+    
+
     /**
      * @Route("cyberjury/accueil", name="cyberjury_accueil")
      */
 	public function accueil()
  
-        {
+        {     $em=$this->getDoctrine()->getManager();
+                  $edition=$this->session->get('edition');
+                 
+                   $edition=$em->merge($edition);
             	$user=$this->getUser();
 		$nom=$user->getUsername();
 
@@ -115,27 +125,37 @@ class JuryController extends AbstractController
 		;
                 $repositoryMemoires = $this->getDoctrine()
                                            ->getManager()
-                                           ->getRepository('App:Memoires');
+                                           ->getRepository('App:Fichiersequipes');
 		$listEquipes=array();
                 $progression=array();
                 $memoires=array();
+               
  		foreach ($attrib as $key => $value) 
-		{
-			$equipe=$repositoryEquipes->findOneByLettre($key);
+		{              try{  
+			$equipe=$repositoryEquipes->createQueryBuilder('e')
+                                                               ->andWhere('e.lettre =:lettre')
+                                                               ->setParameter('lettre',$key)
+                                                               ->getQuery()->getSingleResult();
+                }
+                                                          catch(\Exception $e) {
+                                                              $equipe=null;
+                          }
+                
+                        if (($equipe)){
 			$listEquipes[$key] = $equipe;
 			$id = $equipe->getId();
                         $note=$repositoryNotes->EquipeDejaNotee($id_jure ,$id);
                         $progression[$key] = (!is_null($note)) ? 1 : 0 ;
-                        $idadm=$equipe->getInfoequipe();
-                        $memoire=$repositoryMemoires->findByEquipe($idadm);
-                        if($memoire !=[])
-                            {   if($memoire[0]->getAnnexe() == false)
-                                    {$memoires[$key] = $memoire[0];}
-                                else 
-                                    {$memoires[$key] = $memoire[1];}
-                            }
+                       
+                        $memoire=$repositoryMemoires->createQueryBuilder('m')
+                                ->where('m.edition =:edition')
+                               ->setParameter('edition',$edition)
+                                ->andWhere('m.typefichier < 3');
+                       
                         
                 }
+                
+                        }
                 usort($listEquipes, function($a, $b) {
                 return $a->getOrdre() <=> $b->getOrdre();
                 });
@@ -187,33 +207,29 @@ class JuryController extends AbstractController
 		->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');
-
-		$equipe=$repositoryEquipesadmin->findOneByLettre($lettre);
-		$eq=$repositoryEquipes->findOneByLettre($lettre);
+                                   $equipe=$repositoryEquipes->findOneByLettre($lettre);
+                                   $equipeadmin= $repositoryEquipesadmin->find(['id'=>$equipe->getInfoequipe()]);
+		
+		
 
 		$repositoryEleves = $this
 		->getDoctrine()
 		->getManager()
-		->getRepository('App:Eleves');
+		->getRepository('App:Elevesinter');
 
-		$listEleves=$repositoryEleves->findByLettreEquipe($lettre);
-                $repositoryMemoires = $this->getDoctrine()
-                                           ->getManager()
-                                           ->getRepository('App:Memoires');
-                $idadm=$eq->getInfoequipe();
-                $memoire=$repositoryMemoires->findByEquipe($idadm);
-                $memoires='';
-                if($memoire !=[])
-                            {   if($memoire[0]->getAnnexe() == false)
-                                    {$memoires = $memoire[0];}
-                                else 
-                                    {$memoires = $memoire[1];}
-                            }
+		$listEleves= $repositoryEleves->createQueryBuilder('e')
+                                                                              ->where('e.equipe =:equipe')
+                                                                             ->setParameter('equipe', $equipeadmin)
+                                                                            ->getQuery()->getResult();
+                
+                                  $memoires=$equipe->getMemoire();
+                
+                                  
      
 		$content = $this->renderView('cyberjury/infos.html.twig',
 			array(
 				'equipe'=>$equipe, 
-				'eq'=>$eq,
+				
 				'listEleves'=>$listEleves, 
 				'id_equipe'=>$id,
 				'progression'=>$progression,
@@ -424,17 +440,20 @@ class JuryController extends AbstractController
 		->EquipeDejaNotee($id_jure, $id);
                 $repositoryMemoires = $this->getDoctrine()
                                            ->getManager()
-                                           ->getRepository('App:Memoires');
-                $idadm=$equipe->getInfoequipe();
-                $memoire=$repositoryMemoires->findByEquipe($idadm);
-                $memoires='';
-                if($memoire !=[])
-                            {   if($memoire[0]->getAnnexe() == false)
-                                    {$memoires = $memoire[0];}
-                                else 
-                                    {$memoires = $memoire[1];}
-                            }
-     
+                                           ->getRepository('App:Fichiersequipes');
+                try{
+                $memoire=$repositoryMemoires->createQueryBuilder('m')
+                        ->where('m.equipe =:equipe')
+                        ->setParameter('equipe', $equipe->getInfoequipe())
+                        ->andWhere('m.typefichier = 0')
+                        ->andWhere('m.national = TRUE')
+                        ->getQuery()->getSingleResult();
+                }
+                catch(\Exception $e){
+                    $memoire=null;
+                    
+                }
+              
 		$flag=0; 
 
 		if(is_null($notes))
@@ -493,7 +512,7 @@ class JuryController extends AbstractController
 				'flag'=>$flag,
 				'progression'=>$progression,
 				'jure'=>$jure,
-                                'memoires'=>$memoires
+                                'memoires'=>$memoire
 				  ));
 		return new Response($content);
 		
@@ -538,9 +557,9 @@ class JuryController extends AbstractController
 		foreach($MonClassement as $notes)
 		{
 			$id = $notes->getEquipe();
-			$equipe = $repository->find($id);
+                                                     $equipe = $repository->find($id);
 			$listEquipes[$j]['id']= $equipe->getId();
-                        $listEquipes[$j]['infoequipe']= $equipe->getInfoequipe();
+                                                     $listEquipes[$j]['infoequipe']= $equipe->getInfoequipe();
 			$listEquipes[$j]['lettre']=$equipe->getLettre();
 			$listEquipes[$j]['titre']=$equipe->getTitreProjet();
 			$listEquipes[$j]['exper']=$notes->getExper();
@@ -551,6 +570,7 @@ class JuryController extends AbstractController
 			$listEquipes[$j]['ecrit']=$notes->getEcrit();
 			$listEquipes[$j]['points']=$notes->getPoints();
 			$j++;
+                                            
 		}
 
 		$content = $this->renderView('cyberjury/tableau.html.twig', 
@@ -561,11 +581,11 @@ class JuryController extends AbstractController
         
         /**
          * 
-	 * @Security("is_granted('ROLE_JURY')")
+         * @Security("is_granted('ROLE_JURY')")
          * 
          * 
          * @Route("/phrases_amusantes/{id}", name = "cyberjury_phrases_amusantes",requirements={"id_equipe"="\d{1}|\d{2}"})
-	 */
+         */
 public function phrases(Request $request, Equipes $equipe, $id)
     {
     $user=$this->getUser();
@@ -591,17 +611,21 @@ public function phrases(Request $request, Equipes $equipe, $id)
                                ->getRepository('App:Equipes');
     $repositoryMemoires = $this->getDoctrine()
                                ->getManager()
-                               ->getRepository('App:Memoires');
+                               ->getRepository('App:Fichiersequipes');
     $idadm=$equipe->getInfoequipe();
-    $memoire=$repositoryMemoires->findByEquipe($idadm);
-    $memoires='';
-    if($memoire !=[])
-        {   
-        if($memoire[0]->getAnnexe() == false)
-            {$memoires = $memoire[0];}
-        else 
-            {$memoires = $memoire[1];}
-        }
+    try{
+                $memoire=$repositoryMemoires->createQueryBuilder('m')
+                        ->where('m.equipe =:equipe')
+                        ->setParameter('equipe', $equipe->getInfoequipe())
+                        ->andWhere('m.typefichier = 0')
+                        ->andWhere('m.national = TRUE')
+                        ->getQuery()->getSingleResult();
+                }
+                catch(\Exception $e){
+                    $memoire=null;
+                    
+                }
+    
     $em=$this->getDoctrine()->getManager();
     $form = $this->createForm(EquipesType::class, $equipe, array('Attrib_Phrases'=> true, 'Attrib_Cadeaux'=> false));
     if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
@@ -616,7 +640,7 @@ public function phrases(Request $request, Equipes $equipe, $id)
 				'form'=>$form->createView(),
 				'progression'=>$progression,
 				'jure'=>$jure,
-                                'memoires'=>$memoires
+                                'memoires'=>$memoire
 				  ));
     return new Response($content);
     }           

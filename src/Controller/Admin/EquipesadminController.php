@@ -65,11 +65,12 @@ class EquipesadminController extends EasyAdminController
         
     }
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
-           
+           $request=Request::createFromGlobals();
         
         $edition= $this->session->get('edition');
          $this->session->set('edition_titre',$edition->getEd());
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+      if ($request->query->get('entity')=='Equipesadmin'){
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $em->createQueryBuilder()
             ->select('entity')
@@ -78,7 +79,20 @@ class EquipesadminController extends EasyAdminController
             ->where('edition.ed =:edition')
             ->setParameter('edition', $edition->getEd())
            ->addOrderBy('entity.centre', 'ASC')
-           ->addOrderBy('entity.'.$sortField,$sortDirection);
+           ->addOrderBy('entity.'.$sortField,$sortDirection);}
+         if ($request->query->get('entity')=='Selectionnees'){
+             $queryBuilder = $em->createQueryBuilder()
+            ->select('entity')
+            ->from($this->entity['class'], 'entity')
+            ->where('entity.edition =:edition')
+            ->setParameter('edition', $edition)
+            ->andWhere('entity.selectionnee = TRUE')
+           ->addOrderBy('entity.lettre', 'ASC');
+            
+         }
+           
+           
+           
             return $queryBuilder;
          
       }

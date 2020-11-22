@@ -601,10 +601,10 @@ class SecretariatadminController extends AbstractController
          */
 	public function cree_equipes(Request $request)
 	{ 
-
+               $edition=$this->session->get('edition');
             $defaultData = ['message' => 'Charger le fichier Équipe2'];
             $form = $this->createFormBuilder($defaultData)
-                         ->add('Créer',      SubmitType::class)
+                         ->add('Creer',      SubmitType::class)
                           ->getForm();
             
             $repositoryEquipesadmin = $this
@@ -615,35 +615,48 @@ class SecretariatadminController extends AbstractController
 			->getDoctrine()
 			->getManager()
 			->getRepository('App:Equipes');
-            $form->handleRequest($request);                            
-            if ($form->isSubmitted() && $form->isValid()) 
-                {
+             $repositoryMemoires = $this
+			->getDoctrine()
+			->getManager()
+			->getRepository('App:Fichiersequipes');
+            
                 $listEquipes=$repositoryEquipesadmin ->createQueryBuilder('e')
                                                      ->select('e')
                                                      ->where('e.selectionnee= TRUE')
+                                                     ->andWhere('e.edition =:edition')
+                                                     ->setParameter('edition',$edition)
                                                      ->orderBy('e.lettre','ASC')
                                                      ->getQuery()
                                                      ->getResult();
-		$em = $this->getDoctrine()->getManager();
-                foreach ($listEquipes as $equipeadm)  
-                   {
+                		$em = $this->getDoctrine()->getManager();
+                                
+                                
+                                
+                foreach ($listEquipes as $equipeadmin)  
+                   { 
+                    
+                    $memoires=$repositoryMemoires->createQueryBuilder('m')
+                           ->where('m.equipe =:equipe')
+                           ->setParameter('equipe',$equipeadmin)
+                           ->andWhere('m.typefichier < 2')
+                            ->andWhere('m.national = TRUE')
+                            ->getQuery()->getResult();;
                    // dd($equipeadm);
-                   $lettre=$equipeadm->getLettre();
+                   $lettre=$equipeadmin->getLettre();
+                   if (!$repositoryEquipes->findOneByLettre(['lettre'=>$lettre])){
                    $equipe= new equipes(); 
-                   $info=$repositoryEquipesadmin->findOneByLettre($lettre);
-                   $equipe->setInfoequipe($info);
-                   $lettre=$equipeadm->getLettre();
-                   $equipe->setLettre($lettre) ;
-                   $nomEq=$equipeadm->getTitreProjet();                   
-                   $equipe->setTitreProjet($nomEq);
+                  
+                   $equipe->setLettre($lettre);
+                   $equipe->setInfoequipe($equipeadmin);
+                   $equipe->setTitreProjet($equipeadmin->getTitreProjet());
+                   $equipe->setMemoire($memoires);
                    $em->persist($equipe);
-                    }
+                    
                     $em->flush();
+                   }
+                   }
                     return $this->redirectToRoute('core_home');
-                }
-        $content = $this
-                        ->renderView('secretariatadmin\creer_equipes.html.twig', array('form'=>$form->createView(),));
-	return new Response($content);          
+                
         }
         
         /**

@@ -66,7 +66,7 @@ class Notes
 
     /**
     * @ORM\ManyToOne(targetEntity="App\Entity\Equipes", inversedBy="notess")
-    * @ORM\JoinColumn(nullable=false)
+    * @ORM\JoinColumn(name="equipe_id",nullable=false)
     */
     private $equipe;
 
