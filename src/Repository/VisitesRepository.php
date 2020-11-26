@@ -15,13 +15,12 @@ class VisitesRepository extends \Doctrine\ORM\EntityRepository
     public static function getVisites(VisitesRepository $vr): QueryBuilder
                 {   
 		
-                    return $vr->createQueryBuilder('v')->select('v');
-                           // ->where('v.attribue = :attribue')
-                           // ->setParameter('attribue',0);    
+                    return $vr->createQueryBuilder('v')->select('v')
+                                       ->where('v.equipe = FALSE');
+                        
                     
  
                      }
-    
     
     
 }

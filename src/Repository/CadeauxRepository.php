@@ -24,9 +24,9 @@ class CadeauxRepository extends \Doctrine\ORM\EntityRepository
      public static function getCadeaux(CadeauxRepository $cr): QueryBuilder
                 {   
 		
-                    return $cr->createQueryBuilder('c')->select('c');
-                            //->where('c.attribue = :attribue')
-                            //->setParameter('attribue',0);    
+                    return $cr->createQueryBuilder('c')->select('c')
+                            ->where('c.attribue = FALSE');
+                           
                     
  
                      }

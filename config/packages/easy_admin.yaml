@@ -24,6 +24,7 @@ imports :
       - { resource: easy_admin/fichiersequipesdiaporamas.yml }
       - { resource: easy_admin/videosequipes.yml }
       - { resource: easy_admin/fichiersequipesautorisations.yml }
+      - { resource: easy_admin/visites.yml }
 easy_admin:   
     user:
         name_property_path: 'Nom'

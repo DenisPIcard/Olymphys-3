@@ -27,7 +27,14 @@ class Visites
      * @ORM\Column(name="intitule", type="string", length=255, nullable=true)
      */
     private $intitule;
-
+    
+    
+     /**
+    * @ORM\ManyToOne(targetEntity="App\Entity\Equipes", inversedBy="visite", cascade={"persist", "remove"})
+    * @ORM\JoinColumn(name="equipe_id",nullable=true)
+    */
+    public $equipe;
+    
 
     /**
      * Get id
@@ -38,7 +45,7 @@ class Visites
     {
         return $this->id;
     }
-
+    
     /**
      * Set intitule
      *
@@ -62,4 +69,31 @@ class Visites
     {
         return $this->intitule;
     }
+
+    public function getEquipe(): ?Equipes
+    {
+        return $this->equipe;
+    }
+
+    
+
+    public function setEquipe(?Equipes $equipe): self
+    {   $equipeini=$this->equipe;
+        $this->equipe = $equipe;
+   
+        if ($equipe==null){
+            
+        $equipeini->setVisite(null);}
+        else{
+               
+            $equipe->setVisite($this);
+            
+        }
+        return $this;
+    }
+    
+    
+    
+    
+    
 }

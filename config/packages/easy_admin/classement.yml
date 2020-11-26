@@ -2,7 +2,7 @@ easy_admin :
     entities :
         Classement :
             class :  App\Entity\Classement
-            label : 'Répartition des prix<'
+            label : 'Répartition des prix'
             list :
                 permission: 'ROLE_COMITE'               
                 fields : 

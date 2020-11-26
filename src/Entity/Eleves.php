@@ -156,4 +156,16 @@ class Eleves
     {
         return $this->lettreEquipe;
     }
+
+    public function getEquipe(): ?Equipesadmin
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(?Equipesadmin $equipe): self
+    {
+        $this->equipe = $equipe;
+
+        return $this;
+    }
 }

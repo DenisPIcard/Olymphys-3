@@ -1190,7 +1190,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
         $liste_fichiers=$qb1->getQuery()->getResult();    
         $autorisations=$qb4->getQuery()->getResult();
         
-        //dd($autorisations);
+     
       }
        if ($role=='ROLE_JURYCIA'){         
            $qb1->andWhere('t.typefichier <:type')

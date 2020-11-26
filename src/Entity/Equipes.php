@@ -82,7 +82,8 @@ class Equipes
     private $rang;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Visites", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Visites", mappedBy="equipe")
+     * @ORM\JoinColumn(name="visite_id", nullable=true)
      */
     private $visite;
 
@@ -620,5 +621,11 @@ class Equipes
         return $this;
     }
     
-   
+   public function getClassementEquipe(){
+       $string=$this->classement.' prix'.' : '.$this->lettre.' - '.$this->infoequipe->getTitreProjet().' '.$this->infoequipe->getLyceeLocalite();
+       
+       Return $string;
+       
+       
+   }
 }

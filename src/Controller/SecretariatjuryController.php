@@ -130,11 +130,14 @@ $repositoryEquipesadmin = $this ->getDoctrine()
                     $lesEleves[$lettre] = $repositoryEleves->findByEquipe(['equipe'=>$equipe]);
                     $rne = $equipe->getRne();
                     $lycee[$lettre]= $repositoryRne->findByRne($rne);
+                   
                     }
- 
+          
                 $tableau=[$listEquipes,$lesEleves,$lycee];
                 
                 $this->session->set('tableau',$tableau);    
+                
+                
            	$content = $this->renderView('secretariatjury/accueil.html.twig', 
 			array(''));
 
@@ -1268,12 +1271,17 @@ public function lescadeaux(Request $request, $compteur=1)
          * 
 	*/
 	public function tableau_excel_palmares_site(Request $request)
-	{
-		$session=new Session();
-                $tableau=$session->get('tableau');
+	{   $em=$this->getDoctrine()->getManager();
+                  $edition=$this->session->get('edition');
+                 
+                   $edition=$em->merge($edition);
+	
+                $tableau=$this->session->get('tableau');
+          
                 $equipes=$tableau[0];
                 $lesEleves=$tableau[1];
                 $lycee=$tableau[2];
+               
                 $repositoryUser = $this->getDoctrine()
                                        ->getManager()
                                        ->getRepository('App:User');
@@ -1306,15 +1314,15 @@ public function lescadeaux(Request $request, $compteur=1)
 			->getDoctrine()
 			->getManager()
 			->getRepository('App:Edition');
-                $ed=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-                $date=$ed->getDate();
+              
+                $date=$edition->getConcourscn();
                 $result = $date->format('d/m/Y');
-                $edition=$ed->getEdition();
+                $ed=$edition->getEd();
 		$spreadsheet = new Spreadsheet();
                 $spreadsheet->getProperties()
                         ->setCreator("Olymphys")
                         ->setLastModifiedBy("Olymphys")
-                        ->setTitle("Palmarès de la ".$edition."ème édition - ".$result)
+                        ->setTitle("Palmarès de la ".$ed."ème édition - ".$result)
                         ->setSubject("Palmarès")
                         ->setDescription("Palmarès avec Office 2005 XLSX, generated using PHP classes.")
                         ->setKeywords("office 2005 openxml php")
@@ -1372,7 +1380,7 @@ public function lescadeaux(Request $request, $compteur=1)
         	foreach ($listEquipes as $equipe) 
                 {
                     $lettre=$equipe->getLettre();
-
+                   
                     $ligne4 = $ligne + 3;
                     $sheet->mergeCells('A'.$ligne.':A'.$ligne);
                     $sheet->setCellValue('A'.$ligne, strtoupper($lycee[$lettre][0]->getAcademie()))
@@ -1516,10 +1524,15 @@ public function lescadeaux(Request $request, $compteur=1)
 	*/
 public function tableau_excel_palmares_jury(Request $request)
     {
-	$session=new Session();
-        $tableau=$session->get('tableau');
+	$em=$this->getDoctrine()->getManager();
+                  $edition=$this->session->get('edition');
+                 
+                   $edition=$em->merge($edition);
+        
         //$lesEleves=$tableau[1];
+         $tableau=$this->session->get('tableau');          
         $lycee=$tableau[2];
+       
         $repositoryEquipes = $this->getDoctrine()
                                   ->getManager()
                                   ->getRepository('App:Equipes');

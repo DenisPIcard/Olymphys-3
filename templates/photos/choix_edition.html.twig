@@ -9,6 +9,18 @@
 
 
 {% block body %}
+<div class="w-50 p-3" >
+    {% for message in app.session.flashbag.get('info') %}
+    <div class="alert alert-info"> {{ message }}</div>
+  {% endfor %}
+   {% for message in app.session.flashbag.get('alert') %}
+    <div class="alert alert-danger"> {{ message }}</div>
+  {% endfor %}
+  {% for message in app.session.flashbag.get('success') %}
+    <div class="alert alert-info"> {{ message }}</div>
+  {% endfor %}
+</div>  
+    
   {% for edition in editions %}
       <h2>La {{ edition.ed}}<sup>e</sup>  édition </h2>
       <li><a  class="button" href="{{ path('photos_voirphotoscia',{edition : edition.id})}}" >Concours interacadémiques</a>

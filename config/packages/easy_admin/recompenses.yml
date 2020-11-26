@@ -16,8 +16,7 @@ easy_admin :
                     - { property: 'remisPar'}
                     
             
-        Visites :
-            class : App\Entity\Visites
+       
             
         Cadeaux :
               class : App\Entity\Cadeaux       

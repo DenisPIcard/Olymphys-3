@@ -29,6 +29,11 @@
 
 {% block body %}
     <div class="well">
+        {% if role=='ROLE_PROF' %}
+        <font color= 'red'> Ces photos ne seront visibles en public que le lendemain du concours 
+        {% if concours =='cia' %} interacadémique {% endif  %}
+         {% if concours =='cn' %}national {% endif  %}</font>
+         {% endif %}
           {% form_theme form 'bootstrap_4_layout.html.twig' %}
        {{ form_start(form) }}
     <div class="my-custom-class-for-errors">
