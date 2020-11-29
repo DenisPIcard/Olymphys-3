@@ -45,6 +45,7 @@ easy_admin :
                         - { entity: 'Cadeaux' , icon : 'asterisk'}
                         
                     - { label: 'Retour à la page d''accueil', route: 'core_home' , icon : 'home'}
+                    - { label: 'Secrétariat du jury', route: 'secretariatjury_accueil' , icon : 'pencil'}
                     - { label : 'Deconnexion' , route: 'logout', icon : 'door-open'}
                    #- {  label: 'Retour à la page d''accueil', url: '/public/index.php' , icon : 'home'}
                    # - { label : 'Deconnexion' , url : '/public/index.php/logout', icon : 'door-open'

@@ -7,13 +7,13 @@ easy_admin :
                 batch_action: ['delete']
                 fields:
                      - 'intitule'
-                     - { property: 'equipe.classementEquipe', label : 'Equipe'}
+                     - { property: 'attribue', label : 'Attribué'}
             edit:
                 title: 'Modifier une visite'
                 actions : ['-delete']
                 fields:
                     - 'intitule'
-                    - { property: 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipes', query_builder : 'App\Repository\EquipesRepository::getEquipes', 'choice_label' : 'getClassementEquipe'}}
+                    - { property: 'attribue'}
                   
                   
                     

@@ -421,7 +421,7 @@ class PhotosController extends  AbstractController
         }    
            /**
          * 
-         * @IsGranted("ROLE_ORGACIA")
+         * @IsGranted("ROLE_PROF")
          * @Route("/photos/gestion_photos, {infos}", name="photos_gestion_photos")
          * 
          */    
@@ -442,61 +442,105 @@ class PhotosController extends  AbstractController
               $repositoryCentrescia=$this->getDoctrine()
                                    ->getManager()
                                    ->getRepository('App:Centrescia');
-              
+            $user = $this->getUser();
+            $id_user=$user->getId(); 
+           $roles=$user->getRoles();
+           $role=$roles[0];
            $concourseditioncentre =explode('-',$infos);
             $concours=$concourseditioncentre[0];
             $edition=$repositoryEdition->find(['id' =>$concourseditioncentre[1]]);
             
              If ($concours=='cia'){
-              $centre = $repositoryCentrescia->find(['id'=>$concourseditioncentre[2]]);
-                    
-                 $qb= $repositoryEquipesadmin->createQueryBuilder('e')
-                         ->where('e.centre=:centre')
-                         ->andWhere('e.edition =:edition')
+                $qb= $repositoryEquipesadmin->createQueryBuilder('e'); 
+                $centre = $repositoryCentrescia->find(['id'=>$concourseditioncentre[2]]);
+                         $qb->andWhere('e.edition =:edition')
                          ->setparameter('edition', $edition)
-                         ->setParameter('centre',$centre);
+                         ->addOrderBy('e.numero','ASC');
+             if ($role!='ROLE_PROF'){
+                 $ville=$centre->getCentre();
+                        $qb->andWhere('e.centre=:centre')
+                         ->setParameter('centre',$centre);        
+             }
+                 if ($role=='ROLE_PROF'){
+                     $ville='prof';
+                   $qb->andWhere('e.idProf1 =:prof1') 
+                          ->setParameter('prof1',$id_user)
+                          ->orWhere('e.idProf2 =:prof2') 
+                          ->setParameter('prof2',$id_user);
+                   
+               }
+                 
+                 
                  $liste_equipes=$qb->getQuery()->getResult();
                 
                 $qb2=$repositoryPhotos->createQueryBuilder('p')
-                         ->join('p.equipe','r')
-                         ->andWhere('r.centre =:centre')
-                         ->setParameter('centre', $centre)
-                         ->andWhere('p.edition=:edition')
+                                     ->leftJoin('p.equipe','e')
+                                 ->andWhere('p.edition=:edition')
                         ->setParameter('edition',$edition)
                         ->andWhere('p.national = FALSE')
-                        ->orderBy('r.numero','ASC');
-                  $liste_photos=$qb2->getQuery()->getResult();  
+                        ->orderBy('e.numero','ASC');;
+                        if ($role!='ROLE_PROF'){
+                         $qb2 ->andWhere('e.centre =:centre')
+                         ->setParameter('centre', $centre);
+                        }
+                      
                  
-               
-                 
-             }
+                 if ($role=='ROLE_PROF'){
+                   $qb2->andWhere('e.idProf1 =:prof1') 
+                          ->setParameter('prof1',$id_user)
+                           ->orWhere('e.idProf2 =:prof2')
+                           ->setParameter('prof2',$id_user);
+                 }  
+                 $liste_photos=$qb2->getQuery()->getResult();  
+                }
              
              If ($concours=='national'){
              
              $equipe= $repositoryEquipesadmin->findOneBy(['id'=>$concourseditioncentre[2]]);
+            
                  $qb= $repositoryPhotos->createQueryBuilder('p')
                           ->where('p.equipe =:equipe')
+                          ->andWhere('p.edition=:edition')
+                          ->setParameter('edition',$edition)
                          ->andWhere('p.national = TRUE')
                          ->setParameter('equipe',$equipe);
-                   
-                 $liste_photos=$qb->getQuery()->getResult();                 
+                   if ($role=='ROLE_PROF'){
+                   $qb->leftJoin('p.equipe','eq')
+                           ->andWhere('eq.idProf1 =:prof1') 
+                          ->setParameter('prof1',$id_user)
+                           ->orWhere('eq.idProf2 =:prof2')
+                           ->setParameter('prof2',$id_user);
+                 }   
+                 $liste_photos=$qb->getQuery()->getResult();         
+               
              }
              $i=0;
              foreach ($liste_photos as $photo){
                  $id= $photo->getId();
                   $formBuilder[$i]=$this->get('form.factory')->createNamedBuilder('Form'.$i, FormType::class,$photo);  
+                  if($photo->getComent()==null){$data=$photo->getEquipe()->getTitreProjet();}
+                  else {$data=$photo->getComent();}
             $formBuilder[$i]->add('id',  HiddenType::class, ['disabled'=>true, 'data' => $id, 'label'=>false])
-                                       ->add('photo', CheckboxType::class,[
-                                           'label'=>'',
-                                        'required'=>false,
-                                         'mapped'=>false
-                                         ])
+                                       
                                          ->add('coment', TextType::class,[
-                                             //'mapped'=>false,
+                                             
                                              'required'=>false,
-                                             ])
-                                        ->add('sauver',SubmitType::class)
+                                            'data'=>$data
+                                             ]);
+            if ($concours=='cia'){
+                                      $formBuilder[$i] ->add('equipe',EntityType::class,[
+                                         'class' => 'App:Equipesadmin',
+                                       'query_builder'=>$qb,
+                                                        
+                                        'choice_label'=>'getInfoequipe',
+                                        'label' => 'Choisir une équipe',
+                                         'mapped'=>true,   
+                                        
+                                       ]);
+            }
+                                        $formBuilder[$i]->add('sauver',SubmitType::class)
                                         ->add('effacer',SubmitType::class)
+                                       
                     ;
             
                                        
@@ -516,6 +560,7 @@ class PhotosController extends  AbstractController
                                 
                                 $em=$this->getDoctrine()->getManager();
                                 $photo->setComent($Form[$i]->get('coment')->getData());
+                                $photo->setEquipe($Form[$i]->get('equipe')->getData());
                                 $em->persist($photo);
                                 $em->flush();
                                
@@ -528,27 +573,34 @@ class PhotosController extends  AbstractController
                                  
                              }
                             
-                            
-                            
-                   
                    }
                    }
                    
                   $i=$i+1;
+                  
+             }
+             if (!isset($formtab)){
+                 $request->getSession()
+                         ->getFlashBag()
+                         ->add('info', 'Vous n\'avez pas déposé de photo pour le concours '.$concours.' de l\'édition '.$edition->getEd().' à ce jour') ;
+             return $this->redirectToRoute('core_home');
+                 
+                 
+                 
              }
              
               if ($concours=='cia'){
                $content = $this
                           ->renderView('photos/gestion_photos_cia.html.twig', array('formtab'=>$formtab,
-                         'liste_photos'=>$liste_photos,'edition'=>$edition, 'centre'=>$centre->getCentre(),
-                         'edition'=>$edition, 'liste_equipes'=> $liste_equipes, 'concours'=>'cia')); 
+                         'liste_photos'=>$liste_photos,'edition'=>$edition, 'centre'=>$ville,
+                         'edition'=>$edition, 'liste_equipes'=> $liste_equipes, 'concours'=>'cia','role'=>$role)); 
             return new Response($content); 
               }
-              
+             
                if ($concours=='national'){
                $content = $this
                           ->renderView('photos/gestion_photos_cn.html.twig', array('formtab'=>$formtab, 'liste_photos'=>$liste_photos,
-                              'edition'=>$edition,  'equipe'=>$equipe,'concours'=>'national')); 
+                              'edition'=>$edition,  'equipe'=>$equipe,'concours'=>'national','role'=>$role)); 
             return new Response($content); 
               }
              
@@ -556,7 +608,7 @@ class PhotosController extends  AbstractController
            
           /**
          * 
-         * @IsGranted("ROLE_ORGACIA")
+         * @IsGranted("ROLE_PROF")
          * @Route("/photos/confirme_efface_photo, {concours_photoid_infos}", name="photos_confirme_efface_photo")
          * 
          */    

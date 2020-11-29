@@ -164,21 +164,21 @@ class AdminController extends EasyAdminController
         
         
     }
-   
-   
+   public function EditAction(){
+      $idequipe=$this->request->query->get('id');
+       $class = $this->entity['class'];
+       if ($class=='equipe'){
+        $repository = $this->getDoctrine()->getRepository($class);
+        $cadeau=$repository->find(['id'=>$idequipe])->getCadeau();
+        $visite=$repository->find(['id'=>$idequipe])->getVisite();
+      $this->session->set('idcadeau',$cadeau);
+       $this->session->set('idvisite',$visite);
+       }
+     return parent::editAction();  
+   }
    
   
-    
-   public function persistPhotosinterEntity($entity)
-            {     $edition=$entity->getEdition();
-            if(!$edition){
-                  $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                  $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-            }
-                  $entity->setEdition($edition);
-                            
-              parent::persistEntity($entity);
-         } 
+        
     
     public function persistUserEntity($entity)
     {

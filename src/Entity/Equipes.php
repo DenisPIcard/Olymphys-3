@@ -82,7 +82,7 @@ class Equipes
     private $rang;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Visites", mappedBy="equipe")
+     * @ORM\OneToOne(targetEntity="App\Entity\Visites",cascade={"persist"})
      * @ORM\JoinColumn(name="visite_id", nullable=true)
      */
     private $visite;
@@ -286,7 +286,16 @@ class Equipes
      * @return Equipes
      */
     public function setVisite(\App\Entity\Visites $visite = null)
-    {
+    {    $visiteini=$this->visite; 
+         if ($visite != null){
+            $visite->setAttribue(true);
+           
+        }
+        else{
+            
+            if($visiteini!=null){
+            $visiteini->setAttribue(false);}
+        }
         $this->visite = $visite;
 
         return $this;
@@ -371,7 +380,17 @@ class Equipes
      * @return Equipes
      */
     public function setCadeau(\App\Entity\Cadeaux $cadeau = null)
-    {
+    {      
+        $cadeauini=$this->cadeau;
+        if ($cadeau != null){
+            $cadeau->setAttribue(true);
+           
+        }
+        else{
+        if ($cadeauini!=null){
+            $cadeauini->setAttribue(false);
+        }
+        }
         $this->cadeau = $cadeau;
 
         return $this;

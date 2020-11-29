@@ -749,14 +749,20 @@ public function RaZ(Request $request)
      $repositoryCadeaux = $this->getDoctrine()
                            ->getManager()
                            ->getRepository('App:Cadeaux');
+     $repositoryVisites = $this->getDoctrine()
+                           ->getManager()
+                           ->getRepository('App:Visites');
     $ListPrix = $repositoryPrix->findAll();
     $prix = $repositoryPalmares->findOneByCategorie('prix');
     $em=$this->getDoctrine()->getManager();
     $ListeEquipes = $repositoryEquipes->findAll();
     $listecadeaux=  $repositoryCadeaux->findAll();
+    $listevisites= $repositoryVisites->findAll();
     foreach ($ListeEquipes as $equipe)
     	{
         $equipe->setPrix(null);
+        $equipe->setCadeau(null);
+        $equipe->setVisite(null);
         $em->persist($equipe);
     	}
     foreach (range('A','Z') as $i)
@@ -777,6 +783,10 @@ public function RaZ(Request $request)
     foreach ($listecadeaux as $cadeau){
         $cadeau->setAttribue(FALSE);
         $em->persist($cadeau);
+    }
+     foreach ($listevisites as $visite){
+        $visite->setAttribue(FALSE);
+        $em->persist($visite);
     }
     $em->flush();    
     $content = $this->renderView('secretariatjury/RaZ.html.twig');
@@ -1161,7 +1171,7 @@ public function lescadeaux(Request $request, $compteur=1)
 			
                     if($compteur<$nbreEquipes)
 			{
-                        return $this->redirectToroute('secretariat_lescadeaux',array('compteur'=>$compteur+1));	
+                        return $this->redirectToroute('secretariatjury_lescadeaux',array('compteur'=>$compteur+1));	
 			}
                     else
                         {

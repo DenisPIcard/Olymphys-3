@@ -30,10 +30,11 @@ class Visites
     
     
      /**
-    * @ORM\ManyToOne(targetEntity="App\Entity\Equipes", inversedBy="visite", cascade={"persist", "remove"})
-    * @ORM\JoinColumn(name="equipe_id",nullable=true)
-    */
-    public $equipe;
+     * @var boolean
+     *
+     * @ORM\Column(name="attribue", type="boolean")
+     */
+    public $attribue;
     
 
     /**
@@ -70,25 +71,17 @@ class Visites
         return $this->intitule;
     }
 
-    public function getEquipe(): ?Equipes
-    {
-        return $this->equipe;
-    }
-
     
 
-    public function setEquipe(?Equipes $equipe): self
-    {   $equipeini=$this->equipe;
-        $this->equipe = $equipe;
-   
-        if ($equipe==null){
-            
-        $equipeini->setVisite(null);}
-        else{
-               
-            $equipe->setVisite($this);
-            
-        }
+    public function getAttribue(): ?bool
+    {
+        return $this->attribue;
+    }
+
+    public function setAttribue(bool $attribue): self
+    {
+        $this->attribue = $attribue;
+
         return $this;
     }
     

@@ -85,7 +85,12 @@ class Photos
         * @var boolean
         */
       private $national;
-     
+      
+      /**
+       * @ORM\ManyToOne(targetEntity="App\Entity\User")
+       * @ORM\JoinColumn(name="user_id",  referencedColumnName="id" )
+       */
+      private $user;
      /**
        * 
        * x
@@ -267,6 +272,18 @@ public function personalNamer()    //permet à vichuploeder et à easyadmin de r
     public function setComent($coment)
     {
         $this->coment = $coment;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
         return $this;
     }
    

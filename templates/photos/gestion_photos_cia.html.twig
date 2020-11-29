@@ -11,14 +11,21 @@
 
 
 
-{% block titre3 %}<center>{{edition.ed}} <sup>eme</sup> Les photos  des épreuves interacadémiques.</center></br> 
-   
+{% block titre3 %}<center>{{edition.ed}}<sup>e</sup> Les photos  des épreuves interacadémiques.</center></br> 
+   {% if centre!='prof' %}
     <Font color="blue">Gestion des photos du centre  :  {{centre}}  </font>
-
+    {% endif %}
+    {% if centre=='prof' %}
+    <Font color="blue">Gestion des photos de mes equipes </font>
+    {% endif %}
+    
+    
 {% endblock %}
 {% block body %}
      {% if concours=='cia' %}
+      {% if role!='ROLE_PROF' %}
     <center><a href="{{ path('photos_voirphotoscia',{edition : edition.id})  }}" >Retour à la liste des centres</a></center>
+    {% endif %}
    {% endif %}
    
     {% if concours=='national' %}
@@ -31,7 +38,7 @@
      
      {% form_theme form 'bootstrap_4_layout.html.twig' %} 
   
-         <div class="col-lg-3">       
+        <div class="col-lg-3">       
        
          {% for photo in liste_photos %}
                   
@@ -45,16 +52,16 @@
                    
                         {{ form_widget(form.id)}}  
                         
-                        <div class="custom-control custom-checkbox">
-                   {{ form_widget(form.photo,{'label': '', 'class':'custom-control-input'})}} {#  #}
-                        </div>
+                        {#<div class="custom-control custom-checkbox">
+                   {{ form_widget(form.photo,{'label': '', 'class':'custom-control-input'})}} 
+                        </div> #}
                        
                         <a href="{{asset('/upload/photos/'~photo.photo)}}">
-                       <div class="container">
+                       <div class="container-sm p-3 bg-dark text-white">
                        {# <div class="row>"> #}
                            
-                                <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}" backgrd="black"></div>
-                           <div class="text">
+                                <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}",class="img-responsive"></div>
+                           <div class="text-center">
                               {% if photo.coment=='' %}
                                        {%  set titre = photo.equipe.titreProjet[0:100] %}
                                        <font size = "-2">{{titre}} </font>   
@@ -66,14 +73,36 @@
                            </div>
                    </div></a>
                       {# </div>  
+              
                       {% if  is_granted('ROLE_COMITE') %}#}
-              <div class=row">        
-           {{ form_row(form.coment,{'label': 'Saisir le commentaire  ','class':'custom-control-input','data':photo.coment})}}  
-          
-           {{ form_row(form.sauver,{'label':'Enregistrer le commentaire'})}}
-          
-           {{ form_row(form.effacer,{'label':'Supprimer la photo'})}}
+               
+              <div class="form-group row">  
+                   <div class="form-group mb-3">
+                      <div class="col">
+           {{ form_row(form.coment,{'label': 'Saisir le commentaire  ' })}}  
+                  </div>
+                   </div>
+                  <div class="form-group mb-3">
+                      <div class="col">
+           {{ form_row(form.equipe,{'label': 'Changer d\'équipe  ','data' : photo.equipe})   }}
+           </div>
+                  </div>
               </div>
+               
+          
+          
+              <div class="form-group row">
+                  <div class="col">
+           {{ form_widget(form.sauver,{'label':'Enregistrer'})}}
+                  </div>
+             <div class ="col">
+           {{ form_widget(form.effacer,{'label':'Supprimer'})}}
+               </div>
+              </div>
+         
+           
+        
+         
               
                    {# {% endif %}  #}
             {{ form_end(form) }}       
@@ -100,6 +129,7 @@
   
     </div>
     </div>
+   {%  if role!='ROLE_PROF' %}
    {% if concours=='cia' %}
     <center><a href="{{ path('photos_voirphotoscia',{edition : edition.id})  }}" >Retour à la liste des centres</a></center>
    {% endif %}
@@ -107,7 +137,7 @@
     {% if concours=='national' %}
     <center><a href="{{ path('photos_voirphotoscn',{edition : edition.id})  }}" >Retour à la liste des équipes</a></center>
    {% endif %}
-   
+   {% endif %}
    {% block javascripts %}
   
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

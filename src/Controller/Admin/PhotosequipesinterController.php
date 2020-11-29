@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Form\FormInterface;
@@ -24,6 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Mapping\Annotation\Entity;
 use App\Form\Filter\PhotosequipesinterFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use Symfony\Component\Filesystem\Filesystem;
+use ZipArchive;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
@@ -141,6 +144,48 @@ public function deleteAction(){
            $filesystem->remove('/upload/photos/thumbs/'.$image->getPhoto());
     return parent::deleteAction();
 }
+public function telechargerBatchAction(array $ids)
+    {
+        $class = $this->entity['class'];
+       
+        $repository = $this->getDoctrine()->getRepository($class);
+
+    $FileName=$this->session->get('edition')->getEd().'photoscia'.date('Y-m-d-H-i-s');
+        $zipFile = new \ZipArchive();
+        
+        if ($zipFile->open($FileName, ZipArchive::CREATE) === TRUE)
+        {
+            foreach ($ids as $id) 
+                {
+
+
+                    $entity = $repository->find($id);
+                   
+                       
+                    $fichier= $this->getParameter('app.path.photos').'/'.$entity->getPhoto();
+                    
+                    //$nom_memoire=$entity->getMemoire();
+                    //$filenameFallback = iconv('UTF-8','ASCII//TRANSLIT',$nom_memoire);
+                    $zipFile->addFromString(basename($fichier),  file_get_contents($fichier));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
+
+                  }
+              $zipFile->close();
+    }
+              $response = new Response(file_get_contents($FileName));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
+
+              $disposition = HeaderUtils::makeDisposition(
+                  HeaderUtils::DISPOSITION_ATTACHMENT,
+                  $FileName
+                        );
+                $response->headers->set('Content-Type', 'application/zip'); 
+                $response->headers->set('Content-Disposition', $disposition);
+
+                 @unlink($FileName);
+                //$content = $this->render('secretariat\lire_memoire.html.twig', array('repertoirememoire' => $this->getParameter('repertoire_memoire_national'),'memoire'=>$fichier));
+                return $response; 
+    } 
+
+
 
 
 
