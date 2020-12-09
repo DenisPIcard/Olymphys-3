@@ -2,11 +2,12 @@ easy_admin :
     entities :
         Selectionnees :
             class : App\Entity\Equipes
-            label : '<h2> Les équipes du CN</h2>'
-            #controller: App\Controller\Admin\EquipesadminController 
+            label : ' Les équipes du CN '
+            controller: App\Controller\Admin\EquipesController 
             list : 
-                #dql_filter: "entity.selectionnee = '1' "
-                actions : ['-delete']
+                
+                dql_filter:
+                actions : ['-delete', '-new']
                 max_results: 25
                 sort: ['lettre', 'ASC']
                 fields :

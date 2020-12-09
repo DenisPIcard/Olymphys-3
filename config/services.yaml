@@ -10,7 +10,7 @@ parameters:
     app.path.fichiers : '%kernel.project_dir%/public/fichiers'
     app.path.fichiers.site : /../public/fichiers
     app.path.fichiers.localhost : /fichiers
- 
+    env(DATABASE_URL): "mysql://root:@127.0.0.1:3306/olymphys_odpf"
     
 services:
     # default configuration for services in *this* file

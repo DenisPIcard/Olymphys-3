@@ -20,12 +20,14 @@
 {% endif %}
 {% endblock %}
 {% block body %}
+     {% if role!='ROLE_PROF' %}
      {% if concours=='cia' %}
     <a href="{{ path('photos_voirphotoscia',{edition : edition.id})  }}" >Retour à la liste des centres</a>
    {% endif %}
    
     {% if concours=='national' %}
    <a href="{{ path('photos_voirphotoscn',{edition : edition.id})  }}" >Retour à la liste des équipes</a>
+   {% endif %}
    {% endif %}
     <div class="container-lg-12">
     <div class="row ">
@@ -54,7 +56,7 @@
                        <div class="container-sm p-3 bg-dark text-white">
                        {# <div class="row>"> #}
                            
-                               <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}" backgrd="black"></div>
+                               <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}" class="img-thumbnail" ></div>
                            <div class="text-center">
                                {% if photo.coment=='' %}
                                        {%  set titre = photo.equipe.titreProjet[0:100] %}

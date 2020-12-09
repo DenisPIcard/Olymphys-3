@@ -478,6 +478,7 @@ class SecretariatadminController extends AbstractController
                         $value = $worksheet->getCellByColumnAndRow(4, $row)->getValue();//password
                         $password= $this->passwordEncoder->encodePassword($user, $value);
                         $user->setPassword($password);
+                        
                         $value = $worksheet->getCellByColumnAndRow(5, $row)->getValue();//actif
                         $user->setIsactive($value);
                         $value = $worksheet->getCellByColumnAndRow(6, $row)->getValue();//email

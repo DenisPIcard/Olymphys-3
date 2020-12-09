@@ -6,8 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Validator\Constraints\DateTime;
+
 use App\Entity\User;
 use App\Entity\Edition;  
+
 class CoreController extends AbstractController
 {    
     private $session;
@@ -32,9 +35,9 @@ class CoreController extends AbstractController
      $this->session->set('edition', $edition); 
     if (null != $user)
     {    
-     $datelimcia = $edition->getDatelimcia();
+    $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat(); 
-     $dateouverturesite=$edition->getDateouverturesite();
+    $dateouverturesite=$edition->getDateouverturesite();
     $dateconnect= new \datetime('now');
       if ($dateconnect>$datelimcia) {
         $concours='national';
@@ -42,8 +45,13 @@ class CoreController extends AbstractController
     if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datelimcia)) {
         $concours= 'interacadémique';
     }
-     
-     $this->session->set('concours', $concours);          
+     $datelimphotoscia=date_create();
+    $datelimphotoscn=date_create();
+     date_date_set($datelimphotoscia,$edition->getconcourscia()->format('Y'),$edition->getconcourscia()->format('m'),$edition->getconcourscia()->format('d')+17);
+      date_date_set($datelimphotoscn,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')+30);
+     $this->session->set('concours', $concours);   
+     $this->session->set('datelimphotoscia', $datelimphotoscia);
+     $this->session->set('datelimphotoscn', $datelimphotoscn);
      //dd($this->session);
      //$session->set('edition',$edition);  
      //  dd($user);

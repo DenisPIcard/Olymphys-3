@@ -40,7 +40,7 @@ use Symfony\Component\HttpFoundation\Response ;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\File\File;
+//use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -52,6 +52,10 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\ConstraintViolation;
 use ZipArchive;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -72,7 +76,7 @@ class PhotosController extends  AbstractController
          * @Route("/photos/deposephotos,{concours}", name="photos_deposephotos")
          * 
          */
-    public function deposephotos(Request $request, $concours)
+    public function deposephotos(Request $request, ValidatorInterface $validator, $concours)
             {
              $em=$this->getDoctrine()->getManager();
             
@@ -109,9 +113,37 @@ class PhotosController extends  AbstractController
                      $files=$form->get('photoFiles')->getData();
                      
                      if($files){
+                         $nombre=count($files);
+                         $fichiers_erreurs=[];
+                        $i=0;
                        foreach($files as $file)
-                       {
-                        
+                       {  
+                            $ext=$file->guessExtension();
+                           
+                           $violations = $validator->validate(
+                                       $file,
+                                       [
+                                           new NotBlank(),
+                                           new File([
+                                               'maxSize' => '7000k',
+                                               
+                                           ])
+                                       ]
+                                   );
+                         
+                       if (($violations->count() > 0) or ($ext!='jpeg')) {
+                                                                              $violation='';
+                                                                                    /** @var ConstraintViolation $violation */
+                                                                                  if (isset($violations[0])){
+                                                                                      $violation ='fichier de taille supérieure à 7 M';
+                                                                                  }
+                                                                                  if ($ext!='jpeg'){
+                                                                                  $violation = $violation.':  fichier non jpeg ' ;
+                                                                                  }
+                                                                                  $fichiers_erreurs[$i]=$file->getClientOriginalName().' : '.$violation;
+                                                                                  $i++;
+                                                                                } 
+                          else{ 
                          $photo=new Photos($this->session);
                                      
                        
@@ -129,29 +161,73 @@ class PhotosController extends  AbstractController
                          
                          
                            $photo= $repositoryPhotos->findOneby(['photo'=>$photo->getPhoto()]);
-                         
+                          $image =imagecreatefromjpeg($photo->getPhotoFile());
                          list($width_orig, $height_orig) = getimagesize($photo->getPhotoFile());
+                         if($height_orig/$width_orig<0.866){
+                             $width_opt=$height_orig/0.866;
+                             $Xorig=($width_orig-$width_opt)/2;
+                             $Yorig=0;
+                         $image_opt= imagecreatetruecolor( $width_opt,$height_orig);
+                         imagecopy($image_opt,$image,0,0,$Xorig,$Yorig,$width_opt,$height_orig);
+                          $width_orig=$width_opt;                           
+                         }
+                         else{
+                             $image_opt =imagecreatefromjpeg($photo->getPhotoFile());
+                         }
+                         
+                         
+                         
                          
                          $dim=max($width_orig, $height_orig);
                          $percent = 200/$height_orig;
                          $new_width = $width_orig * $percent;
                          $new_height = $height_orig * $percent;
-                          $image =imagecreatefromjpeg($photo->getPhotoFile());
+                         
                           $thumb = imagecreatetruecolor($new_width, $new_height);
                            $paththumb = $this->getParameter('app.path.photos').'/thumbs';
-                          imagecopyresampled($thumb,$image, 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
+                          imagecopyresampled($thumb,$image_opt, 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
                           imagejpeg($thumb, $paththumb.'/'.$photo->getPhoto()); 
-                             }
-                     $request->getSession()
+                       }
+                       
+                         }
+                             if( count($fichiers_erreurs)==0){
+                                if ($nombre==1){
+                                    $message=  'Votre fichier a bien été déposé. Merci !' ;                                   
+                                                            }
+                                else{ $message=   'Vos fichiers ont bien été déposés. Merci !' ;}
+                                 $request->getSession()
                          ->getFlashBag()
-                         ->add('info', 'Votre fichier a bien été déposé. Merci !') ;
-                     }
+                         ->add('info',$message) ;
+                             }
+                             else{ 
+                                 $message='';
+                                
+                                                             
+                                 foreach($fichiers_erreurs as $erreur){
+                                     $message = $message.$erreur.', ';
+                                 }
+                                 if (count($fichiers_erreurs)==1){
+                                     $message = $message.' n\'a pas pu être déposé';
+                                 }
+                               if (count($fichiers_erreurs)>1){   
+                                 $message = $message. ' n\'ont pas pu être déposés';
+                               }
+                             
+                                  
+                                 $request->getSession()
+                         ->getFlashBag()
+                         ->add('alert','Des erreurs ont été constaté : '.$message);
+                         
+                     }   
+                     }     
+                     
+                     
                     if (!$files){
                          $request->getSession()
                          ->getFlashBag()
                          ->add('alert', 'Pas fichier sélectionné: aucun dépôt effectué !') ;
                     }
-                 return $this->redirectToRoute('core_home');
+                 return $this->redirectToRoute('photos_deposephotos', array('concours'=>$concours));
                 }
              return $this->render('photos/deposephotos.html.twig', [
                 'form' => $form->createView(),'session'=>$edition->getEd(),'concours'=>$concours, 'role'=>$role
@@ -518,14 +594,14 @@ class PhotosController extends  AbstractController
              foreach ($liste_photos as $photo){
                  $id= $photo->getId();
                   $formBuilder[$i]=$this->get('form.factory')->createNamedBuilder('Form'.$i, FormType::class,$photo);  
-                  if($photo->getComent()==null){$data=$photo->getEquipe()->getTitreProjet();}
-                  else {$data=$photo->getComent();}
+                  //if($photo->getComent()==null){$data=$photo->getEquipe()->getTitreProjet();}
+                  //else {$data=$photo->getComent();}
             $formBuilder[$i]->add('id',  HiddenType::class, ['disabled'=>true, 'data' => $id, 'label'=>false])
                                        
                                          ->add('coment', TextType::class,[
                                              
                                              'required'=>false,
-                                            'data'=>$data
+                                           // 'data'=>$data
                                              ]);
             if ($concours=='cia'){
                                       $formBuilder[$i] ->add('equipe',EntityType::class,[

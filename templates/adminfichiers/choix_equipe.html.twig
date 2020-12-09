@@ -93,7 +93,7 @@
                         </div>   
                         
                           <div class="col">  
-                                {% if(choix=='deposer') or choix=='presentation' or choix=='diaporama_jury' %}
+                                {% if(choix=='deposer-'~role) or choix=='presentation' or choix=='diaporama_jury' %}
                                 <a class="btn btn-primary" href="{{ path('fichiers_charge_fichiers', {'infos': infos} ) }}" >Choisir cette équipe</a>
                                 {% endif %}
                                 {% if choix=='liste_prof'%}
@@ -119,7 +119,7 @@
                 {% for equipe in liste_equipes %}
                     <div class="row">
                         <div class="col">
-                            <b> {{ equipe.lettre }}</b> - {{ equipe.titreProjet }}  
+                            <b> {{ equipe.lettre }}</b> - {{ equipe.titreProjet }}
                             {% if role != 'ROLE_PROF' %} <h8><i>  (Lycee {{equipe.rneId.nom}}, {{equipe.rneId.commune}})</i> </h8>
                                 {% endif %}
                             <hr>
@@ -127,7 +127,7 @@
                        
                             <div class="col">
                                 {% set infos =  equipe.id ~ '-'~phase~'-'~choix %}
-                                {% if (choix=='deposer') or (choix=='presentation') %}
+                                {% if (choix=='deposer') or (choix=='presentation' or choix=='diaporama_jury') %}
                                 <a class="btn btn-primary" href="{{ path('fichiers_charge_fichiers', {'infos': infos} ) }}" >Choisir cette équipe</a>
                                 {%endif %}
                                  {% if (choix=='liste_prof') or (choix=='liste_cn_comite')%}
@@ -139,7 +139,9 @@
                                  {% if choix=='liste_video' %}
                                 <a class="btn btn-primary" href="{{ path('videos_liste_videos', {'infos': infos} ) }}" >Choisir cette équipe</a>
                                 {% endif %}
-                            
+                                  {% if (choix=='autorisation_photos')%}
+                                <a class="btn btn-primary" href="{{ path('fichiers_autorisations_photos', {'infos': infos} ) }}" >Choisir cette équipe</a>
+                                {% endif %}
                             
                             
                             </div>

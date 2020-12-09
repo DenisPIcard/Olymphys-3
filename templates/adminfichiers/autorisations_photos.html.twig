@@ -23,7 +23,7 @@
 
 
 {% block body %}
-     {% if role=='ROLE_PROF' %}
+    {# {% if role=='ROLE_PROF' %}#}
     <div class="well">
         {% for message in app.session.flashbag.get('info') %}
             <div class="alert alert-info"> {{ message }}</div>
@@ -74,7 +74,7 @@
     <a href="{{ path('fichiers_choix_equipe',{choix:choix})}}">Retourner à la liste des équipes</a>
            </center>
            
-    {% endif %}   
+    {#{% endif %}   #}
     {% block javascripts %}
         <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js" ></script> 
        

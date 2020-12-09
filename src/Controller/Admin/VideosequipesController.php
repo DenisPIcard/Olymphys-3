@@ -64,16 +64,15 @@ class VideosequipesController extends EasyAdminController
     public function persistEntity($entity)
     {
         
-        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+        /*$repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-                  $entity->setEdition($edition);
+                  $entity->setEdition($edition);*/
         
          parent::persistEntity($entity);
         
     }
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
-          $edition= $this->session->get('edition');
-         $this->session->set('edition_titre',$edition->getEd());
+          
         
         $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
@@ -85,18 +84,13 @@ class VideosequipesController extends EasyAdminController
             ->join('entity.equipe','eq')
            ->addOrderBy('eq.centre', 'ASC')
            ->addOrderBy('eq.numero', 'ASC')
-            ->andwhere('entity.edition =:edition')
-            ->setParameter('edition', $edition);
+           ;
            
           if (!empty($dqlFilter)) {
               $queryBuilder->andWhere($dqlFilter);
                                           
               }
            
-        
-        
-        
-        
             return $queryBuilder;
          
       }

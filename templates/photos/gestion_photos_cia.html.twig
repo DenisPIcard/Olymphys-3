@@ -21,29 +21,31 @@
     
     
 {% endblock %}
-{% block body %}
+{% block body %}  
+    {% if role!='ROLE_PROF' %}
      {% if concours=='cia' %}
-      {% if role!='ROLE_PROF' %}
+    
     <center><a href="{{ path('photos_voirphotoscia',{edition : edition.id})  }}" >Retour à la liste des centres</a></center>
     {% endif %}
-   {% endif %}
+ 
    
     {% if concours=='national' %}
     <center><a href="{{ path('photos_voirphotoscn',{edition : edition.id})  }}" >Retour à la liste des équipes</a></center>
    {% endif %}
-    <div class="container-lg-12">
-    <div class="row ">
+      {% endif %}
+    <div class="container-lg-12 ">
+    <div class="row">
         {% set i=0 %}
          {% for form in formtab %}   
      
      {% form_theme form 'bootstrap_4_layout.html.twig' %} 
   
-        <div class="col-lg-3">       
+        <div class="col-lg-3 ">       
        
          {% for photo in liste_photos %}
                   
                       
-                       
+             <div class="container-sm border">
                    {% if photo.id == form.id.vars.data %}
                        {{ form_start(form) }}
         <div class="my-custom-class-for-errors">
@@ -60,7 +62,7 @@
                        <div class="container-sm p-3 bg-dark text-white">
                        {# <div class="row>"> #}
                            
-                                <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}",class="img-responsive"></div>
+                                <div class="d-flex h-100 align-items-center justify-content-center"><img src="{{asset('/upload/photos/thumbs/'~photo.photo)}}",class="img-thumbnail" ></div>
                            <div class="text-center">
                               {% if photo.coment=='' %}
                                        {%  set titre = photo.equipe.titreProjet[0:100] %}
@@ -107,7 +109,7 @@
                    {# {% endif %}  #}
             {{ form_end(form) }}       
                    {%endif %}
-                       
+             </div>           
              {% endfor %}
         </div>   
         

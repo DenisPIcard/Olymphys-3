@@ -14,6 +14,8 @@ use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Centrescia;
 use App\Entity\Elevesinter;
+use App\Entity\Eleves;
+use App\Entity\Equipes;
 use App\Entity\Fichiersequipes;
 use App\Form\Filter\EquipesadminFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -103,9 +105,10 @@ class EquipesadminController extends EasyAdminController
         $repository = $this->getDoctrine()->getRepository($class);
         $equipe=$repository->find(['id'=>$id]);
        
-         $repositoryEleves = $this->getDoctrine()->getRepository(Elevesinter::class);
+         $repositoryElevesinter = $this->getDoctrine()->getRepository(Elevesinter::class);
+         $repositoryEleves = $this->getDoctrine()->getRepository(Eleves::class);
          $repositoryFichiers = $this->getDoctrine()->getRepository(Fichiersequipes::class);
-         
+         $repositoryEquipes = $this->getDoctrine()->getRepository(Equipes::class);
          $qb= $repositoryFichiers->createQueryBuilder('f')
                  ->where('f.equipe =:equipe')
                  ->setParameter('equipe',$equipe);
@@ -117,16 +120,36 @@ class EquipesadminController extends EasyAdminController
             $fichier->setEleve(null);
          $em->remove($fichier);
         }
-         $qb2= $repositoryEleves->createQueryBuilder('e')
+         $qb2= $repositoryElevesinter->createQueryBuilder('e')
                  ->andWhere('e.equipe =:equipe')
                  ->setParameter('equipe',$equipe);
-        $liste_eleves=$qb2->getQuery()->getResult();
+        $liste_elevesinter=$qb2->getQuery()->getResult();
         
-         foreach($liste_eleves as $eleve){
+        $liste_eleves=$repositoryEleves->createQueryBuilder('e')
+                 ->andWhere('e.equipe =:equipe')
+                 ->setParameter('equipe',$equipe)
+                ->getQuery()->getResult();
+        $equipe=$repositoryEquipes->createQueryBuilder('e')
+                 ->andWhere('e.infoequipe =:equipe')
+                 ->setParameter('equipe',$equipe)
+                ->getQuery()->getSingleResult();
+       If ($equipe){
+        $equipe->setInfoequipe(null);
+       }
+         foreach($liste_elevesinter as $eleve){
             $eleve->setEquipe(null);
             $eleve->setAutorisationphotos(null);
              $em->remove($eleve);      
         }
+         foreach($liste_eleves as $eleve){
+            $eleve->setEquipe(null);
+           
+             $em->remove($eleve);      
+        }
+        
+        
+        
+        
         $em->flush();
         
         

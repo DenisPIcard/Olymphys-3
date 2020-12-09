@@ -328,12 +328,24 @@ public function choix_equipe(Request $request,$choix) {
                                           }
                                        }
 if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$choix=='autorisation_photos'){
-                                         
-                                          if ($phase=='interacadémique')     {
+                                      
+                                          if (($phase=='interacadémique') or ($role=='ROLE_ORGACIA'))     {
+                                           if ($role=='ROLE_PROF') {  
                                          $liste_equipes=$qb3->getQuery()->getResult();    
-                                        
+                                           }
+                                           if ($role=='ROLE_ORGACIA'){
+                                             $centre=$this->getUser()->getCentrecia();
+                                           
+                                           $liste_equipes=$repositoryEquipesadmin->createQueryBuilder('t')
+                                                  ->where('t.centre =:centre')
+                                                  ->setParameter('centre', $centre)
+                                                  ->andWhere('t.edition =:edition')
+                                                  ->setParameter('edition', $edition)
+                                                  ->orderBy('t.numero', 'ASC')->getQuery()->getResult();       
+                                           }
+                                           
                                           }
-
+                                   if ( ($role!='ROLE_ORGACIA')){
                                          if ($dateconnect>$datecia) {
                                              $qb3->andWhere('t.selectionnee=:selectionnee')
                                                      ->setParameter('selectionnee', TRUE)
@@ -341,6 +353,7 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                             $liste_equipes=$qb3->getQuery()->getResult();     
                                             
                                          }
+                                   }
 
                                          if($liste_equipes!=null) {
 
@@ -378,12 +391,14 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                                       
                                                                   ->setParameter('selectionnee', TRUE);     
                                              $liste_equipes=$qb3->getQuery()->getResult();    
+                                             
                                             }
                                         } 
                                         
                                         
                                         
-                                        else{    
+                                        else
+                                        {    
                                             
                                          if (($dateconnect>$datelimcia) and ($dateconnect<=$datelimnat)) {
                                              $phase='national';
@@ -416,12 +431,12 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                              }
                                             }
 
-                                             if( $role=='ROLE_COMITE' ){
+                                             if( ($role=='ROLE_COMITE')  ){
                                                 if (($dateconnect>$datelimcia) and ($dateconnect<=$datelimnat)) {
                                              $phase='national';
                                                $qb4 =$repositoryEquipesadmin->createQueryBuilder('t')
-                                                                  ->where('t.selectionnee=:selectionnee')
-                                                                 ->setParameter('selectionnee',TRUE)
+                                                                 // ->where('t.selectionnee=:selectionnee')
+                                                                 //->setParameter('selectionnee',TRUE)
                                                                  ->andWhere('t.edition =:edition')
                                                                   ->setParameter('edition', $edition)
                                                                  ->andWhere('t.lettre>:valeur')
@@ -470,10 +485,10 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                                                 ->andWhere('t.centre =:centre')
                                                                 ->setParameter('centre', $user->getCentrecia());
                                                     $liste_equipes=$qb5->getQuery()->getResult();  
-                                                    if ($dateconnect>$datecia){
-                                                        return $this->redirectToRoute('core_home'); 
+                                                   // if ($dateconnect>$datecia){
+                                                   //     return $this->redirectToRoute('core_home'); 
                                                         
-                                                    }
+                                                   // }
                                                 
 
 
@@ -658,11 +673,13 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                           ->getRepository('App:Elevesinter');
     
     $info=explode("-",$infos);
+    
+    ;
     $id_equipe=$info[0];
     //$type_fichier=$info[1];
     $phase=$info[1];
     $choix= $info[2];
-    
+   
     if (count($info)==4){
      $id_citoyen= $info[3];
         
@@ -688,7 +705,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
    
       $dateconnect= new \datetime('now');
       
-      $form1=$this->createForm(ToutfichiersType::class, ['choix'=>$choix]);
+      $form1=$this->createForm(ToutfichiersType::class, ['choix'=>$choix, 'role'=>$this->getUser()->getRoles()[0]]);
       if(isset($equipe)){
       $nom_equipe=$equipe->getTitreProjet();
         $lettre_equipe= $equipe->getLettre();
@@ -773,7 +790,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                                             'mimeTypes' => [
                                                                                 'application/pdf',
                                                                             ],
-                                                                             'mimeTypesMessage'=>'Veuillez télécharger un fichier du bon format'
+                                                                             'mimeTypesMessage'=>'Veuillez télécharger un fichier du bon format',
                                                                         ])
                                                                     ]
                                                                 );
@@ -1003,7 +1020,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     
                      $info_equipe='prof '. $citoyen->getNomPrenom();
                 }
-                $this->MailConfirmation($mailer,$type_fichier,$info_equipe);
+                //$this->MailConfirmation($mailer,$type_fichier,$info_equipe);
                 
                 return $this->redirectToRoute('core_home');     
                 }        
@@ -1124,6 +1141,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
       $repositoryEdition= $this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:Edition');
+      $repositoryElevesinter= $this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:Elevesinter');
     $Infos=explode('-',$infos);
     
     $id_equipe=$Infos[0];
@@ -1138,7 +1158,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     $equipe_choisie= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
      $centre=$equipe_choisie->getCentre();
     
-    $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')//Les fichiers sans les autorisations photos
+    $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')//Les fichiers sans les autorisations photos 
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
                               ->andWhere('e.edition =:edition')
@@ -1146,9 +1166,12 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->setParameter('id_equipe', $id_equipe)
                              ->andWhere('t.typefichier <:type')
                              ->setParameter('type', 6);
+                             
+                           
     
     
-    $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le comité fichiers cia
+    
+    $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le comité tout  fichier cia
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
                              ->setParameter('id_equipe', $id_equipe)
@@ -1157,16 +1180,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->andWhere('t.national =:national')
                              ->setParameter('national', FALSE) ;
     
-    $qb3 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le comité fichiers cn sans les fiches securité
-                             ->LeftJoin('t.equipe', 'e')
-                             ->Where('e.id =:id_equipe')
-                             ->setParameter('id_equipe', $id_equipe)
-                              ->andWhere('e.edition =:edition')
-                             ->setParameter('edition', $edition)
-                             ->andWhere('t.typefichier <:type')
-                             ->setParameter('type', 4)
-                             ->andWhere('t.national =:national')
-                             ->setParameter('national', TRUE) ;
+  
     $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le jurys cn resumé mémoire annexes
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id =:id_equipe')
@@ -1174,8 +1188,11 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                               ->andWhere('e.edition =:edition')
                              ->setParameter('edition', $edition)
                              ->andWhere('t.typefichier < 2 ')
+                             ->andWhere('t.typefichier = 2 ')
                              ->andWhere('t.national =:national')
                              ->setParameter('national', TRUE) ;
+    
+    $listeEleves=$repositoryElevesinter->findByEquipe(['equipe'=>$equipe_choisie]);
     $liste_prof[1]= $repositoryUser->find(['id'=>$equipe_choisie->getIdProf1()]) ;
    if (null!=$equipe_choisie->getIdProf2()){
    $liste_prof[2]=$repositoryUser->find(['id'=>$equipe_choisie->getIdProf2()]) ;
@@ -1188,13 +1205,20 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                               
       if(($role=='ROLE_PROF') or($role=='ROLE_ORGACIA') or ($role=='ROLE_COMITE') or ($role=='ROLE_SUPER_ADMIN')) {               
         $liste_fichiers=$qb1->getQuery()->getResult();    
-        $autorisations=$qb4->getQuery()->getResult();
+        $autorisations=$qb1
+                            ->andWhere('t.typefichier = 6')
+                           ->getQuery()->getResult();
         
      
       }
        if ($role=='ROLE_JURYCIA'){         
            $qb1->andWhere('t.typefichier <:type')
-                   ->setParameter('type', 4);
+                   ->setParameter('type',4)
+                   ->andWhere('t.typefichier  = 5')
+                  
+                   
+                   ;
+                   
         $liste_fichiers=$qb1->getQuery()->getResult();
         $autorisations=[];
       } 
@@ -1352,8 +1376,8 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
              $content = $this
                           ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
                                                         'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role,
-                                                         'liste_prof'=>$liste_prof)
-                                            ); 
+                                                         'liste_prof'=>$liste_prof, 'listeEleves'=>$listeEleves)
+                                  ); 
             return new Response($content); 
             
             
@@ -1404,8 +1428,12 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
             $edition_en_cours=$this->session->get('edition');
             $date=new \datetime('now');
             
-            if ($edition_en_cours==$edition){
-                if ($edition_en_cours->getConcourscn()>$date){
+          
+            
+            if ($concours=='cia'){
+                 if ($edition_en_cours==$edition){
+                    
+                if ($edition_en_cours->getConcourscia()>$date){
                    $request->getSession()
                     ->getFlashBag()
                     ->add('info','Les fichiers de l\'édition '.$edition_en_cours->getEd().' ne sont pas encore publiés, patience ...') ;  
@@ -1413,9 +1441,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                     
                     
                 }
-            }
-            
-            if ($concours=='cia'){
+            } 
+                
+                
                $qb1= $repositoryFichiersequipes->createQueryBuilder('m')
                                       ->leftJoin('m.equipe', 'e')
                                       ->where('e.selectionnee=:selectionnee')
@@ -1435,6 +1463,15 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                   $listeequipe=$qb2->getQuery()->getResult();
           }
             if ($concours=='cn'){
+                 if ($edition_en_cours==$edition){
+                 if ($edition_en_cours->getConcourscn()>$date){
+                   $request->getSession()
+                    ->getFlashBag()
+                    ->add('info','Les fichiers de l\'édition '.$edition_en_cours->getEd().' ne sont pas encore publiés, patience ...') ;  
+       return $this->redirectToRoute('fichiers_choixedition',array('num_type_fichier'=>$num_type_fichier)); 
+                    
+                    
+                 }}
                 $qb1= $repositoryFichiersequipes->createQueryBuilder('m')
                                       ->leftJoin('m.equipe', 'e')
                                       ->orderBy('e.lettre', 'ASC')

@@ -59,6 +59,7 @@
            Cette équipe n'a pas encore déposé de fichier.
            </div>
       {%  endif %} 
+        
       {%  if listevideos is defined %}
           <hr>
           <div class='well'>
@@ -91,14 +92,21 @@
           (pour gérer les autorisations, aller dans "déposer et gérer les autorisations photos" du menu principal)
               {% endif %}
           <ul>
-        {%  for autorisation in  liste_autorisations%}
-            <li> <a href ="{{asset('/fichiers/autorisations/'~autorisation.fichier)}}" target="blank">{{ autorisation.fichier}}</a>
-          
+         Des élèves : 
+            {% for eleve in listeEleves %}
+               <li> {{ eleve.prenom}} {{  eleve.nom }} : 
+                                               {% if eleve.autorisationphotos!=null%}
+             <a href ="{{asset('/fichiers/autorisations/'~eleve.autorisationphotos.fichier)}}" target="blank">{{ eleve.autorisationphotos.fichier}}</a>
+            {% endif %}
+         
          {%  endfor %}
-         <hr>
+          </ul>
+          <ul>
+         Des professeurs :
          {% for prof in liste_prof %}
+              <li>{{ prof.prenom }} {{ prof.nom }} : 
              {%    if prof.autorisationphotos != null %}
-             <li> <a href ="{{asset('/fichiers/autorisations/'~prof.autorisationphotos.fichier)}}" target="blank">{{ prof.autorisationphotos.fichier}}</a>
+             <a href ="{{asset('/fichiers/autorisations/'~prof.autorisationphotos.fichier)}}" target="blank">{{ prof.autorisationphotos.fichier}}</a>
              {% endif %}
              
              {% endfor %}

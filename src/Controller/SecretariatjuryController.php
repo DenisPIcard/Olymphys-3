@@ -339,12 +339,14 @@ $repositoryEquipesadmin = $this ->getDoctrine()
 			else
 			{
 				foreach ($listesNotes as $note) 
-				{
+				{   
 					$points = $points + $note->getPoints(); 
-					
+				
 					$nbre_notes_ecrit = ($note->getEcrit()) ? $nbre_notes_ecrit +1 : $nbre_notes_ecrit ; 
 					$points_ecrit = $points_ecrit + $note->getEcrit()*5; 
 				}
+                           
+                                
 				$moyenne_oral = $points/$nbre_notes; 
 				$moyenne_ecrit = ($nbre_notes_ecrit) ? $points_ecrit/$nbre_notes_ecrit : 0 ;
 

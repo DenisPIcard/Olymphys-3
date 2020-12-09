@@ -107,7 +107,7 @@ class PhotosType extends AbstractType
           }
         }
                 $builder ->add('photoFiles', FileType::class, [
-                                      'label' => 'Choisir les photos(format .jpeg)',
+                                      'label' => 'Choisir les photos(format .jpeg obligatoire)',
                                         'mapped' => true,
                                        'required' => false,
                                         'multiple'=>true,

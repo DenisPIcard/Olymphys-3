@@ -5,6 +5,9 @@ easy_admin :
                     css:
                         # ...
                         - 'css/admin.css'
+                        #-  'https://example.org/css/admin3.css'
+                        #- 'http://example.org/css/admin2.css'
+
                 menu:
                     - { entity: 'Adminsite' , permission: 'ROLE_SUPER_ADMIN', icon : 'cogs'}
                     - { entity: 'User', label : 'Utilisateurs', permission: 'ROLE_SUPER_ADMIN', icon : 'user' }
