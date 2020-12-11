@@ -396,7 +396,16 @@ class FichiersequipesController extends EasyAdminController
                 $em->flush();
    
         }  
-            
+       
+         if (($fichier->getTypefichier()==0) or ($fichier->getTypefichier()==1) or ($fichier->getTypefichier()==2) and ($fichier->getNational()==true)){
+                    
+             $fichier->setNational(false);
+                    
+        $em->persist($fichier);
+        $em->flush();
+        return $this->redirectToRoute('easyadmin');
+         }
+        
        return parent::deleteAction();
     }
     
@@ -404,10 +413,10 @@ class FichiersequipesController extends EasyAdminController
          $class = $this->entity['class'];
        
         $repository = $this->getDoctrine()->getRepository($class);
-       
+        
         $zipFile = new \ZipArchive();
         $now   = new \DateTime();
-         $FileName= 'autorisationsphotos'.$now->format( 'd-m-Y\-His' );
+         $FileName= 'telechargement_olymphys_'.$now->format( 'd-m-Y\-His' );
        
          if ($zipFile->open($FileName, ZipArchive::CREATE) === TRUE)
         
@@ -415,9 +424,25 @@ class FichiersequipesController extends EasyAdminController
             foreach ($ids as $id) 
                 {  
                     $entity = $repository->find(['id'=>intval($id)]);
-                                 
-                    $fichier= $this->getParameter('app.path.fichiers').'/autorisations/'.$entity->getFichier();
-                   
+                    $typefichier= $entity->getTypefichier();
+                    
+                   switch ($typefichier) {              
+                       case 0 :     $fichier= $this->getParameter('app.path.fichiers').'/memoires/'.$entity->getFichier();
+                           break;
+                       case 1 :     $fichier= $this->getParameter('app.path.fichiers').'/memoires/'.$entity->getFichier();  
+                           break;
+                       case 2 :     $fichier= $this->getParameter('app.path.fichiers').'/resumes/'.$entity->getFichier();
+                           break;
+                       case 3 :     $fichier= $this->getParameter('app.path.fichiers').'/presentation/'.$entity->getFichier();
+                           break;
+                       case 4 :     $fichier= $this->getParameter('app.path.fichiers').'/fichessecur/'.$entity->getFichier();   
+                           break;
+                       case 5 :     $fichier= $this->getParameter('app.path.fichiers').'/diaporamas/'.$entity->getFichier();
+                           break;
+                       case 6 :     $fichier= $this->getParameter('app.path.fichiers').'/autorisations/'.$entity->getFichier();  
+                           break;
+                           
+                }
                     try{
                    
                      $zipFile->addFromString(basename($fichier),  file_get_contents($fichier));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
@@ -443,6 +468,10 @@ class FichiersequipesController extends EasyAdminController
                  @unlink($FileName);
                  return $response; 
           } 
+          
+          
+          
+          
     public function persistEntity($entity){
         $request=Request::createFromGlobals();
         

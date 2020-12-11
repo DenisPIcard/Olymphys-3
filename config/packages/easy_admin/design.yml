@@ -41,14 +41,14 @@ easy_admin :
                                             #- { entity: 'Eleves' , icon : 'asterisk'}
                        
                         - { label : 'Les photos', entity: 'Photosequipescn' , icon : 'images'}
-                        - label : 'Les recompenses'
-                        - { entity:  'Classement' , icon : 'asterisk'}
-                        - { entity:  'Prix' , icon : 'asterisk'}
-                        - { entity: 'Visites' , icon : 'asterisk'}
-                        - { entity: 'Cadeaux' , icon : 'asterisk'}
+                        - { label : 'Les recompenses', permission : 'ROLE_SUPER_ADMIN'}
+                        - { entity:  'Classement' , icon : 'asterisk',permission : 'ROLE_SUPER_ADMIN'}
+                        - { entity:  'Prix' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}
+                        - { entity: 'Visites' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}
+                        - { entity: 'Cadeaux' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}
                         
                     - { label: 'Retour à la page d''accueil', route: 'core_home' , icon : 'home'}
-                    - { label: 'Secrétariat du jury', route: 'secretariatjury_accueil' , icon : 'pencil'}
+                    - { label: 'Secrétariat du jury', route: 'secretariatjury_accueil' , icon : 'pencil', permission : 'ROLE_SUPER_ADMIN'}
                     - { label : 'Deconnexion' , route: 'logout', icon : 'door-open'}
                    #- {  label: 'Retour à la page d''accueil', url: '/public/index.php' , icon : 'home'}
                    # - { label : 'Deconnexion' , url : '/public/index.php/logout', icon : 'door-open'

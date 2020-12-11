@@ -25,7 +25,10 @@ class ToutfichiersType extends AbstractType
         }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {       
-       
+        if($this->session->get('concours'=='interacadémique')){
+                   $valeur=5;                   
+               }
+               else{$valeur = 3;}
       
          
         $builder
@@ -52,7 +55,7 @@ class ToutfichiersType extends AbstractType
                                 'Résumé(pdf, 1 M max, 1 page)'=>2,
                                 'Fiche sécurité(1M max, doc, docx, pdf, jpg, odt)'=>4,
                                // 'Présentation du concours national(pdf, 10 M max)'=>3,
-                                'Diaporama  pour le jury(pdf, 10 M maxi)' =>3
+                                'Diaporama  pour le jury(pdf, 10 M maxi)et qui sera publiée après le concours' =>$valeur
                                ]
                                ] );
                }
@@ -106,16 +109,17 @@ class ToutfichiersType extends AbstractType
                          }
            }
            else{
+              
                  if ($options['data']['choix']=='diaporama_jury'){
                            $builder->add('typefichier', ChoiceType::class, [
                             'mapped'=>false,
                             'required' => false,
                                 'multiple'=>false,
                                'empty_data' =>  '3',
-                               'placeholder' =>  'Diaporama pour le jury(pdf, 10 M maxi)',
+                               'placeholder' =>  'Diaporama pour le jury(pdf, 10 M maxi)et qui sera publiée après le concours',
                             'choices' => [
                                
-                                'Diaporama pour le jury(pdf, 10 M maxi)' =>3]
+                                'Diaporama pour le jury(pdf, 10 M maxi) et qui sera publiée après le concours' =>$valeur ]
                                ] ) ;  
               
              }

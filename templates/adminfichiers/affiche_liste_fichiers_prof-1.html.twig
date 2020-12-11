@@ -25,36 +25,39 @@
 
 {% endblock %}
 
+
 {% block body %}
     
-        {%  if liste_fichiers!=null %}
+        {%  if formtab is defined %}
         <div class="well">    
-            Fichiers de cette équipe déposés pour le concours {{ concours }}
-            <ul>
-            {% for fichier in liste_fichiers %}
+       <table>  
+            {% for form in formtab %}
+                 {% form_theme form 'bootstrap_4_layout.html.twig' %}
                 
-                <tr>
-                <li>{{type_fichier_lit[fichier.typefichier]}} : <a href="{{ asset('/fichiers/'~type_fichier[fichier.typefichier]~'/'~fichier.fichier)}}" target="_blanck">{{ fichier.fichier }}</a>
-                </tr>
-                
-            {% endfor %} 
-            </ul>
-        </table> 
-        <div class=''row>
-             {{ form_start(form) }}
+                 {{ form_start(form) }}
                 <div class="my-custom-class-for-errors">
                     {{ form_errors(form) }}
                 </div>
                 <div class="row">
-                     {{ form_widget(form.save, { 'label': 'Tout télécharger' }) }}
-                   </div>
+                    <div class="col">
+                        {{ form_row(form.fichier, {  'class':'custom-file-input'}) }}
+                    </div>
+                    <div class="col" id="some-custom-id">
+                        {% if loop.index<loop.length %}
+                            {{ form_widget(form.save, { 'label': 'Télécharger' }) }}
+                        {% else %}
+                            {{ form_widget(form.save, { 'label': 'Tout télécharger' }) }}
+                        {% endif %}
+                    </div>
                 </div>
-                {{ form_end(form) }}    
-               
+                {{ form_end(form) }}         
+                <hr> 
+            {% endfor %} 
+        </table> 
         </div>
        {%  else %}    
            <div class="alert alert-light" >
-           Cette équipe n'a pas encore déposé ses fichiers pour le concours {{ concours }}.
+           Cette équipe n'a pas encore déposé de fichier.
            </div>
       {%  endif %} 
         

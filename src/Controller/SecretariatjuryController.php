@@ -323,12 +323,13 @@ $repositoryEquipesadmin = $this ->getDoctrine()
 		{                   
                                                        
 			$listesNotes=$equipe->getNotess();
+                        
 			$nbre_notes = $equipe->getNbNotes(); 
 
 			$nbre_notes_ecrit=0; 			
 			$points_ecrit = 0 ; 		
 			$points = 0 ; 
-			
+		
 			
 			if ($nbre_notes==0) 
 				{

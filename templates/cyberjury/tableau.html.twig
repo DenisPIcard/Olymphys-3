@@ -51,7 +51,14 @@
 				<td> <span class = "fas fa-minus-circle"> </span> </td>
 			{% endif %}
         <td>
-        <a href="https://olymphys.fr/public/upload/equipes/memoires/nat/27-eq-{{ equipes.lettre }}-memoire-{{equipes.infoequipe.titreprojet}}.pdf" class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
+        
+         {% for memoire in memoires %}   
+              {% if memoire %}   
+            {% if memoire.equipe==equipes%}
+        <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
+              {%endif %}
+              {% endif %}
+         {% endfor %}
         <a href="{{ path('cyberjury_infos_equipe', {'id': equipes.id} ) }}" class="fas fa-info-circle" title="En savoir plus sur cette équipe"> </a>
         <a href="{{ path('cyberjury_phrases_amusantes', {'id': equipes.id} ) }}" class="fas fa-pencil-alt" title="Les phrases amusantes" > </a>
       </td>

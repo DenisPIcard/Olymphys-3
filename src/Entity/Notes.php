@@ -77,6 +77,7 @@ class Notes
     private $jure;
 
     /**
+    * 
     * @ORM\PrePersist
     */ 
     public function increase()

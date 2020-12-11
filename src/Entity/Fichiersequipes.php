@@ -267,15 +267,15 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
  }
     
     public function code($nom){
-         $nom= str_replace("à","a",$nom);
+           $nom= str_replace("à","a",$nom);
            $nom= str_replace("ù","u",$nom);
            $nom= str_replace("è","e",$nom);
            $nom= str_replace("é","e",$nom);
            $nom= str_replace("ë","e",$nom);
            $nom= str_replace("ê","e",$nom);
-            $nom= str_replace("?"," ",$nom);
-             $nom= str_replace("ï","i",$nom);
-               $nom= str_replace(":","_",$nom);
+           $nom= str_replace("?"," ",$nom);
+           $nom= str_replace("ï","i",$nom);
+           $nom= str_replace(":","_",$nom);
             setLocale(LC_CTYPE,'fr_FR');
            $nom = iconv('UTF-8','ASCII//TRANSLIT',$nom);
         
@@ -326,8 +326,10 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
        return $this->national;
    }
     public function setNational($national)
-   {
+   {  
       $this->national=$national;
+     
+      return $this;
    }
 
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self

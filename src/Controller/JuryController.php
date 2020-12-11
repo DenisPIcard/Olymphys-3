@@ -550,8 +550,11 @@ class JuryController extends AbstractController
 		->getManager()
 		->getRepository('App:Equipes')
 		;
+                                 $repositoryMemoires = $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Fichiersequipes');
 		$em=$this->getDoctrine()->getManager();
-
+                                   $memoires=array();
 		$listEquipes = array();
 		$j=1;
 		foreach($MonClassement as $notes)
@@ -569,12 +572,19 @@ class JuryController extends AbstractController
 			$listEquipes[$j]['wgroupe']=$notes->getWgroupe();
 			$listEquipes[$j]['ecrit']=$notes->getEcrit();
 			$listEquipes[$j]['points']=$notes->getPoints();
-			$j++;
-                                            
+			$memoires[$j]=$repositoryMemoires->createQueryBuilder('m')
+                                                                              ->andWhere('m.equipe =:equipe')
+                                                                              ->setParameter('equipe', $equipe)
+                                                                              ->andWhere('m.typefichier =:typefichier')
+                                                                             ->setParameter('typefichier',0)
+                                                                             ->getQuery()->getResult();
+                                                     
+                                                     $j++;
+                                                   
 		}
 
 		$content = $this->renderView('cyberjury/tableau.html.twig', 
-			array('listEquipes'=>$listEquipes,'jure'=>$jure)
+			array('listEquipes'=>$listEquipes,'jure'=>$jure, 'memoires'=>$memoires)
 			);
 		return new Response($content);
 	}

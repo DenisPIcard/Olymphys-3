@@ -607,7 +607,16 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                               if(isset($equipe)){
                               $Fichier->setEquipe($equipe);
                               }
-                              $Fichier->setNational(0);
+                             
+                    if ($this->session->get('concours')== 'interacadémique' ){ 
+                        $Fichier->setNational(false);
+                                                    }         
+                    if ($this->session->get('concours')== 'national' ){ 
+                        $Fichier->setNational(true);
+                       
+                    }          
+                            
+                              
                     $em->persist($Fichier);
                     $em->flush();
                    
@@ -637,7 +646,7 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                 }
             $request->getSession()
                     ->getFlashBag()
-                    ->add('info', $avertissement.' Voulez-vous poursuivre et remplacer éventuellement ce fichier ? Cette opération est défintive, sans possibilité de récupération.') ;
+                    ->add('info', $avertissement.' Voulez-vous poursuivre et remplacer éventuellement ce fichier ? Cette opération est définitive, sans possibilité de récupération.') ;
             $content = $this
                             ->renderView('adminfichiers\confirm_charge_fichier.html.twig', array(
                                                     'form'=>$form3->createView(), 
@@ -1042,9 +1051,8 @@ public function MailConfirmation(MailerInterface $mailer, string $type_fichier, 
   
     $email=(new Email())
                     ->from('info@olymphys.fr')
-                    ->to('alain.jouve@wanadoo.fr')
-                  // ->cc('webmestre3@olymphys.fr')
-                  // ->to('webmestre2@olymphys.fr')
+                   ->cc('webmestre3@olymphys.fr')
+                    ->to('webmestre2@olymphys.fr')
                  
                     ->subject('Depot du '.$type_fichier.' de l\'équipe '.$info_equipe)
                     ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.')
@@ -1171,24 +1179,24 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
     
     
     
-    $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le comité tout  fichier cia
+    $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le prof, le comité : tout  fichier cia ou cn
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
                              ->setParameter('id_equipe', $id_equipe)
                             ->andWhere('e.edition =:edition')
-                             ->setParameter('edition', $edition)
-                             ->andWhere('t.national =:national')
-                             ->setParameter('national', FALSE) ;
-    
-  
-    $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le jurys cn resumé mémoire annexes
-                             ->LeftJoin('t.equipe', 'e')
-                             ->Where('e.id =:id_equipe')
-                             ->setParameter('id_equipe', $id_equipe)
-                              ->andWhere('e.edition =:edition')
-                             ->setParameter('edition', $edition)
-                             ->andWhere('t.typefichier < 2 ')
-                             ->andWhere('t.typefichier = 2 ')
+                             ->setParameter('edition', $edition) 
+                              ->andWhere('t.typefichier in (0,1,2,3,4,3,5)');
+               
+                 if ($concours =='national' ){
+                             $qb2->andWhere('t.national =:national')
+                             ->setParameter('national', TRUE) ;
+                }
+                
+                
+    $qb4 =$repositoryFichiersequipes->createQueryBuilder('t')  // /pour le jury cn resumé mémoire annexes diaporama
+                             ->Where('t.equipe =:equipe')
+                             ->setParameter('equipe', $equipe_choisie)
+                             ->andWhere('t.typefichier in (0,1,2,3)')
                              ->andWhere('t.national =:national')
                              ->setParameter('national', TRUE) ;
     
@@ -1202,24 +1210,33 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                             
     $roles=$this->getUser()->getRoles();
         $role=$roles[0];
-                              
-      if(($role=='ROLE_PROF') or($role=='ROLE_ORGACIA') or ($role=='ROLE_COMITE') or ($role=='ROLE_SUPER_ADMIN')) {               
+      if ($role=='ROLE_COMITE'){
+         $liste_fichiers=$qb2->getQuery()->getResult();    
+        $autorisations=$qb1
+                            ->andWhere('t.typefichier =:type3')
+                           ->setParameter('type3',6)
+                           ->getQuery()->getResult();       
+       
+      }            
+      if($role=='ROLE_PROF'){  // Liste de tous les fichiers 
+          if ($this->session->get('concours')=='national'){
+              $qb1->andWhere('t.national = TRUE');
+                        }
+          $liste_fichiers=$qb1->getQuery()->getResult();    
+        $autorisations=$qb1
+                            ->andWhere('t.typefichier = 6')
+                           ->getQuery()->getResult(); 
+          
+      }
+      if( ($role=='ROLE_ORGACIA')  or ($role=='ROLE_SUPER_ADMIN')) {               
         $liste_fichiers=$qb1->getQuery()->getResult();    
         $autorisations=$qb1
                             ->andWhere('t.typefichier = 6')
                            ->getQuery()->getResult();
-        
-     
-      }
+                }
        if ($role=='ROLE_JURYCIA'){         
-           $qb1->andWhere('t.typefichier <:type')
-                   ->setParameter('type',4)
-                   ->andWhere('t.typefichier  = 5')
-                  
-                   
-                   ;
-                   
-        $liste_fichiers=$qb1->getQuery()->getResult();
+           $qb1->andWhere('t.typefichier in (0,1,2,3,5)');
+           $liste_fichiers=$qb1->getQuery()->getResult();
         $autorisations=[];
       } 
     if($role=='ROLE_JURY'){
@@ -1236,12 +1253,12 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
      }
     $user = $this->getUser();
     
-    $i=0;
+    /*$i=0;
     
     if (isset($liste_fichiers)){
     foreach($liste_fichiers as $fichier){
         $id=$fichier->getId();
-        
+      
         $formBuilder[$i]=$this->get('form.factory')->createNamedBuilder('Form'.$i, FormType::class,$fichier);  
         $formBuilder[$i] ->add('id',  HiddenType::class, ['disabled'=>true, 'label'=>false])
                          ->add('fichier', TextType::class,['disabled'=>true,  'label'=>false])
@@ -1274,8 +1291,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                 }
             }
         $i=$i+1;
-        }
-    }      
+        
+    }
+    }*/      
      $qb = $repositoryVideosequipes->createQueryBuilder('v')
                              ->LeftJoin('v.equipe', 'e')
                              ->Where('e.id=:id_equipe')
@@ -1290,14 +1308,17 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                 $FileName= $equipe_choisie->getCentre()->getCentre().'-Fichiers-eq-'.$equipe_choisie->getNumero().'-'.date('now');
                 if ($zipFile->open($FileName, ZipArchive::CREATE) === TRUE){
                    $fichiers= $repositoryFichiersequipes->findByEquipe(['equipe'=>$equipe_choisie]);
-                    foreach($liste_fichiers as $fichier){
-                         if ($fichier->getTypefichier()==1){
-                           $fichierName=$this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[0].'/'.$fichier->getFichier();   
-                         }
-                         else{
-                         $fichierName=$this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[$fichier->getTypefichier()].'/'.$fichier->getFichier();
-                         }
+                    
+                   foreach($liste_fichiers as $fichier){
                         if($fichier){
+                            if ($fichier->getTypefichier()==1){
+                                
+                                $fichierName=$this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[0].'/'.$fichier->getFichier();
+                            }
+                            else{
+                         $fichierName=$this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[$fichier->getTypefichier()].'/'.$fichier->getFichier();
+                            }
+                        
                             $zipFile->addFromString(basename($fichierName),  file_get_contents($fichierName));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
                           }
                         }
@@ -1315,15 +1336,18 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                 }
             }
             
-        if(isset($formtab )){      
+        if($liste_fichiers){      
             $fichier=new Fichiersequipes();
-            $formBuilder=$this->get('form.factory')->createNamedBuilder('FormAll', ListefichiersType::class,$fichier);  
+            $formBuilder=$this->get('form.factory')->createNamedBuilder('FormAll', ListefichiersType::class,$fichier); //Ajoute le bouton  tout télécharger
             $formBuilder->add('save',      SubmitType::class );
-            $Form=$formBuilder->getForm();
-            $formtab[$i]=$Form->createView();//Ajoute le bouton  tout télécharger
+            $form=$formBuilder->getForm();
+            $Form=$form->createView();
+            
         }
-         if(!isset($formtab)) {
-             $formtab=[];
+         if(!isset($Form)) {
+       
+       $Form=$this->createForm(ListefichiersType::class)->createView(); 
+        
          }
           if(!isset($listevideos)) {
              $listevideos=[];
@@ -1331,8 +1355,11 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
           if(!isset($autorisations)) {
              $autorisations=[];
          }
+           if(!isset($liste_fichiers)) {
+             $liste_fichiers=[];
+         }
        
-        if(($formtab==null) and ($listevideos==null) and ($autorisations==null)){
+        if(($liste_fichiers==null) and ($listevideos==null) and ($autorisations==null)){
          
                 if ($role=='ROLE_PROF'){
                     $num_equipe='n° '.$equipe_choisie->getNumero();
@@ -1374,9 +1401,9 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
             }
             
              $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('formtab'=>$formtab, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
+                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('form'=>$Form, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
                                                         'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role,
-                                                         'liste_prof'=>$liste_prof, 'listeEleves'=>$listeEleves)
+                                                         'liste_prof'=>$liste_prof, 'listeEleves'=>$listeEleves,'liste_fichiers'=>$liste_fichiers)
                                   ); 
             return new Response($content); 
             

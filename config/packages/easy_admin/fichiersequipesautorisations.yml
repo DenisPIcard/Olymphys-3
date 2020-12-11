@@ -13,7 +13,7 @@ easy_admin :
              list :
                   max_results: 50
                   actions: [ { name: 'Lire', icon: 'eye' }, 'delete', '-edit',{name : 'new','label' : 'Déposer une autorisation'}]
-                  batch_actions: [ {name : 'telecharger', icon : 'download'},{name : 'erase',label : 'Tout effacer', icon : 'trash-alt', permission : 'ROLE_SUPER_ADMIN'}]
+                  batch_actions: [ {name : 'telecharger', icon : 'download'},{name : 'erase',label : 'Tout effacer', icon : 'trash-alt', permission : 'ROLE_SUPER_ADMIN', ask_confirm : true}]
                   filters :
                     - 'eleve'
                       
