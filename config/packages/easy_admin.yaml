@@ -19,6 +19,7 @@ imports :
       - { resource: easy_admin/fichiersequipesmemoirescn.yml }
       - { resource: easy_admin/fichiersequipesmemoiresinter.yml }
       - { resource: easy_admin/fichiersequipesresumes.yml }
+      - { resource: easy_admin/fichiersequipesresumescn.yml }
       - { resource: easy_admin/fichiersequipesfichessecur.yml }
       - { resource: easy_admin/fichiersequipespresentations.yml }
       - { resource: easy_admin/fichiersequipesdiaporamas.yml }

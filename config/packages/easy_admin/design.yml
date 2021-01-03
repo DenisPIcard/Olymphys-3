@@ -34,7 +34,7 @@ easy_admin :
                         - { label : 'Palmares des équipes', entity: 'Equipes' , icon : 'asterisk'}
                         - { label : 'Administration des équipes' , entity : 'Selectionnees', icon : 'user-friends'}
                         - { entity : 'Fichiersequipesmemoirescn', 'label' : 'Les mémoires' , icon : 'book'}
-                        - { entity : 'Fichiersequipesresumes', 'label' : 'Les résumés' , icon : 'book'}
+                        - { entity : 'Fichiersequipesresumescn', 'label' : 'Les résumés' , icon : 'book'}
                         - { entity : 'Fichiersequipesdiaporamas', 'label' : 'Les diaporamas' , icon : 'book'}
                         - { entity : 'Fichiersequipespresentations', 'label' : 'Les présentations' , icon : 'book'}
                         - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}

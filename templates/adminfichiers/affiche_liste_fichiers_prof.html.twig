@@ -34,8 +34,13 @@
             {% for fichier in liste_fichiers %}
                 
                 <tr>
+                    {% if fichier.typefichier==1 %}
+                      <li>{{type_fichier_lit[fichier.typefichier]}} : <a href="{{ asset('/fichiers/memoires/'~fichier.fichier)}}" target="_blanck">{{ fichier.fichier }}</a>
+                   
+                        {% else %}
                 <li>{{type_fichier_lit[fichier.typefichier]}} : <a href="{{ asset('/fichiers/'~type_fichier[fichier.typefichier]~'/'~fichier.fichier)}}" target="_blanck">{{ fichier.fichier }}</a>
-                </tr>
+                         {% endif %}
+                    </tr>
                 
             {% endfor %} 
             </ul>

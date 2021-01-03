@@ -578,14 +578,28 @@ class PhotosController extends  AbstractController
                           ->where('p.equipe =:equipe')
                           ->andWhere('p.edition=:edition')
                           ->setParameter('edition',$edition)
-                         ->andWhere('p.national = TRUE')
+                         ->andWhere('p.national = 1')
                          ->setParameter('equipe',$equipe);
                    if ($role=='ROLE_PROF'){
-                   $qb->leftJoin('p.equipe','eq')
-                           ->andWhere('eq.idProf1 =:prof1') 
-                          ->setParameter('prof1',$id_user)
-                           ->orWhere('eq.idProf2 =:prof2')
-                           ->setParameter('prof2',$id_user);
+                    $equipes= $repositoryEquipesadmin->createQueryBuilder('eq')
+                                               ->andWhere('eq.selectionnee = TRUE')
+                                                ->andWhere('eq.idProf1 =:prof1') 
+                                               ->setParameter('prof1',$id_user)
+                                               ->orWhere('eq.idProf2 =:prof2')
+                                                ->setParameter('prof2',$id_user)
+                                                ->getQuery()->getResult();
+                           
+                           
+                     
+                           $qb=$repositoryPhotos->createQueryBuilder('p') 
+                                    ->andWhere('p.national =:valeur')
+                                   ->setParameter('valeur','1')
+                                   ->andWhere('p.edition=:edition')
+                                   ->setParameter('edition',$edition)
+                                   ->andWhere('p.equipe in(:equipes)') 
+                                   ->setParameter('equipes',$equipes);
+                           
+                  
                  }   
                  $liste_photos=$qb->getQuery()->getResult();         
                
@@ -636,7 +650,9 @@ class PhotosController extends  AbstractController
                                 
                                 $em=$this->getDoctrine()->getManager();
                                 $photo->setComent($Form[$i]->get('coment')->getData());
+                                if ($concours== 'cn'){
                                 $photo->setEquipe($Form[$i]->get('equipe')->getData());
+                                 }
                                 $em->persist($photo);
                                 $em->flush();
                                

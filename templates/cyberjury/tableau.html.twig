@@ -52,13 +52,12 @@
 			{% endif %}
         <td>
         
-         {% for memoire in memoires %}   
-              {% if memoire %}   
-            {% if memoire.equipe==equipes%}
-        <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
+        
+              {% if memoires[loop.index] != null%}   
+         
+        <a href="{{asset('/fichiers/memoires/'~memoires[loop.index].fichier)}}"class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
               {%endif %}
-              {% endif %}
-         {% endfor %}
+              
         <a href="{{ path('cyberjury_infos_equipe', {'id': equipes.id} ) }}" class="fas fa-info-circle" title="En savoir plus sur cette équipe"> </a>
         <a href="{{ path('cyberjury_phrases_amusantes', {'id': equipes.id} ) }}" class="fas fa-pencil-alt" title="Les phrases amusantes" > </a>
       </td>

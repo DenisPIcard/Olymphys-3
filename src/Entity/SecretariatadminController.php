@@ -485,19 +485,19 @@ class SecretariatadminController extends AbstractController
                        
                         $value = $worksheet->getCellByColumnAndRow(7, $row)->getValue(); //password request at
                         $user->setPasswordRequestedAt($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //rne
+                        $value = $worksheet->getCellByColumnAndRow(8, $row)->getValue(); //rne
                         $user->setrne($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue(); //adresse
+                        $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //adresse
                         $user->setAdresse($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue(); //ville
+                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue(); //ville
                         $user->setVille($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue();//code
+                        $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue();//code
                         $user->setCode($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(13, $row)->getValue(); //nom
+                        $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue(); //nom
                         $user->setNom($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//prenom
+                        $value = $worksheet->getCellByColumnAndRow(13, $row)->getValue();//prenom
                         $user->setPrenom($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(15, $row)->getValue();//phone
+                        $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//phone
                         $user->setPhone($value) ;
                        
                         
@@ -621,26 +621,25 @@ class SecretariatadminController extends AbstractController
                                                      ->select('e')
                                                      ->andwhere('e.edition =:edition')
                                                      ->setParameter('edition', $this->session->get('edition'))
-                                                     ->andwhere('e.selectionnee = 1')
+                                                     ->andwhere('e.selectionnee= TRUE')
                                                      ->orderBy('e.lettre','ASC')
                                                      ->getQuery()
                                                      ->getResult();
 		$em = $this->getDoctrine()->getManager();
                 foreach ($listEquipes as $equipeadm)  
                    {
-                   
+                   // dd($equipeadm);
                    $lettre=$equipeadm->getLettre();
-                   if (!$repositoryEquipes->findOneByLettre(['lettre'=>$lettre])){
                    $equipe= new equipes(); 
-                  
-                   $equipe->setLettre($lettre);
-                   $equipe->setInfoequipe($equipeadm);
-                   $equipe->setTitreProjet($equipeadm->getTitreProjet());
+                   $info=$repositoryEquipesadmin->findOneByLettre($lettre);
+                   $equipe->setInfoequipe($info);
+                   $lettre=$equipeadm->getLettre();
+                   $equipe->setLettre($lettre) ;
+                   $nomEq=$equipeadm->getTitreProjet();                   
+                   $equipe->setTitreProjet($nomEq);
                    $em->persist($equipe);
-                   $em->flush();
-                   }
-                   }
-                    
+                    }
+                    $em->flush();
                     return $this->redirectToRoute('core_home');
                 }
         $content = $this
@@ -656,7 +655,7 @@ class SecretariatadminController extends AbstractController
          */
 	public function charge_jures(Request $request)
 	{ 
-           
+
             $defaultData = ['message' => 'Charger le fichier Jures'];
             $form = $this->createFormBuilder($defaultData)
                             ->add('fichier',      FileType::class)
@@ -672,18 +671,12 @@ class SecretariatadminController extends AbstractController
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fichier);
                 $worksheet = $spreadsheet->getActiveSheet();
             
-                $highestRow =  $spreadsheet->getActiveSheet()->getHighestRow();              
+                $highestRow = 20;              
  
                 $em = $this->getDoctrine()->getManager();
-                //$lettres = range('A','Z') ;
-                $repositoryEquipes=$this->getDoctrine()->getManager()
-			   ->getRepository('App:Equipes');
-                $equipes=$repositoryEquipes->createQueryBuilder('e')
-                                                               ->orderBy('e.lettre','ASC')
-                                                              ->getQuery()->getResult();
-                
+                $lettres = range('A','Z') ;
                 for ($row = 1; $row <= $highestRow; ++$row) 
-                   {
+                   { 
                     $jure = new jures();   
                     $value = $worksheet->getCellByColumnAndRow(1, $row)->getValue();
                     $jure->setPrenomJure($value);
@@ -692,11 +685,11 @@ class SecretariatadminController extends AbstractController
                     $value = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
                     $jure->setInitialesJure($value);
                     $colonne = 4;
-                    foreach ($equipes as $equipe)
+                    foreach ($lettres as $lettre)
                         {
                         $value = $worksheet->getCellByColumnAndRow($colonne, $row)->getValue();
 
-                        $method ='set'.$equipe->getLettre();
+                        $method ='set'.$lettre;
                         $jure->$method($value);
  
                         $colonne +=1;

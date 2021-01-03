@@ -18,7 +18,7 @@ use App\Form\EditionType;
 use App\Form\MemoiresType;
 use App\Form\MemoiresinterType;
 use App\Form\ConfirmType;
-
+use App\Form\PrixExcelType;
 
 use App\Entity\Equipes ;
 use App\Entity\Eleves ;
@@ -134,7 +134,7 @@ $repositoryEquipesadmin = $this ->getDoctrine()
                     }
           
                 $tableau=[$listEquipes,$lesEleves,$lycee];
-                
+               
                 $this->session->set('tableau',$tableau);    
                 
                 
@@ -1294,7 +1294,7 @@ public function lescadeaux(Request $request, $compteur=1)
                 $equipes=$tableau[0];
                 $lesEleves=$tableau[1];
                 $lycee=$tableau[2];
-               
+              
                 $repositoryUser = $this->getDoctrine()
                                        ->getManager()
                                        ->getRepository('App:User');
@@ -1307,6 +1307,7 @@ public function lescadeaux(Request $request, $compteur=1)
                     $prof2[$lettre]= $repositoryUser->findById($idprof2);
                     
                 }
+         
                 $listEquipes = $this->getDoctrine()
 			->getManager()
 			->getRepository('App:Equipes')
@@ -1388,17 +1389,19 @@ public function lescadeaux(Request $request, $compteur=1)
                 $sheet->getStyle('D'.$ligne)->applyFromArray($borderArray);
                 $sheet->getStyle('E'.$ligne)->applyFromArray($borderArray);
                 $sheet->getStyle('A'.$ligne.':D'.$ligne)->getAlignment()->applyFromArray($centerArray);
-                $ligne +=1; 
-
+                $ligne  +=1; 
+             
         	foreach ($listEquipes as $equipe) 
                 {
                     $lettre=$equipe->getLettre();
-                   
+                  
                     $ligne4 = $ligne + 3;
                     $sheet->mergeCells('A'.$ligne.':A'.$ligne);
+                    if($lycee[$lettre][0]!=null){
                     $sheet->setCellValue('A'.$ligne, strtoupper($lycee[$lettre][0]->getAcademie()))
-                        ->setCellValue('B'.$ligne,'Lycée '.$lycee[$lettre][0]->getNom()." - ".$lycee[$lettre][0]->getCommune() )
-                        ->setCellValue('C'.$ligne, $prof1[$lettre][0]->getPrenom()." ".strtoupper($prof1[$lettre][0]->getNom()))
+                               ->setCellValue('B'.$ligne,'Lycée '.$lycee[$lettre][0]->getNom()." - ".$lycee[$lettre][0]->getCommune() );
+                        }         
+                         $sheet ->setCellValue('C'.$ligne, $prof1[$lettre][0]->getPrenom()." ".strtoupper($prof1[$lettre][0]->getNom()))
                         ->setCellValue('D'.$ligne, $equipe->getClassement().' '.'prix');
                      if($equipe->getPhrases()!==null)   
                     {$sheet->setCellValue('E'.$ligne, $equipe->getPhrases()->getPhrase().' '.$equipe->getLiaison()->getLiaison().' '.$equipe->getPhrases()->getPrix());}
@@ -1814,7 +1817,76 @@ public function tableau_excel_palmares_jury(Request $request)
         
         
     }
-    
+     /**
+         * 
+         * @Security("is_granted('ROLE_JURY')")
+         * 
+         * 
+         * @Route("/secretariatjury/preparation_tableau_excel_palmares_jury", name = "secretariatjury_preparation_tableau_excel_palmares_jury")
+         */
+    public function preparation_tableau_excel_palmares_jury(Request $request){
+                 
+                $em=$this->getDoctrine()->getManager(); 
+
+                
+                
+                $repositoryEquipes = $this->getDoctrine()
+                                       ->getManager()
+                                       ->getRepository('App:Equipes');
+            $repositoryPrix = $this->getDoctrine()
+                                       ->getManager()
+                                       ->getRepository('App:Prix');
+            $classement = $this->getDoctrine()
+                                       ->getManager()
+                                       ->getRepository('App:User')
+                                       ->findAll();
+            
+            $equipes=$repositoryEquipes->findAll();
+           $listEquipes = $this->getDoctrine()
+			->getManager()
+			->getRepository('App:Equipes')
+			->createQueryBuilder('e')
+                                                     ->orderBy('e.classement','DESC')
+                                                     ->leftJoin('e.infoequipe','i')
+                                                     ->addOrderBy('i.lyceeAcademie','ASC')
+                                                    ->addOrderBy('i.lyceeLocalite','ASC')
+                                                     ->addOrderBy('i.nomLycee','ASC')
+                                                     ->getQuery()->getResult();
+                       $listPrix=$repositoryPrix->findAll(); 
+               $i=0;
+            foreach ($listEquipes as $equipe) 
+                    {
+                   $prix= $equipe->getPrix();
+                   $formBuilder[$i]= $this->get('form.factory')->createNamedBuilder('Form'.$i,PrixExcelType::class, $prix,['voix'=>$prix->getVoix(), 'intervenant'=>$prix->getIntervenant()]);
+                                             
+                   $form[$i]=$formBuilder[$i]->getForm();
+                   
+                   $formtab[$i] = $form[$i]->createView();
+   		
+		if ($request->isMethod('POST') &&  $request->request->has('Form'.$i)) 
+                    { //$id=$form[$i]->get('id')->getData();
+                  
+          
+           
+                 $prix->setVoix($request->get('Form'.$i)['voix']);
+                 $prix->setIntervenant($request->get('Form'.$i)['intervenant']);
+                 
+                    
+                    $em->persist($prix);
+                 $em->flush();
+                    return $this->redirectToRoute('secretariatjury_preparation_tableau_excel_palmares_jury');
+                    }
+                    $i++;
+                    }
+              $content = $this
+                            ->renderView('secretariatjury\preparation_palmares.html.twig', array(
+                                                    
+                                'listequipes'=>$listEquipes, 'formtab'=>$formtab
+                                                     )
+                                                        );
+            return new Response($content);   
+        
+    }
     
 }
 

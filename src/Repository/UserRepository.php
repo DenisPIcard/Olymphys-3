@@ -22,18 +22,18 @@ class UserRepository extends ServiceEntityRepository
          $this->session = $session;
          
     }
-   public function getProf(UserRepository $er): QueryBuilder//Liste des prof sans autorisation photos
+   public function getProfautorisation(UserRepository $er): QueryBuilder//Liste des prof sans autorisation photos
      {   
           $roles= ['ROLE_PROF','ROLE_USER'];
       
-         $edition=$er->session->get('edition');
+         
          $qb=$er->createQueryBuilder('p');
           $qb1 =$er->createQueryBuilder('u')
                   ->Where('u.autorisationphotos is null')
-                  ->andWhere($qb->expr()->like('u.roles',':roles'))
-                  ->setParameter('roles','%i:0;s:9:"ROLE_PROF";i:2;s:9:"ROLE_USER";%')
+                 ->andWhere($qb->expr()->like('u.roles',':roles'))
+                  ->setParameter('roles','a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}')
                   ->addOrderBy('u.nom','ASC');
-       //dd($qb1);
+      
           return $qb1;
      }               
     public function getProfesseur(UserRepository $er): QueryBuilder//Liste des prof sans autorisation photos

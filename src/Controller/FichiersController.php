@@ -934,12 +934,21 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
             $em=$this->getDoctrine()->getManager();
             $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
            if ($num_type_fichier!=6){
-            $qb= $repositoryFichiersequipes->createQueryBuilder('f');
-                 $Fichiers=$qb->where('f.equipe=:equipe')
+            $qb= $repositoryFichiersequipes->createQueryBuilder('f')
+                                                   ->where('f.equipe=:equipe')
                                                      ->setParameter('equipe',$equipe)
                                                      ->andWhere('f.typefichier =:type')
-                                                    ->setParameter('type',$num_type_fichier)
-                                                    ->getQuery()->getResult();
+                                                    ->setParameter('type',$num_type_fichier);
+                      if($this->session->get('concours')!='national' ){
+                         $national=false;
+                      }   
+                      else {
+                          $national=true;
+                      }
+                              $qb->andWhere('f.national =:valeur')
+                                      ->setParameter('valeur',$national);
+            
+                          $Fichiers=$qb ->getQuery()->getResult();
            }
            if ($num_type_fichier==6){
             $Fichiers=$citoyen->getAutorisationphotos();
@@ -954,7 +963,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                         $this->getParameter('app.path.tempdirectory'),
                         $file->getClientOriginalName());
                 
-                } catch (FileException $e) {
+                } catch (\FileException $e) {
                     // ... handle exception if something happens during file upload
                 }  
                    if ($num_type_fichier!=6){
@@ -969,9 +978,29 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 } }
                 }
                   if (!$Fichiers){
-                              
-                               $fichier= new Fichiersequipes();
-                              $fichier->setTypefichier($num_type_fichier);
+                     
+                      if($this->session->get('concours')=='national' ){ //on vérifie que le fichier cia existe et on écrase sans demande de confirmation ce fichier  par le fichier national  sauf les autorisations photos
+                              if ($num_type_fichier < 6){
+                                    try{
+                                  $fichier = $repositoryFichiersequipes->createQueryBuilder('f')
+                                                   ->where('f.equipe=:equipe')
+                                                     ->setParameter('equipe',$equipe)
+                                                     ->andWhere('f.typefichier =:type')
+                                                    ->setParameter('type',$num_type_fichier)
+                                                     ->andWhere('f.national =:valeur')
+                                                    ->setParameter('valeur','0')
+                                                     ->getQuery()->getSingleResult();     
+                                    }catch (\Exception $e) {// précaution pour éviter une erreur dans le cas du manque du fichier cia, ce qui arrive souvent pour les résumés, annexes, fiche sécurité, 
+                   $message='';
+                    $fichier= new Fichiersequipes();
+                    $nouveau=true;
+                }   if (!isset($nouveau)){
+                $message= 'Pour éviter les confusions, le fichier interacadémique a été supprimé. ';
+                }
+                         }
+                      }
+                               
+                               $fichier->setTypefichier($num_type_fichier);
                               $fichier->setEdition($edition);
                               if (isset($equipe)){
                               $fichier->setEquipe($equipe);
@@ -1005,22 +1034,13 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                      
                     $request->getSession()
                             ->getFlashBag()
-                            ->add('info', 'Votre fichier renommé selon : '.$nom_fichier.' a bien été déposé. Merci !') ;
+                            ->add('info', $message.'Votre fichier renommé selon : '.$nom_fichier.' a bien été déposé. Merci !') ;
                
                 $user = $this->getUser();//Afin de rappeler le nom du professeur qui a envoyé le fichier dans le mail
                 $type_fichier= $this->getParameter('type_fichier')[$num_type_fichier];
                 
                 $type_fichier= $this->getParameter('type_fichier_lit')[$num_type_fichier];
-               /* $bodyMail = $mailer->createBodyMail('emails/confirm_fichier.html.twig', ['typefichier' =>$type_fichier,'equipe'=>$equipe ] );
-           $mailer->sendMessage('info@olymphys.fr', 'alain.jouve@wanadoo.fr', 'Equipe '.$equipe->getNumero().'DÃ©pÃ´t d\'un fichier', $bodyMail);
-           $mailer->sendMessage('info@olymphys.fr','info@olymphys.fr', 'Inscription d\'un nouvel utilisateur', $bodyMail);
-              $email=(new Email())
-                    ->from('info@olymphys.fr')
-                    ->to('alain.jouve@wanadoo.fr') //'webmestre2@olymphys.fr', 'Denis'
-                    ->subject('Depot du '.$type_fichier.'de l\'Ã©quipe '.$equipe->getInfoequipe())
-                    ->text('L\'equipe '. $equipe->getInfoequipe().' a dÃ©posÃ© un fichier : '.$type_fichier);
-                   
-                $mailer->send($email);*/
+              
                 if (isset($equipe)){
                     
                    $info_equipe='L\'equipe '. $equipe->getInfoequipe();
@@ -1051,15 +1071,12 @@ public function MailConfirmation(MailerInterface $mailer, string $type_fichier, 
   
     $email=(new Email())
                     ->from('info@olymphys.fr')
-                   ->cc('webmestre3@olymphys.fr')
-                    ->to('webmestre2@olymphys.fr')
-                 
+                  // ->cc('webmestre3@olymphys.fr')
+                  //  ->to('webmestre2@olymphys.fr')
+                    ->to('alain.jouve@wanadoo.fr')
                     ->subject('Depot du '.$type_fichier.' de l\'équipe '.$info_equipe)
-                    ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.')
-                    ->getHeaders()->addTextHeader([
-  'name' => 'file.txt',
-  'charset' => 'iso-8859-1'
-   ]);
+                    ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.');
+                   
                 $mailer->send($email);
    
  }
@@ -1368,20 +1385,20 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                     }
                     $request->getSession()
                     ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$num_equipe) ;
+                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$num_equipe.'pour le concours'.$concours) ;
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'liste_prof'));   }
                 
                  if ($role=='ROLE_COMITE' || $role=='ROLE_SUPER_ADMIN' || $role=='ROLE_JURY'){
                      if ($concours=='interacadémique'){
                      $request->getSession()
                     ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe'.$equipe_choisie->getNumero()) ;   
+                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe'.$equipe_choisie->getNumero().'pour le concours'.$concours) ;   
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>$centre)); 
                      }
                      if ($concours=='national'){
                       $request->getSession()
                     ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$equipe_choisie->getLettre()) ;
+                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$equipe_choisie->getLettre().'pour le concours'.$concours) ;
                          
                          
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'liste_cn_comite')); 
@@ -1395,7 +1412,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                      if ($role=='ROLE_ORGACIA' || $role=='ROLE_JURYCIA'){
                          $request->getSession()
                     ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe n°'.$equipe_choisie->getNumero()) ;
+                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe n°'.$equipe_choisie->getNumero().'pour le concours'.$concours) ;
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'centre')  );
                              }
             }

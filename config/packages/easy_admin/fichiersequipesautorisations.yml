@@ -31,8 +31,8 @@ easy_admin :
                   fields: 
                       - { type: 'group', columns: 6, label: '<font color="red" > Déposer une nouvelle autorisation photo </font> ' } 
                       - { property : 'eleve', label : 'Choisir l''élève' ,type: 'entity' , type_options : { class : 'App\Entity\Elevesinter',query_builder : 'App\Repository\ElevesinterRepository::getEleve', 'choice_label' : 'getNomPrenom'}}
-                      - { property : 'prof',label : 'Ou choisir le professeur', type: 'entity' , type_options : { class : 'App\Entity\User',query_builder : 'App\Repository\UserRepository::getProf', 'choice_label' : 'getNomPrenom'}}
-                      - { property : 'fichierFile', label: 'Choisir le résumé',  type : 'vich_file',  type_options : {'allow_delete' : false}}
+                      - { property : 'prof',label : 'Ou choisir le professeur', type: 'entity' , type_options : { class : 'App\Entity\User',query_builder : 'App\Repository\UserRepository::getProfautorisation', 'choice_label' : 'getNomPrenom'}}
+                      - { property : 'fichierFile', label: 'Choisir l''autorisation',  type : 'vich_file',  type_options : {'allow_delete' : false}}
                       
           
             

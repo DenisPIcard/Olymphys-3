@@ -104,11 +104,11 @@ class JuryController extends AbstractController
 			;
 
 		$jure=$repositoryJure->findOneByNomJure($nom);
-    
+
 		$id_jure = $jure->getId();
-                
+                  
  		$attrib = $jure->getAttributions();
-                
+                         
 		$repositoryEquipes = $this
 			->getDoctrine()
 			->getManager()
@@ -131,7 +131,9 @@ class JuryController extends AbstractController
                 $memoires=array();
                
  		foreach ($attrib as $key => $value) 
-		{              try{  
+		{              
+                   
+                    try{  
 			$equipe=$repositoryEquipes->createQueryBuilder('e')
                                                                ->andWhere('e.lettre =:lettre')
                                                                ->setParameter('lettre',$key)
@@ -140,17 +142,25 @@ class JuryController extends AbstractController
                                                           catch(\Exception $e) {
                                                               $equipe=null;
                           }
-                
+                          
                         if (($equipe)){
 			$listEquipes[$key] = $equipe;
 			$id = $equipe->getId();
                         $note=$repositoryNotes->EquipeDejaNotee($id_jure ,$id);
                         $progression[$key] = (!is_null($note)) ? 1 : 0 ;
-                       
-                        $memoire=$repositoryMemoires->createQueryBuilder('m')
+                      try{ 
+                        $memoires[$key]=$repositoryMemoires->createQueryBuilder('m')
                                 ->where('m.edition =:edition')
                                ->setParameter('edition',$edition)
-                                ->andWhere('m.typefichier < 3');
+                               ->andWhere('m.national = 1')
+                                ->andWhere('m.typefichier = 0')
+                                ->andWhere('m.equipe =:equipe')
+                               ->setParameter('equipe',$equipe->getInfoEquipe())
+                               ->getQuery()->getSingleResult();
+                      }
+                      catch(\Exception $e) {
+                                                              $memoires[$key]=null;
+                          }
                        
                         
                 }
@@ -159,6 +169,7 @@ class JuryController extends AbstractController
                 usort($listEquipes, function($a, $b) {
                 return $a->getOrdre() <=> $b->getOrdre();
                 });
+               
                 $content = $this->renderView('cyberjury/accueil.html.twig', 
 			array('listEquipes' => $listEquipes,'progression'=>$progression,'jure'=>$jure,'memoires'=>$memoires)
 			);
@@ -221,11 +232,21 @@ class JuryController extends AbstractController
                                                                               ->where('e.equipe =:equipe')
                                                                              ->setParameter('equipe', $equipeadmin)
                                                                             ->getQuery()->getResult();
-                
-                                  $memoires=$equipe->getMemoire();
-                
                                   
-     
+                                   try{
+                                  $memoires= $this->getDoctrine() ->getManager()
+		                                               ->getRepository('App:Fichiersequipes')->createQueryBuilder('m')
+                                                                                                  ->where('m.equipe =:equipe')
+                                                                                                 ->setParameter('equipe', $equipeadmin)
+                                                                                                 ->andWhere('m.typefichier = 0')
+                                                                                                   ->getQuery()->getResult();
+                                   }
+                                   catch(\Exception $e) {
+                                                              $memoires=null;
+                                          }
+                       
+                                  
+                                   
 		$content = $this->renderView('cyberjury/infos.html.twig',
 			array(
 				'equipe'=>$equipe, 
@@ -431,23 +452,26 @@ class JuryController extends AbstractController
                 $jure=$repositoryJures->findOneByNomJure($nom);
 		$id_jure = $jure->getId();
 		$attrib = $jure->getAttributions();   
-		
+	
 		$em=$this->getDoctrine()->getManager();
 
 		$notes = $repositoryNotes = $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Notes')
 		->EquipeDejaNotee($id_jure, $id);
+                
                 $repositoryMemoires = $this->getDoctrine()
                                            ->getManager()
                                            ->getRepository('App:Fichiersequipes');
                 try{
+                 
                 $memoire=$repositoryMemoires->createQueryBuilder('m')
                         ->where('m.equipe =:equipe')
                         ->setParameter('equipe', $equipe->getInfoequipe())
                         ->andWhere('m.typefichier = 0')
-                        ->andWhere('m.national = TRUE')
+                        ->andWhere('m.national = 1')
                         ->getQuery()->getSingleResult();
+                
                 }
                 catch(\Exception $e){
                     $memoire=null;
@@ -505,6 +529,7 @@ class JuryController extends AbstractController
 			return $this->redirectToroute('cyberjury_tableau_de_bord');
 		}
 		// Si on n'est pas en POST, alors on affiche le formulaire. 
+       
 		$content = $this->renderView('cyberjury/evaluer.html.twig', 
 			array(
 				'equipe'=>$equipe,
@@ -512,7 +537,7 @@ class JuryController extends AbstractController
 				'flag'=>$flag,
 				'progression'=>$progression,
 				'jure'=>$jure,
-                                'memoires'=>$memoire
+                                                                       'memoire'=>$memoire
 				  ));
 		return new Response($content);
 		
@@ -553,6 +578,8 @@ class JuryController extends AbstractController
                                  $repositoryMemoires = $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Fichiersequipes');
+                                
+                                 
 		$em=$this->getDoctrine()->getManager();
                                    $memoires=array();
 		$listEquipes = array();
@@ -574,15 +601,17 @@ class JuryController extends AbstractController
 			$listEquipes[$j]['points']=$notes->getPoints();
 			$memoires[$j]=$repositoryMemoires->createQueryBuilder('m')
                                                                               ->andWhere('m.equipe =:equipe')
-                                                                              ->setParameter('equipe', $equipe)
+                                                                              ->setParameter('equipe', $equipe->getInfoEquipe())
+                                                                              ->andWhere('m.national =:valeur')
+                                                                              ->setParameter('valeur', 1)
                                                                               ->andWhere('m.typefichier =:typefichier')
-                                                                             ->setParameter('typefichier',0)
-                                                                             ->getQuery()->getResult();
-                                                     
+                                                                             ->setParameter('typefichier', '0')
+                                                                             ->getQuery()->getSingleResult();
+                                                 
                                                      $j++;
-                                                   
+                                                  
 		}
-
+                                                
 		$content = $this->renderView('cyberjury/tableau.html.twig', 
 			array('listEquipes'=>$listEquipes,'jure'=>$jure, 'memoires'=>$memoires)
 			);
@@ -653,5 +682,6 @@ public function phrases(Request $request, Equipes $equipe, $id)
                                 'memoires'=>$memoire
 				  ));
     return new Response($content);
-    }           
+    }   
+    
 }

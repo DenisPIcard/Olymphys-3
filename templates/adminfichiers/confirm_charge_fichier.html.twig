@@ -1,20 +1,23 @@
 {% extends "base.html.twig" %}
 {% block title %}Fichier{% endblock %}
 {% block titre3 %}  Transférer  
-    {% if typefichier=='fichesecur' %}
+    {% if typefichier=='4' %}
         de la fiche sécurité 
     {% endif %}
-    {% if typefichier=='resume' %}
+    {% if typefichier==2 %}
         du résumé 
     {% endif %}
-     {% if typefichier=='memoire' %}
+     {% if typefichier==0 or  typefichier==1 %}
         du memoire  ou de son annexe
     {% endif %}
     
-     {% if typefichier=='présentation' %}
+     {% if typefichier==3 %}
         de la présentation 
     {% endif %}
-    {% if typefichier=='autorisation' %}
+     {% if typefichier==5 %}
+        du diaporama 
+    {% endif %}
+    {% if typefichier==6 %}
         de l'autorisation photos
     {% endif %}
     {%  if equipe != 'prof' %}

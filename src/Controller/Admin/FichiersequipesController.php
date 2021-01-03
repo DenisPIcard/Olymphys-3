@@ -54,7 +54,7 @@ class FichiersequipesController extends EasyAdminController
            'choice_label' => 'getEd',
             'multiple'=>false,]);
         
-            if($entityName=='Fichiersequipesmemoiresinter'){                         
+            if(($entityName=='Fichiersequipesmemoiresinter') or ($entityName=='Fichiersequipesresumes')){                         
             $form->add('centre', FichiersequipesFilterType::class, [
                          'class' => Centrescia::class,
                          'query_builder' => function (EntityRepository $er) {
@@ -79,7 +79,7 @@ class FichiersequipesController extends EasyAdminController
                          'multiple'=>false,]);
             }
             
-             if($entityName=='Fichiersequipesmemoirescn'){                         
+             if(($entityName=='Fichiersequipesmemoirescn') or ($entityName=='Fichiersequipesresumescn')){                         
                       
                                     
             $form->add('equipe', FichiersequipesFilterType::class, [
@@ -96,6 +96,8 @@ class FichiersequipesController extends EasyAdminController
                          'multiple'=>false,]);
                                                   
             }
+           
+            
             //$form->add('submit', SubmitType::class, [ 'label' => 'Appliquer',  ]);
           if($entityName=='Fichiersequipesautorisations'){                         
                       
@@ -224,12 +226,26 @@ class FichiersequipesController extends EasyAdminController
               
                if ($dqlFilter=='entity.typefichier = 2'){
               $queryBuilder->andWhere($dqlFilter)
-                       ->join('entity.equipe','eq')
+                        ->andWhere('entity.national = FALSE')
+                      ->join('entity.equipe','eq')
                        ->addOrderBy('eq.numero', 'ASC')
                       ->andWhere('eq.edition =:edition')
                       ->setParameter('edition', $edition)
                       ->addOrderBy('eq.lettre', 'ASC');;;;
               }
+               if ($dqlFilter=='entity.typefichier = 2 AND entity.national = 1'){
+              $queryBuilder
+                        ->andWhere('entity.typefichier = 2') 
+                       ->join('entity.equipe','eq')
+                       ->andWhere('entity.national = TRUE')
+                       ->addOrderBy('eq.numero', 'ASC')
+                      ->andWhere('eq.edition =:edition')
+                      ->setParameter('edition', $edition)
+                      ->addOrderBy('eq.lettre', 'ASC');;;;
+              }
+              
+              
+              
                if ($dqlFilter=='entity.typefichier = 3 AND national = 1'){
                    
               $queryBuilder->andWhere('entity.typefichier = 3')

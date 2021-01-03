@@ -14,6 +14,7 @@
 {% block titre3 %} Mes équipes {% endblock %}
 
 {% block body %}
+    <div class="small">Dans l'ordre de passage </div>
 {% for equipes in listEquipes %}
     {% set lettre = equipes.lettre %}
     <p>
@@ -26,8 +27,8 @@
     <a href="#" class="fas fa-clock" title="{{equipes.heure}} {{equipes.salle}}"> </a>
     {% for key,mem in memoires %}
         {%if key == lettre %}    
-            {%  if memoires!=null %}
-            <a href="https://olymphys.fr/public/upload/equipes/memoires/nat/{{ memoires.memoire }}" class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
+            {%  if mem!=null %}
+            <a href="{{ asset('/fichiers/memoires/'~ mem.fichier)}}" class="fas fa-book-reader" title="Accéder au mémoire de l'équipe" target="_blank"> </a>
         {% endif %}
             {% endif %} 
     {% endfor %}
