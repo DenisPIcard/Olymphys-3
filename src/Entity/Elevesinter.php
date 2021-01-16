@@ -241,8 +241,9 @@ class Elevesinter
 
         return $this;
     }
-    public function getNomPrenom(){
-        $NomPrenom='Equipe'.$this->equipe->getNumero().'-'.$this->nom.' '.$this->prenom;
+    public function getNomPrenomlivre(){
+        
+        $NomPrenom=$this->nom.' '.$this->prenom;
         
         return $NomPrenom;        
     }

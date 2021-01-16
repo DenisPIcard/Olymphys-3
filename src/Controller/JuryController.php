@@ -227,7 +227,10 @@ class JuryController extends AbstractController
 		->getDoctrine()
 		->getManager()
 		->getRepository('App:Elevesinter');
-
+                                   $repositoryUser = $this
+		->getDoctrine()
+		->getManager()
+		->getRepository('App:User');
 		$listEleves= $repositoryEleves->createQueryBuilder('e')
                                                                               ->where('e.equipe =:equipe')
                                                                              ->setParameter('equipe', $equipeadmin)
@@ -245,12 +248,27 @@ class JuryController extends AbstractController
                                                               $memoires=null;
                                           }
                        
-                                  
-                                   
+                                  $idprof1 =$equipe->getInfoequipe()->getIdProf1();
+                                   $idprof2 =$equipe->getInfoequipe()->getIdProf2();
+                                  $mailprof1=$repositoryUser->find(['id'=>$idprof1])->getEmail();
+                                  $telprof1 = $repositoryUser->find(['id'=>$idprof1])->getPhone();
+                                   if ($idprof2!=null){
+                                    $mailprof2=$repositoryUser->find(['id'=>$idprof2])->getEmail();   
+                                    $telprof2 = $repositoryUser->find(['id'=>$idprof2])->getPhone();
+                                    }
+                                    else{
+                                         $mailprof2=null;
+                                         $telprof2=null;
+                                    }
+                                    
+                                 
 		$content = $this->renderView('cyberjury/infos.html.twig',
 			array(
 				'equipe'=>$equipe, 
-				
+				'mailprof1'=>$mailprof1,
+                                                                       'mailprof2'=>$mailprof2,
+                                                                       'telprof1'=>$telprof1,
+                                                                       'telprof2'=>$telprof2,
 				'listEleves'=>$listEleves, 
 				'id_equipe'=>$id,
 				'progression'=>$progression,

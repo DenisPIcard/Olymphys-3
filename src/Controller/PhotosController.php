@@ -159,25 +159,46 @@ class PhotosController extends  AbstractController
                          $em->persist($photo);
                           $em->flush();
                          
-                         
+                          $headers = exif_read_data($photo->getPhotoFile());
                            $photo= $repositoryPhotos->findOneby(['photo'=>$photo->getPhoto()]);
                           $image =imagecreatefromjpeg($photo->getPhotoFile());
-                         list($width_orig, $height_orig) = getimagesize($photo->getPhotoFile());
+                         
+                           list($width_orig, $height_orig) = getimagesize($photo->getPhotoFile());
+                        
+                          
+                            if (isset($headers['Orientation']))  { 
+                             if (($headers['Orientation']=='6') and ($width_orig>$height_orig)){
+                               $image=  imagerotate($image,270,0);      
+                               
+                               $widthtmp=$width_orig;
+                               $width_orig=$height_orig;
+                               $height_orig=$widthtmp;
+                              
+                             }
+                          if (($headers['Orientation']=='8') and ($width_orig>$height_orig)){
+                               $image=  imagerotate($image,90,0);                                 
+                               $widthtmp=$width_orig;
+                               $width_orig=$height_orig;
+                               $height_orig=$widthtmp;
+                          }  
+                             }
+                        
+                        
                          if($height_orig/$width_orig<0.866){
                              $width_opt=$height_orig/0.866;
                              $Xorig=($width_orig-$width_opt)/2;
                              $Yorig=0;
                          $image_opt= imagecreatetruecolor( $width_opt,$height_orig);
+                         
                          imagecopy($image_opt,$image,0,0,$Xorig,$Yorig,$width_opt,$height_orig);
                           $width_orig=$width_opt;                           
                          }
                          else{
-                             $image_opt =imagecreatefromjpeg($photo->getPhotoFile());
+                             $image_opt =$image;
                          }
-                         
-                         
-                         
-                         
+                       
+                      
+                                                  
                          $dim=max($width_orig, $height_orig);
                          $percent = 200/$height_orig;
                          $new_width = $width_orig * $percent;

@@ -330,7 +330,7 @@ class Equipesadmin
        
         
         $nom_equipe=$this->getTitreProjet() ;
-        $infoequipe=$edition->getEd().'Eq '.$lettre.' - '.$nom_equipe;
+        $infoequipe=$lettre.' - '.$nom_equipe;
         if ($this->getRneId()){
         $infoequipe=$infoequipe.'-'.$this->getRneId()->getCommune();
         }

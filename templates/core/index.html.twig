@@ -49,6 +49,7 @@
 
     <li>
     {% if is_granted('ROLE_SUPER_ADMIN') %}
+         
       <button class="btn btn-outline-primary dropdown-toggle active" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Administration</button>
            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -85,8 +86,16 @@
             <a class="dropdown-item" href="{{ path('fichiers_choix_equipe',{choix: 'liste_cn_comite'}) }}" class="btn btn-outline-primary" role="button" aria-pressed="true"> Liste des mémoires et résumés CN</a>
            
            
-           </div>       
-
+           </div>
+    </li>
+    <li>
+            <button class="btn btn-outline-primary dropdown-toggle active" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Livre d'Or</button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                <a class="dropdown-item"  href="{{ path('livredor_lire',{livre : 'eleves'}) }}" role="button" aria-pressed="true">Livre d'Or des élèves</a>
+                <a class="dropdown-item"  href="{{ path('livredor_lire',{livre : 'profs'}) }}" role="button" aria-pressed="true">Livre d'Or des professeurs</a>
+            </div>
+         
     {% elseif is_granted('ROLE_ORGACIA') %}
        <button class="btn btn-outline-primary dropdown-toggle active" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Les mémoires des CIA</button>   
@@ -129,14 +138,22 @@
                 <a  class="dropdown-item" href="{{ path('photos_gestion_photos',{infos:'national-'~app.session.get('edition').id~'-prof'}) }}" role="button" aria-pressed="true">Gérer les photos des épreuves nationales  de la {{ app.session.get('edition').ed }}<sup>e</sup></a>
                 
                {%  endif %}
-              
-            </div>
-
-    {% endif %}
+                   </div>
     </li>
+                {% if date()>= app.session.get('datelivredor') and  date()<= app.session.get('datelimlivredor')%}
+                <li><a href="{{path('livredor_saisie_texte',{id : app.user.id})}}" class="btn btn-primary" role="button" aria-pressed="true">Remplir le livre d'Or</a></li> 
+                  {% endif %}
+    {% elseif  is_granted('ROLE_ELEVE') %}
+      {% if date()>= app.session.get('datelivredor') and  date()<= app.session.get('datelimlivredor')%}
+           <li><a href="{{path('livredor_choix_equipe')}}" class="btn btn-primary" role="button" aria-pressed="true">Remplir le livre d'Or</a></li>  
+           {% endif %}
+    {% endif %}
+    
+    
     <li><a href="{{path('photos_choixedition')}}" class="btn btn-primary" role="button" aria-pressed="true">Galeries Photos</a></li>
     <li><a href="{{path('fichiers_choixedition',{num_type_fichier : 0})}}" class="btn btn-primary" role="button" aria-pressed="true">Mémoires</a></li>
     <li><a href="{{path('fichiers_choixedition',{num_type_fichier : 3})}}" class="btn btn-primary" role="button" aria-pressed="true">Présentations</a></li>
+     
     <li><a href="https://forum.olymphys.fr/" class="btn btn-primary" role="button" aria-pressed="true">FORUM</a></li>
 </ul>
 </nav>

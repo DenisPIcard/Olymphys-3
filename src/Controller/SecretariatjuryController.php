@@ -124,6 +124,8 @@ $repositoryEquipesadmin = $this ->getDoctrine()
                                                      ->orderBy('e.lettre','ASC')
                                                      ->getQuery()
                                                      ->getResult();
+        
+       
 		foreach ($listEquipes as $equipe) 
                     {
                     $lettre=$equipe->getLettre();

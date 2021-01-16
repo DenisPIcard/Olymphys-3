@@ -1042,8 +1042,13 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 $type_fichier= $this->getParameter('type_fichier_lit')[$num_type_fichier];
               
                 if (isset($equipe)){
-                    
+                      if ($phase != 'national'){
                    $info_equipe='L\'equipe '. $equipe->getInfoequipe();
+                    }
+                    
+                    if ($phase == 'national'){
+                   $info_equipe='L\'equipe '. $equipe->getInfoequipenat();
+                    }
                 }
                 else{
                     
