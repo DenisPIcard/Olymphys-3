@@ -15,7 +15,7 @@ easy_admin :
                     
                 dql_filter : 
                
-                batch_actions: ['delete',{name : 'extract_tableau_excel_Elevesns', 'label' : 'Extraire les élèves non sélectionnés'}]
+                batch_actions: ['delete',{name : 'extract_tableau_excel_Elevesns', 'label' : 'Extraire les élèves non sélectionnés'},{name : 'extract_tableau_excel_Eleves_s', 'label' : 'Extraire les élèves  sélectionnés'}]
                 fields : 
                     - {property : 'nom'}
                     - {property : 'prenom '}

@@ -1,14 +1,22 @@
 {% extends "base.html.twig" %}
 {% block title %} Remplir le livre d'or{% endblock %}
 {% block titre3 %}
-   Remplir le livre d'Or
+    Remplir le livre d'Or  - 
+     {% if type=='prof' %} 
+           {{ prof.prenom }} {{ prof.nom }}
+         {% endif %}  
+        {% if type=='equipe'%}   
+             Equipe {{equipe.lettre  }}
+             {% endif %}
 {% endblock %}
 
 
 {% block body %}
     <div class="well">
-    Choisir votre nom puis saisir votre texte.
-    
+       
+           Saisir votre texte.
+        
+     
     {{ form(form) }}
     </div>
 {% endblock %}

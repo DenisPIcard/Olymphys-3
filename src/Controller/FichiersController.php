@@ -998,6 +998,9 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 $message= 'Pour éviter les confusions, le fichier interacadémique a été supprimé. ';
                 }
                          }
+                          if ($num_type_fichier < 6){
+                              $fichier=new Fichiersequipes();
+                          }
                       }
                                
                                $fichier->setTypefichier($num_type_fichier);

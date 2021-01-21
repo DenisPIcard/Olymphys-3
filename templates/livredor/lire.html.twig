@@ -1,0 +1,46 @@
+{% extends "base.html.twig" %}
+{% block title %} LIvre d'or{% endblock %}
+{% block titre3 %}
+    Livre d'or des 
+    {% if choix=='profs' %} 
+        professeurs de la {{ app.session.get('edition').ed }}<sup>e</sup> édition
+          
+        {% elseif  choix=='eleves'%}   
+             élèves  de la {{app.session.get('edition').ed }}<sup>e</sup> édition
+             {% endif %}
+{% endblock %}
+
+
+{% block body %}
+   {%  set i=0 %}
+   {% for texte in listetextes %} 
+       
+       {% if choix=='profs'%} 
+                
+           
+          
+    {{ texte.nom }} :  equipe{% if equipes[i][1] is defined %}s{% endif %}
+    {% set j= 0 %}
+    {% for equipe in equipes[i] %}
+         {% if j>0 %}, {% endif %}{{ equipe.lettre  }}
+        
+        {% set j = j+1 %}
+        {% endfor %}
+    
+    
+    
+     {% set i = i+1 %}
+    {% endif %}
+     {% if choix=='eleves' %} 
+    Equipe {{ texte.equipe.lettre  }} : {{ texte.equipe.titreProjet }} ({{ texte.noms }})
+    {% endif %}
+    :<br>
+    {{ texte.texte}}
+    <hr>      
+       
+       
+   {% endfor %}
+    
+  
+    
+{% endblock %}

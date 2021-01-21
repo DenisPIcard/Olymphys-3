@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\LivredorelevesRepository;
-use APP\Entity\Equipesadmin;
-use APP\Entity\Elevesinter;
-use APP\Entity\Edition;
+use App\Entity\Equipesadmin;
+use App\Entity\Elevesinter;
+use App\Entity\Edition;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,13 +22,10 @@ class Livredoreleves
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $nom;
+  
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=1000)
      */
     private $texte;
 
@@ -45,27 +42,18 @@ class Livredoreleves
     private $equipe;
 
     /**
-     * @ORM\OneToOne(targetEntity=Elevesinter::class)
-     *  @ORM\JoinColumn(name="eleve_id",  referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $eleve;
+    private $noms;
+
+   
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
+   
 
     public function getTexte(): ?string
     {
@@ -111,6 +99,18 @@ class Livredoreleves
     public function setEleve( $eleve)
     {
         $this->eleve = $eleve;
+
+        return $this;
+    }
+
+    public function getNoms(): ?string
+    {
+        return $this->noms;
+    }
+
+    public function setNoms(?string $noms): self
+    {
+        $this->noms = $noms;
 
         return $this;
     }

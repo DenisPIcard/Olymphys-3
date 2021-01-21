@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Doctrine\ORM\EntityRepository;
@@ -33,25 +34,32 @@ class LivredorController extends AbstractController
     
     
     /**
+     *  @IsGranted("ROLE_PROF")
      * @Route("/livredor/choix_equipe", name="livredor_choix_equipe")
      *  @return RedirectResponse|Response
      */
     public function choix_equipe(Request $request){
         
-                                         
-         
+        $idprof=$this->getUser()->getId();
+          $qb=$this->getDoctrine()
+                                ->getManager()
+                                ->getRepository('App:Equipesadmin')
+                               ->createQueryBuilder('e')
+                               ->where('e.edition =:edition')
+                               ->setParameter('edition', $this->session->get('edition'))
+                               ->andWhere('e.idProf1 =:prof1')
+                               ->setParameter('prof1',$idprof)
+                               ->orWhere('e.idProf2 =:prof2')
+                               ->setParameter('prof2',$idprof)
+                               ->andWhere('e.selectionnee = 1')
+                               ->addOrderBy('e.lettre', 'ASC');;
+           $equipes = $qb->getQuery()->getResult();
+         if (count($equipes)>1){
         $form = $this->createFormBuilder()
                     ->add('equipe', EntityType::class,
                               ['class'=>Equipesadmin::class,
-                                  'query_builder' => function (EntityRepository $er ) {
-                        $edition=$this->session->get('edition');
-                       
-                                         return $er->createQueryBuilder('e') 
-                                        ->where('e.edition =:edition')
-                                       ->setParameter('edition',$edition)
-                                       ->andWhere('e.selectionnee = 1')
-                                       ->addOrderBy('e.lettre', 'ASC');  },
-                                'choice_label'=>'getLettre',        
+                                  'query_builder' => $qb,
+                                'choice_label'=>'getInfoequipenat',        
                     ])
             ->add('save', SubmitType::class, ['label' => 'Valider'])
             ->getForm();
@@ -60,21 +68,24 @@ class LivredorController extends AbstractController
         
         $equipe=$form->get('equipe')->getData();
          $id=$equipe->getId();
-      return  $this->redirectToRoute('livredor_saisie_texte',['id'=>$id]) ;
-        
-        
-        
-        
-        
-    }
+      return  $this->redirectToRoute('livredor_saisie_texte',['id'=>'equipe-'.$id]) ;
+            }
              $content = $this
                  ->renderView('livredor\choix_equipe.html.twig', ['form'=>$form->createView()]);
         
-       return new Response($content);  
+       return new Response($content); 
+         }
+   else{
+       $content = $this
+                 ->renderView('livredor\saisie_texte.html.twig', ['id'=>'equipe-'.$equipes[0]->getId()]);
         
+       return new Response($content); 
+       
+   }     
         
     }
    /**
+     * @IsGranted("ROLE_PROF")
      * @Route("/livredor/saisie_texte,{id}", name="livredor_saisie_texte")
      *  @return RedirectResponse|Response
      */
@@ -86,42 +97,61 @@ class LivredorController extends AbstractController
          
          $form = $this->createFormBuilder();
        
-        $datelim =new \DateTime( $this->session->get('datelimlivredor')->format('Y-m-d').'00:00:00');
+         $ids=explode('-',$id);
+        $type=$ids[0];
+        $id_=$ids[1];
+       
+        if($type=='equipe'){
         
-        $p=new \DateInterval('PT18H');
-        $datelim=$datelim->add($p);
-        
-        
-        
-        if(($this->getUser()->getRoles()[0]=='ROLE_ELEVE') and(new \DateTime('now')<=$datelim)){
-                     
-            
-        $this->session->set('equipe',$id);
         $equipe=$this->getDoctrine()
                                 ->getManager()
-                                ->getRepository('App:Equipesadmin')->findOneById(['id'=>$id]);   
-         $form ->add('eleve', EntityType::class,
-                              ['class'=>Elevesinter::class,
-                                  'query_builder' => function (EntityRepository $er ) {
-                                    $idequipe=$this->session->get('equipe');
-                                         return $er->createQueryBuilder('e') 
-                                            ->leftJoin('e.equipe','eq')
-                                            ->Where('eq.id =:id')     
-                                            ->setParameter('id', $idequipe)
-                                            ->addOrderBy('e.nom', 'ASC');  
-                                  },
-                                 'choice_label'=>'getNomPrenomlivre',  
-                    ]);
+                                ->getRepository('App:Equipesadmin')->findOneById(['id'=>$id_]);   
         
+        $livredor=$this->getDoctrine()
+                                ->getManager()
+                                ->getRepository('App:Livredoreleves')->findOneByEquipe(['equipe'=>$equipe]);
+      if($livredor != null){   
+          $texteini=$livredor->getTexte();
+      }
+              if (!isset($texteini)) { 
+             $texteini ='';
+                            };
+         
+        $listeEleves=$this->getDoctrine()
+                                ->getManager()
+                                ->getRepository('App:Elevesinter')
+                                ->createQueryBuilder('e')
+                               ->where('e.equipe =:equipe')
+                               ->setParameter('equipe', $equipe)
+                               ->getQuery()->getResult();
+        $noms='';
+         foreach($listeEleves as $eleve){
+             $noms= $noms.$eleve->getPrenom().', ';
+             
+         }
+         $noms= substr($noms, 0, -2);
+         
         }
-        if($this->getUser()->getRoles()[0]=='ROLE_PROF'){
+        if($type=='prof'){
             
             $prof=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:User')->findOneById(['id'=>$id]); 
+                                 ->getRepository('App:User')->findOneById(['id'=>$id_]); 
+            $livredor=$this->getDoctrine()
+                                ->getManager()
+                                ->getRepository('App:Livredorprofs')->findOneByProf(['prof'=>$prof]);
+      if($livredor != null){   
+          $texteini=$livredor->getTexte();
+         
+      }
+              if (!isset($texteini)) { 
+             $texteini ='';
+                            };
+            
         }
        $form->add('texte', TextareaType::class,[
-                'label' =>'Texte (255 char. maxi)'
+                'label' =>'Texte (1000 char. maxi)',
+                'data' => $texteini,
             ])    
             ->add('save', SubmitType::class, ['label' => 'Valider']);
            $form=$form ->getForm();
@@ -129,22 +159,22 @@ class LivredorController extends AbstractController
           $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()){
          $texte=$form->get('texte')->getData();
-         if($this->getUser()->getRoles()[0]=='ROLE_ELEVE'){
-        $eleve=$form->get('eleve')->getData();
+         if(($type == 'equipe')){
+       
          
         $livredor=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:Livredoreleves')->findOneByEleve(['eleve'=>$eleve]);     
+                                 ->getRepository('App:Livredoreleves')->findOneByEquipe(['equipe'=>$equipe]);     
        if ($livredor==null){
             $livredor=new livredoreleves();
            } 
-           $livredor->setNom($eleve->getPrenom());
-            $livredor->setEleve($eleve);
+            
+             $livredor->setNoms($noms);
             $livredor->setTexte($texte);
             $livredor->setEquipe($equipe);
             $livredor->setEdition($edition);
            }
-         if($this->getUser()->getRoles()[0]=='ROLE_PROF'){
+         if($type == 'prof'){ 
          try {       
         $livredor=$this->getDoctrine()->getManager()->getRepository('App:Livredorprofs')
                                  ->createQueryBuilder('p')
@@ -173,13 +203,18 @@ class LivredorController extends AbstractController
    
    
     }
+  
+     if ($type=='equipe'){
         $content = $this
-                 ->renderView('livredor\saisie_texte.html.twig', ['form'=>$form->createView(),]);
-        
+                          ->renderView('livredor\saisie_texte.html.twig', ['form'=>$form->createView(),'equipe' =>$equipe,'type'=>'equipe']);}
+       if ($type=='prof'){
+        $content = $this
+                                ->renderView('livredor\saisie_texte.html.twig', ['form'=>$form->createView(),'prof' =>$this->getUser(),'type'=>'prof']);}
        return new Response($content);
         
     } 
     /**
+     * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
      * @Route("/livredor/lire,{type}", name="livredor_lire")
      *  @return RedirectResponse|Response
      */
@@ -188,30 +223,45 @@ class LivredorController extends AbstractController
         if ($type=='eleves'){
             $listetextes=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:livredoreleves')->CreateQueryBuilder('l')
+                                 ->getRepository('App:Livredoreleves')->CreateQueryBuilder('l')
                                  ->leftJoin('l.equipe', 'eq')
                                  ->orderBy('l.edition', 'DESC')
                                  ->addOrderBy('eq.lettre','ASC')
-                                 ->getQuery()->getResult()
-                    ;
+                                 ->getQuery()->getResult();
+                    $content = $this
+                 ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type]);;
         }
         if ($type=='profs'){
             $listetextes=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:livredorprofs')->CreateQueryBuilder('l')
-                                 ->leftJoin('l.user', 'u')
+                                 ->getRepository('App:Livredorprofs')->CreateQueryBuilder('l')
+                                 ->leftJoin('l.prof', 'u')
                                  ->orderBy('l.edition', 'DESC')
                                  ->addOrderBy('u.nom','ASC')
                                  ->getQuery()->getResult();
-        }
-        
-          $content = $this
-                 ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes]);
-        
-       return new Response($content);
-        
-        
-        
+          $i=0;
+            foreach($listetextes as $texte){
+               $idprof=$texte->getProf()->getId();
+               $equipes[$i]= $qb=$this->getDoctrine()
+                                ->getManager()
+                                ->getRepository('App:Equipesadmin')
+                               ->createQueryBuilder('e')
+                               ->where('e.edition =:edition')
+                               ->setParameter('edition', $this->session->get('edition'))
+                               ->andWhere('e.idProf1 =:prof1')
+                               ->setParameter('prof1',$idprof)
+                               ->orWhere('e.idProf2 =:prof2')
+                               ->setParameter('prof2',$idprof)
+                               ->andWhere('e.selectionnee = 1')
+                               ->addOrderBy('e.lettre', 'ASC')
+                               ->getQuery()->getResult();
+               
+           }
+                    $content = $this
+                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'equipes' =>$equipes,'choix'=>$type]);;
+                    }
+        return new Response($content);
+    
     }
-
+ 
 }

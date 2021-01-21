@@ -47,17 +47,22 @@ class CoreController extends AbstractController
     }
      $datelimphotoscia=date_create();
      $datelimphotoscn=date_create();
-     $datelimlivredor=date_create();
-     $datelivredor=date_create();
+     $p=new \DateInterval('P7D');
+     $datelimlivredor=new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d'));
+     $datelimlivredor->add($p);
+     $datelivredor=new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d').'00:00:00');
+     $datelimlivredoreleve=new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d').'18:00:00');
      date_date_set($datelimphotoscia,$edition->getconcourscia()->format('Y'),$edition->getconcourscia()->format('m'),$edition->getconcourscia()->format('d')+17);
      date_date_set($datelimphotoscn,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')+30);
      date_date_set($datelivredor,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')-1 );
-     date_date_set($datelimlivredor,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')); 
+     
+    
      $this->session->set('concours', $concours);   
      $this->session->set('datelimphotoscia', $datelimphotoscia);
      $this->session->set('datelimphotoscn', $datelimphotoscn);
      $this->session->set('datelivredor', $datelivredor);
      $this->session->set('datelimlivredor', $datelimlivredor);
+     $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
      //dd($this->session);
      //$session->set('edition',$edition);  
      //  dd($user);

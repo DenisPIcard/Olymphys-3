@@ -142,6 +142,78 @@ class ElevesciaController extends EasyAdminController
         
         
     }
-    
+    public function extract_tableau_excel_Eleves_sBatchAction(){
+        $repositoryEdition = $this->getDoctrine()->getRepository('App:Elevesinter');
+            $edition= $this->session->get('edition');
+                 // $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+            $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+        /* @var DoctrineQueryBuilder */
+        $queryBuilder = $em->createQueryBuilder()
+                 ->select('entity')
+                -> from($this->entity['class'], 'entity')
+                ->leftJoin('entity.equipe','e')
+                ->andWhere('e.selectionnee = TRUE')
+                ->andWhere('e.edition =:edition')
+                ->setParameter('edition',$edition);
+        $liste_eleves = $queryBuilder->getQuery()->getResult();
+             
+        
+        $spreadsheet = new Spreadsheet();
+         $spreadsheet->getProperties()
+                        ->setCreator("Olymphys")
+                        ->setLastModifiedBy("Olymphys")
+                        ->setTitle("CN   ".$edition->getEd()."ème édition - élèves sélectionnés avec mail")
+                        ->setSubject("Elèves non sélectionnés")
+                        ->setDescription("Office 2007 XLSX Document pour mailing diplomes participation ")
+                        ->setKeywords("Office 2007 XLSX")
+                        ->setCategory("Test result file");
+ 
+                $sheet = $spreadsheet->getActiveSheet();
+ 
+               
+           
+       
+                $ligne=1;
+
+                $sheet->setCellValue('A'.$ligne, 'Nom')
+                    ->setCellValue('B'.$ligne, 'Prenom')
+                    ->setCellValue('C'.$ligne, 'courriel')    
+                    ->setCellValue('D'.$ligne, 'Lettre')
+                     ->setCellValue('E'.$ligne, 'Titre')  
+                    ->setCellValue('F'.$ligne, 'Lycée')
+                   ->setCellValue('G'.$ligne, 'Commune');
+                   
+                
+                $ligne +=1; 
+
+        	foreach ($liste_eleves as $eleve) 
+                {
+                    $equipe=$eleve->getEquipe();
+                 
+                    $sheet->setCellValue('A'.$ligne,$eleve->getNom() )
+                        ->setCellValue('B'.$ligne, $eleve->getPrenom())
+                        ->setCellValue('C'.$ligne, $eleve->getCourriel())    
+                        ->setCellValue('D'.$ligne, $equipe->getLettre())
+                        ->setCellValue('E'.$ligne, $equipe->getTitreProjet())
+                        ->setCellValue('F'.$ligne,$equipe->getRneId()->getNom())
+                        ->setCellValue('G'.$ligne, $equipe->getRneId()->getCommune());
+                      $ligne +=1;
+                }
+                    
+ 
+
+ 
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment;filename="eleves_sélectionnés.xls"');
+                header('Cache-Control: max-age=0');
+        
+                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+                $writer->save('php://output');
+        
+        
+        
+        
+        
+    }
 }
 
