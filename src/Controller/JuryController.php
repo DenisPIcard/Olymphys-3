@@ -90,20 +90,20 @@ class JuryController extends AbstractController
      */
 	public function accueil()
  
-        {     $em=$this->getDoctrine()->getManager();
-                  $edition=$this->session->get('edition');
+        {           $em=$this->getDoctrine()->getManager();
+                   $edition=$this->session->get('edition');
                  
                    $edition=$em->merge($edition);
-            	$user=$this->getUser();
-		$nom=$user->getUsername();
-
-		$repositoryJure = $this
+                   
+                   
+                   $repositoryJures = $this
 			->getDoctrine()
 			->getManager()
-			->getRepository('App:Jures')
-			;
+			->getRepository('App:Jures');
+            	  $user=$this->getUser();
+		$iduser=$user->getId();
 
-		$jure=$repositoryJure->findOneByNomJure($nom);
+		$jure=$repositoryJures->findOneByIduser($iduser);
 
 		$id_jure = $jure->getId();
                   
@@ -135,7 +135,8 @@ class JuryController extends AbstractController
                    
                     try{  
 			$equipe=$repositoryEquipes->createQueryBuilder('e')
-                                                               ->andWhere('e.lettre =:lettre')
+                                                              ->leftJoin('e.infoequipe','eq')
+                                                               ->andWhere('eq.lettre =:lettre')
                                                                ->setParameter('lettre',$key)
                                                                ->getQuery()->getSingleResult();
                 }
@@ -547,10 +548,16 @@ class JuryController extends AbstractController
 			return $this->redirectToroute('cyberjury_tableau_de_bord');
 		}
 		// Si on n'est pas en POST, alors on affiche le formulaire. 
-       
+                                 $type_salle='zoom';
+                                 
+                                if(stripos($equipe->getSalle(),'renater')){
+                                     $type_salle='renater' ;
+                                   
+                                 }
 		$content = $this->renderView('cyberjury/evaluer.html.twig', 
 			array(
 				'equipe'=>$equipe,
+                                                                      'type_salle'=>$type_salle,
 				'form'=>$form->createView(),
 				'flag'=>$flag,
 				'progression'=>$progression,

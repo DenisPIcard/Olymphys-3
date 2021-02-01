@@ -251,5 +251,5 @@ class EquipesRepository extends ServiceEntityRepository
 		// on retourne ces résultats
 		return $value;
 	}
-
+      
 }

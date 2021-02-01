@@ -19,7 +19,7 @@ easy_admin :
                     - { name : 'new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
                     - { name: 'edit', icon: 'pencil', label: false }
                     - { name: 'delete', icon: 'trash-alt', label: false }
-                
+                batch_actions: [ {name : 'extractionprofsequipescn', 'label' : 'Extraire_les professeurs_cn'}]
                 max_results: 50
                 
                 template : 'Admin\customizations\list.html.twig'

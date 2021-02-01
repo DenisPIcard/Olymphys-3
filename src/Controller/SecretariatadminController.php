@@ -460,7 +460,7 @@ class SecretariatadminController extends AbstractController
  
                 $em = $this->getDoctrine()->getManager();
                  
-                for ($row = 2; $row <= $highestRow; ++$row) 
+                for ($row = 3; $row <= $highestRow; ++$row) 
                    {                       
                    
                    $value = $worksheet->getCellByColumnAndRow(2, $row)->getValue();//on récupère le username
@@ -485,21 +485,21 @@ class SecretariatadminController extends AbstractController
                        
                         $value = $worksheet->getCellByColumnAndRow(7, $row)->getValue(); //password request at
                         $user->setPasswordRequestedAt($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //rne
+                        $value = $worksheet->getCellByColumnAndRow(8, $row)->getValue(); //rne
                         $user->setrne($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue(); //adresse
+                        $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //adresse
                         $user->setAdresse($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue(); //ville
+                        $value = $worksheet->getCellByColumnAndRow(10, $row)->getValue(); //ville
                         $user->setVille($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue();//code
+                        $value = $worksheet->getCellByColumnAndRow(11, $row)->getValue();//code
                         $user->setCode($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(13, $row)->getValue(); //nom
+                        $value = $worksheet->getCellByColumnAndRow(12, $row)->getValue(); //nom
                         $user->setNom($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//prenom
+                        $value = $worksheet->getCellByColumnAndRow(13, $row)->getValue();//prenom
                         $user->setPrenom($value) ;
-                        $value = $worksheet->getCellByColumnAndRow(15, $row)->getValue();//phone
+                        $value = $worksheet->getCellByColumnAndRow(14, $row)->getValue();//phone
                         $user->setPhone($value) ;
-                       
+                        
                         
                        /*$errors = $this->validator->validate($user);
                         if (count($errors) > 0) {
@@ -682,16 +682,42 @@ class SecretariatadminController extends AbstractController
                                                                ->orderBy('e.lettre','ASC')
                                                               ->getQuery()->getResult();
                 
-                for ($row = 1; $row <= $highestRow; ++$row) 
+                
+                $repositoryUser=$this->getDoctrine()->getManager()
+			   ->getRepository('App:User');
+                
+                
+                for ($row = 2; $row <= $highestRow; ++$row) 
                    {
                     $jure = new jures();   
-                    $value = $worksheet->getCellByColumnAndRow(1, $row)->getValue();
-                    $jure->setPrenomJure($value);
-                    $value = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
-                    $jure->setNomJure($value);
-                    $value = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
-                    $jure->setInitialesJure($value);
+                    $prenom = $worksheet->getCellByColumnAndRow(1, $row)->getValue();
+                    $jure->setPrenomJure($prenom);
+                    $nom = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
+                    $jure->setNomJure($nom);
+                    $initiales = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
+                    $jure->setInitialesJure($initiales);
+                    $user=$repositoryUser->createQueryBuilder('u')
+                            ->where('u.nom =:nom')
+                            ->setParameter('nom', $nom)
+                            ->andWhere('u.prenom =:prenom')
+                            ->setParameter('prenom',$prenom)
+                            ->getQuery()->getResult();
+                     If(count( $user) >1){
+                            foreach ($user as $jury){
+
+                                if ($jury->getRoles()[0]=='ROLE_JURY'){
+                                  $jure->setIduser($jury);
+                                }
+                            }
+                     }
+                     else{
+                            $jure->setIduser($user[0]);
+                           }
+                    
+                   
                     $colonne = 4;
+                    
+                    
                     foreach ($equipes as $equipe)
                         {
                         $value = $worksheet->getCellByColumnAndRow($colonne, $row)->getValue();

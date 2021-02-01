@@ -9,6 +9,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Memoiresinter;
+use App\Entity\User;
+
+
 /**
  * EquipesadminRepository
  *
@@ -69,6 +72,39 @@ class EquipesadminRepository extends ServiceEntityRepository
         
         
     }
-                
+    
+     public function getEleves(Equipesadmin $equipe): array
+    {
+                $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT e
+            FROM App\Entity\Elevesinter e
+            WHERE e.equipe =:equipe
+            ORDER BY e.nom ASC'
+        )->setParameter('equipe', $equipe);
+
+        // returns an array of Product objects
+        return $query->getResult();
+        
+        
+    }
+     public function getEquipes_prof_cn(User $prof): array
+    {
+                $entityManager = $this->getEntityManager();
+        $edition=$this->edition;
+       
+        $query = $entityManager->createQuery(
+            'SELECT e
+            FROM App\Entity\Equipesadmin e 
+            WHERE (e.idProf1 =:prof1 OR e.idProf2 =:prof2) AND e.selectionnee = TRUE AND e.edition =:edition
+            ORDER BY e.lettre ASC')
+            ->setParameter('prof1', $prof)
+            ->setParameter('prof2', $prof)
+            ->setParameter('edition', $edition);
+         return $query->execute();
+        
+        
+    }
        
 }

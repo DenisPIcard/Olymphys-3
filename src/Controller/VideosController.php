@@ -96,8 +96,10 @@ public function liens_videos(Request $request, $infos){
         $em=$this->getDoctrine()->getManager();
          $url=$form->get('lien')->getData();
         $parsed = parse_url($url);
-        // $file_headers = @get_headers($url);
-       if (($parsed['host']!='www.youtube.com') and($parsed['host']!='youtube.com')and($parsed['host']!='www.youtu.be')){
+        // $file_headers = @get_headers($url);https://youtu.be/4i0nff-3xWg
+        
+        //dd($parsed['host']);
+       if (($parsed['host']!='www.youtube.com') and($parsed['host']!='youtube.com')and($parsed['host']!='www.youtu.be')and($parsed['host']!='youtu.be')){
            $request->getSession()
                     ->getFlashBag()
                     ->add('info','Le lien saisi n\'est pas valide') ;

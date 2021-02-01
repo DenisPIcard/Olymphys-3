@@ -31,14 +31,14 @@ class Livredorprofs
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
-     * @ORM\JoinColumn(name="edition_id",  referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     * @ORM\JoinColumn(name="edition_id",  referencedColumnName="id", nullable=true)
      */
     private $edition;
 
    
     /**
-     * @ORM\ManyToOne(targetEntity=User::class)
-     *  @ORM\JoinColumn(name="prof_id",  referencedColumnName="id", nullable=true, onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     *  @ORM\JoinColumn(name="prof_id",  referencedColumnName="id", nullable=true,)
      */
     private $prof;
 

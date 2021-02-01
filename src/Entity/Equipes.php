@@ -125,7 +125,32 @@ class Equipes
     /**
      * @ORM\Column(name="nb_notes", type="integer")
      */
-    private $nbNotes=0;  
+    private $nbNotes=0;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sallesecours;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $hote;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $interlocuteur;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $code;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $observateur;  
   
     
     /**
@@ -632,5 +657,65 @@ class Equipes
        Return $string;
        
        
+   }
+
+   public function getSallesecours(): ?string
+   {
+       return $this->sallesecours;
+   }
+
+   public function setSallesecours(?string $sallesecours): self
+   {
+       $this->sallesecours = $sallesecours;
+
+       return $this;
+   }
+
+   public function getHote(): ?user
+   {
+       return $this->hote;
+   }
+
+   public function setHote(?user $hote): self
+   {
+       $this->hote = $hote;
+
+       return $this;
+   }
+
+   public function getInterlocuteur(): ?user
+   {
+       return $this->interlocuteur;
+   }
+
+   public function setInterlocuteur(?user $interlocuteur): self
+   {
+       $this->interlocuteur = $interlocuteur;
+
+       return $this;
+   }
+
+   public function getCode(): ?string
+   {
+       return $this->code;
+   }
+
+   public function setCode(?string $code): self
+   {
+       $this->code = $code;
+
+       return $this;
+   }
+
+   public function getObservateur(): ?user
+   {
+       return $this->observateur;
+   }
+
+   public function setObservateur(?user $observateur): self
+   {
+       $this->observateur = $observateur;
+
+       return $this;
    }
 }

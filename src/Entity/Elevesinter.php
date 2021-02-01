@@ -73,9 +73,8 @@ class Elevesinter
       private $courriel;
       
         /**
-       *  
-       * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes")
-       * @ORM\JoinColumn( referencedColumnName="id" )
+       *@ORM\OneToOne(targetEntity=fichiersequipes::class, cascade={"persist", "remove"})
+       * 
        */
      private $autorisationphotos;
       

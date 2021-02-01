@@ -19,20 +19,18 @@
                 
            
           
-    {{ texte.nom }} :  equipe{% if equipes[i][1] is defined %}s{% endif %}
-    {% set j= 0 %}
-    {% for equipe in equipes[i] %}
-         {% if j>0 %}, {% endif %}{{ equipe.lettre  }}
-        
-        {% set j = j+1 %}
-        {% endfor %}
-    
+           <b><font color="blue">{{ texte.nom }} ( equipe{% if lettres_equipes_prof[i]|length > 3 %}s{% endif %}
+  
+     {{ lettres_equipes_prof[i] }} )</font></b>
+      
     
     
      {% set i = i+1 %}
     {% endif %}
+    
+    
      {% if choix=='eleves' %} 
-    Equipe {{ texte.equipe.lettre  }} : {{ texte.equipe.titreProjet }} ({{ texte.noms }})
+         <b><font color="blue">Equipe {{ texte.equipe.lettre  }} : {{ texte.equipe.titreProjet }} ({{ texte.noms }})</font></b>
     {% endif %}
     :<br>
     {{ texte.texte}}

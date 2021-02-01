@@ -46,5 +46,35 @@ class UserRepository extends ServiceEntityRepository
                   ->addOrderBy('u.nom','ASC');
        //dd($qb1);
           return $qb1;
-     }            
+     }  
+      public function getHote(UserRepository $er): QueryBuilder{//listes de membres du comité (pour la table equipes selectionnes)
+                      
+	                  $qb=$er->createQueryBuilder('p');
+		$queryBuilder=$er->createQueryBuilder('h') 
+                                                    ->select('h')
+			->andWhere($qb->expr()->like('h.roles',':roles'))
+			->setParameter('roles','a:2:{i:0;s:11:"ROLE_COMITE";i:1;s:9:"ROLE_USER";}')
+                                                     ->addOrderBy('h.nom','ASC');
+		
+		return $queryBuilder;
+      }
+      public function getInterlocuteur(UserRepository $er): QueryBuilder{//listes de membres du comité (pour la table equipes selectionnes)
+                      
+	                  $qb=$er->createQueryBuilder('p');
+		$queryBuilder=$er->createQueryBuilder('h') 
+                                                    ->select('h')
+			->andWhere($qb->expr()->like('h.roles',':roles'))
+			->setParameter('roles','a:2:{i:0;s:9:"ROLE_JURY";i:1;s:9:"ROLE_USER";}')
+                                                     ->addOrderBy('h.nom','ASC');
+		
+		return $queryBuilder;       
+                  
+                  
+                  
+                  
+                  
+              }
+     
+     
+     
 }

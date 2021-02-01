@@ -47,6 +47,7 @@ class CoreController extends AbstractController
     }
      $datelimphotoscia=date_create();
      $datelimphotoscn=date_create();
+      $datelimdiaporama=new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d'));
      $p=new \DateInterval('P7D');
      $datelimlivredor=new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d'));
      $datelimlivredor->add($p);
@@ -55,7 +56,7 @@ class CoreController extends AbstractController
      date_date_set($datelimphotoscia,$edition->getconcourscia()->format('Y'),$edition->getconcourscia()->format('m'),$edition->getconcourscia()->format('d')+17);
      date_date_set($datelimphotoscn,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')+30);
      date_date_set($datelivredor,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')-1 );
-     
+     date_date_set($datelimdiaporama,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')-7 );
     
      $this->session->set('concours', $concours);   
      $this->session->set('datelimphotoscia', $datelimphotoscia);
@@ -63,6 +64,7 @@ class CoreController extends AbstractController
      $this->session->set('datelivredor', $datelivredor);
      $this->session->set('datelimlivredor', $datelimlivredor);
      $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
+     $this->session->set('datelimdiaporama', $datelimdiaporama);
      //dd($this->session);
      //$session->set('edition',$edition);  
      //  dd($user);

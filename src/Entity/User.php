@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -164,6 +165,11 @@ class User implements UserInterface, \Serializable
        * @ORM\JoinColumn( referencedColumnName="id", )
        */
      private $autorisationphotos;
+
+     /**
+      * @ORM\OneToMany(targetEntity=Equipes::class, mappedBy="hote")
+      */
+     private $interlocuteur;
      
      
      
@@ -173,9 +179,14 @@ class User implements UserInterface, \Serializable
         $this->isActive = true;
         $this->roles = ['ROLE_USER'];
        
+       
         
     }
-     
+     /*public function __toString()
+   {
+      return strval( $this->getNomPrenom() );
+   }*/
+
 
     public function getId(): ?int
     {
@@ -615,5 +626,41 @@ class User implements UserInterface, \Serializable
     {
         return $this->nom.' '.$this->prenom;
         
+    }
+    
+     public function getPrenomNom()
+    {
+        return $this->prenom.' '.$this->nom;
+        
+    }
+
+    /**
+     * @return Collection|Equipes[]
+     */
+    public function getInterlocuteur(): Collection
+    {
+        return $this->interlocuteur;
+    }
+
+    public function addInterlocuteur(Equipes $interlocuteur): self
+    {
+        if (!$this->interlocuteur->contains($interlocuteur)) {
+            $this->interlocuteur[] = $interlocuteur;
+            $interlocuteur->setHote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInterlocuteur(Equipes $interlocuteur): self
+    {
+        if ($this->interlocuteur->removeElement($interlocuteur)) {
+            // set the owning side to null (unless already changed)
+            if ($interlocuteur->getHote() === $this) {
+                $interlocuteur->setHote(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -306,7 +306,7 @@ public function choix_equipe(Request $request,$choix) {
     }
     
    if ($choix=='presentation'){//pour le dépôt des présentations
-          if ($dateconnect>$datelimnat )  {
+          if ($dateconnect>$this->session->get('datelimdiaporama') )  {
                                           $qb3->andWhere('t.selectionnee=:selectionnee')
                                                               ->setParameter('selectionnee', TRUE);
                                         $liste_equipes=$qb3->getQuery()->getResult();    
@@ -432,19 +432,23 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                             }
 
                                              if( ($role=='ROLE_COMITE')  ){
-                                                if (($dateconnect>$datelimcia) and ($dateconnect<=$datelimnat)) {
+                                                 
+                                                 
+                                                if (($dateconnect>$datelimcia) ) {
                                              $phase='national';
                                                $qb4 =$repositoryEquipesadmin->createQueryBuilder('t')
-                                                                 // ->where('t.selectionnee=:selectionnee')
-                                                                 //->setParameter('selectionnee',TRUE)
+                                                                ->where('t.selectionnee=:selectionnee')
+                                                                 ->setParameter('selectionnee',TRUE)
                                                                  ->andWhere('t.edition =:edition')
                                                                   ->setParameter('edition', $edition)
                                                                  ->andWhere('t.lettre>:valeur')
                                                                  ->setParameter('valeur', '')
                                                                  ->orderBy('t.lettre','ASC');
                                              $liste_equipes=$qb4->getQuery()->getResult();
+                                             
+                                           
                                                 }
-                                               if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datelimcia)) {
+                                               if (($dateconnect>$dateouverturesite) and ($dateconnect<=$this->session->get('concourscn'))) {
                                              $phase= 'interacadémique';
                                              $qb4 =$repositoryEquipesadmin->createQueryBuilder('t')
                                                                   ->where('t.nomLycee>:vide')
@@ -699,6 +703,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
            }
            else {
              $citoyen = $repositoryUser->find(['id'=>$id_citoyen]);
+            
                }
       }
     
@@ -708,7 +713,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
     }
   
     
-   
+ 
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
     $datelimnat=$edition->getDatelimnat();
    
@@ -738,9 +743,10 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
            
        /** @var UploadedFile $file */
           $file=$form1->get('fichier')->getData();
-   
+     
         $ext=$file->guessExtension();
         $num_type_fichier=$form1->get('typefichier')->getData();
+        
        if (!isset($num_type_fichier)){
            
             $this->addFlash('alert', 'Sélectionner le type de fichier !');
@@ -748,7 +754,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                            'infos' => $infos,
                                        ]);
        }
-        $num_type_fichier=$form1->get('typefichier')->getData();
+        
        
         if(($num_type_fichier==0) or ($num_type_fichier==1)){
                                         $violations = $validator->validate(
@@ -828,7 +834,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                                              }      
                                             }
             if ($num_type_fichier==3 ){
-                                                        if( $dateconnect>$datelimnat){
+                                                        if( $dateconnect > $this->session->get('datelimdiaporama')){
                                                            $violations = $validator->validate(
                                                                                     $file,
                                                                                     [
@@ -849,16 +855,17 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                                                     return $this->redirectToRoute('fichiers_charge_fichiers', [
                                                                                         'infos' => $infos,
                                                                                     ]);
-                                                                                } 
-                                                      else{
+                                                                                }
+                                                        }
+                                                     else{
                                                        $message = 'Le dépôt des diaporamas n\'est possible qu\'après le concours national';
                                                       $request->getSession()
                                                                   ->getFlashBag()
                                                                   ->add('alert', $message ) ; 
                                                           return $this->redirectToRoute('fichiers_charge_fichiers',array('infos'=>$infos));
                                                       }
-                        }
-            }  
+                
+            }
             if($num_type_fichier==4){
                      $violations = $validator->validate( $file,[        new NotBlank(),
                                                                                         new File([
@@ -949,9 +956,11 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                       ->setParameter('valeur',$national);
             
                           $Fichiers=$qb ->getQuery()->getResult();
+                          
            }
            if ($num_type_fichier==6){
             $Fichiers=$citoyen->getAutorisationphotos();
+            
            
            }
                  
@@ -970,6 +979,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     $id_fichier=$Fichiers[0]->getId();
                     return $this->redirectToRoute('fichiers_confirme_charge_fichier',array('file_equipe'=>$file->getClientOriginalName().'::'.$num_type_fichier.'::'.$id_equipe.'::'.$id_fichier,$mailer));
                    }
+                
                     if ($num_type_fichier==6){
                     $id_fichier=$Fichiers->getId();
                   
@@ -995,14 +1005,16 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     $fichier= new Fichiersequipes();
                     $nouveau=true;
                 }   if (!isset($nouveau)){
-                $message= 'Pour éviter les confusions, le fichier interacadémique a été supprimé. ';
+                $message= 'Pour éviter les confusions, le fichier interacadémique n\'est plus accessible. ';
                 }
                          }
-                          if ($num_type_fichier < 6){
-                              $fichier=new Fichiersequipes();
-                          }
+                       if ($num_type_fichier == 6){
+                            $fichier= new Fichiersequipes();
+                          
+                       }   
                       }
-                               
+                      
+                              
                                $fichier->setTypefichier($num_type_fichier);
                               $fichier->setEdition($edition);
                               if (isset($equipe)){
@@ -1015,6 +1027,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                            if ($phase=='national'){
                           $fichier->setNational(1);
                            }
+                           
                             if ($num_type_fichier==6){
                            $fichier->setNomautorisation( $citoyen->getNom().'-'.$citoyen->getPrenom());
                             if ($id_equipe !='prof'){
@@ -1045,7 +1058,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 $type_fichier= $this->getParameter('type_fichier_lit')[$num_type_fichier];
               
                 if (isset($equipe)){
-                      if ($phase != 'national'){
+                 if ($phase != 'national'){
                    $info_equipe='L\'equipe '. $equipe->getInfoequipe();
                     }
                     
@@ -1057,7 +1070,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                     
                      $info_equipe='prof '. $citoyen->getNomPrenom();
                 }
-                //$this->MailConfirmation($mailer,$type_fichier,$info_equipe);
+               $this->MailConfirmation($mailer,$type_fichier,$info_equipe);
                 
                 return $this->redirectToRoute('core_home');     
                 }        
@@ -1079,10 +1092,9 @@ public function MailConfirmation(MailerInterface $mailer, string $type_fichier, 
   
     $email=(new Email())
                     ->from('info@olymphys.fr')
-                  // ->cc('webmestre3@olymphys.fr')
-                  //  ->to('webmestre2@olymphys.fr')
-                    ->to('alain.jouve@wanadoo.fr')
-                    ->subject('Depot du '.$type_fichier.' de l\'équipe '.$info_equipe)
+                    ->cc('webmestre3@olymphys.fr')
+                    ->to('webmestre2@olymphys.fr')
+                   ->subject('Depot du '.$type_fichier.' de '.$info_equipe)
                     ->text($info_equipe.' a déposé un fichier : '.$type_fichier.'.');
                    
                 $mailer->send($email);

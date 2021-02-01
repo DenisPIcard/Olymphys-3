@@ -56,8 +56,8 @@ class PhotosType extends AbstractType
                                                         return $ea->createQueryBuilder('e')
                                                                 ->andWhere('e.edition =:edition')
                                                                 ->setParameter('edition',$this->session->get('edition'))
-                                                                ->andWhere('e.selectionnee =:selectionnee')
-                                                                ->setParameter('selectionnee', 'TRUE')
+                                                                ->andWhere('e.selectionnee = 1')
+                                                               // ->setParameter('selectionnee', 'TRUE')
                                                                  ->addOrderBy('e.lettre', 'ASC');
                                                                                                },
                                         'choice_label'=>'getInfoequipenat',
