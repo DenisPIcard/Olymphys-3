@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\LivredorprofsRepository;
+use App\Repository\LivredorRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * livredorprofs
- * @ORM\Table(name="livresdorprofs")
- * @ORM\Entity(repositoryClass=LivredorprofsRepository::class)
+ * livredor
+ * @ORM\Table(name="livredor")
+ * @ORM\Entity(repositoryClass=LivredorRepository::class)
  */
-class Livredorprofs
+class Livredor
 {
     /**
      * @ORM\Id
@@ -25,7 +25,7 @@ class Livredorprofs
     private $nom;
 
     /**
-     * @ORM\Column(type="text", length=1000)
+     * @ORM\Column(type="text", length=1000,nullable=true)
      */
     private $texte;
 
@@ -34,13 +34,22 @@ class Livredorprofs
      * @ORM\JoinColumn(name="edition_id",  referencedColumnName="id", nullable=true)
      */
     private $edition;
-
+    
+     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $categorie;
    
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     *  @ORM\JoinColumn(name="prof_id",  referencedColumnName="id", nullable=true,)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User") 
+     *  @ORM\JoinColumn(name="user_id",  referencedColumnName="id", nullable=true,)
      */
-    private $prof;
+    private $user;
+
+    /**
+     * @ORM\OneToOne(targetEntity=equipesadmin::class, cascade={"remove"})
+     */
+    private $equipe;
 
     public function getId(): ?int
     {
@@ -83,14 +92,38 @@ class Livredorprofs
         return $this;
     }
 
-    public function getProf()
+    public function getUser()
     {
-        return $this->prof;
+        return $this->user;
     }
 
-    public function setProf( $prof)
+    public function setUser( $user)
     {
-        $this->prof = $prof;
+        $this->user = $user;
+
+        return $this;
+    }
+    
+     public function getCategorie()
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie( $categorie)
+    {
+        $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getEquipe(): ?equipesadmin
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(?equipesadmin $equipe): self
+    {
+        $this->equipe = $equipe;
 
         return $this;
     }

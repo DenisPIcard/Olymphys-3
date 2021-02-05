@@ -15,8 +15,8 @@ use Symfony\Component\HttpFoundation\Request ;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Elevesinter;
-use App\Entity\Livredoreleves;
-use App\Entity\Livredorprofs;
+
+use App\Entity\Livredor;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -84,10 +84,10 @@ class LivredorController extends AbstractController
         
        return new Response($content); 
          }
-   else{
+  
        return  $this->redirectToRoute('livredor_saisie_texte',['id'=>'equipe-'.$equipes[0]->getId()]) ;
        
-   }     
+      
         
     }
    /**
@@ -102,7 +102,7 @@ class LivredorController extends AbstractController
          $edition=$em->merge($edition);
          
          $form = $this->createFormBuilder();
-       
+        $user=$this->getUser();
          $ids=explode('-',$id);
         $type=$ids[0];
         $id_=$ids[1];
@@ -115,7 +115,7 @@ class LivredorController extends AbstractController
         
         $livredor=$this->getDoctrine()
                                 ->getManager()
-                                ->getRepository('App:Livredoreleves')->findOneByEquipe(['equipe'=>$equipe]);
+                                ->getRepository('App:Livredor')->findOneByEquipe(['equipe'=>$equipe]);
       if($livredor != null){   
           $texteini=$livredor->getTexte();
       }
@@ -138,23 +138,23 @@ class LivredorController extends AbstractController
          $noms= substr($noms, 0, -2);
          
         }
-        if($type=='prof'){
+        if(($type=='prof')or ($type=='comite') or ($type=='jury')){
             
             $prof=$this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:User')->findOneById(['id'=>$id_]); 
             $livredor=$this->getDoctrine()
                                 ->getManager()
-                                ->getRepository('App:Livredorprofs')->findOneByProf(['prof'=>$prof]);
+                                ->getRepository('App:Livredor')->findOneByUser(['user'=>$prof]);
       if($livredor != null){   
           $texteini=$livredor->getTexte();
          
       }
               if (!isset($texteini)) { 
              $texteini ='';
-                            };
-            
+                            }
         }
+       
        $form->add('texte', TextareaType::class,[
                 'label' =>'Texte (1000 char. maxi)',
                 'data' => $texteini,
@@ -165,43 +165,48 @@ class LivredorController extends AbstractController
           $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()){
          $texte=$form->get('texte')->getData();
+        
+         
+         
          if(($type == 'equipe')){
        
          
         $livredor=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:Livredoreleves')->findOneByEquipe(['equipe'=>$equipe]);     
+                                 ->getRepository('App:Livredor')->findOneByEquipe(['equipe'=>$equipe]);     
        if ($livredor==null){
             $livredor=new livredoreleves();
            } 
             
-             $livredor->setNoms($noms);
+             $livredor->setNom($noms);
             $livredor->setTexte($texte);
             $livredor->setEquipe($equipe);
             $livredor->setEdition($edition);
            }
-         if($type == 'prof'){ 
+        
+        if(($type == 'prof') or ($type == 'comite') or ($type == 'jury') ){ 
          try {       
-        $livredor=$this->getDoctrine()->getManager()->getRepository('App:Livredorprofs')
-                                 ->createQueryBuilder('p')
-                                 ->Where('p.edition =:edition')
+        $livredor=$this->getDoctrine()->getManager()->getRepository('App:Livredor')
+                                 ->createQueryBuilder('c')
+                                 ->Where('c.edition =:edition')
                                  ->setParameter('edition',$edition)
-                                 ->andWhere('p.prof =:prof')
-                                -> setParameter('prof',$prof)
+                                 ->andWhere('c.user =:user')
+                                -> setParameter('user',$user)
          ->getQuery()->getSingleResult();
                  }
          catch (\Exception $e){
              $livredor=null;
          }
          if ($livredor==null){
-            $livredor=new livredorprofs();
+            $livredor=new livredor();
            }
-            $livredor->setNom($prof->getPrenom().' '.$prof->getNom());
-            $livredor->setProf($prof);
+            $livredor->setNom($user->getPrenom().' '.$user->getNom());
+            $livredor->setUser($user);
             $livredor->setTexte($texte);
             $livredor->setEdition($edition);
+            $livredor->setCategorie($type);
       }    
-           
+          
              $em->persist($livredor);
              $em->flush();
             return  $this->redirectToRoute('core_home') ;
@@ -213,9 +218,9 @@ class LivredorController extends AbstractController
      if ($type=='equipe'){
         $content = $this
                           ->renderView('livredor\saisie_texte.html.twig', ['form'=>$form->createView(),'equipe' =>$equipe,'type'=>'equipe']);}
-       if ($type=='prof'){
+       if (($type=='prof')or ($type=='comite')or($type=='jury')){
         $content = $this
-                                ->renderView('livredor\saisie_texte.html.twig', ['form'=>$form->createView(),'prof' =>$this->getUser(),'type'=>'prof']);}
+                                ->renderView('livredor\saisie_texte.html.twig', ['form'=>$form->createView(),'user' =>$this->getUser(),'type'=>$type]);}
        return new Response($content);
         
     } 
@@ -234,22 +239,28 @@ class LivredorController extends AbstractController
         if ($type=='eleves'){
             $listetextes=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:Livredoreleves')->CreateQueryBuilder('l')
+                                 ->getRepository('App:Livredor')->CreateQueryBuilder('l')
                                  ->leftJoin('l.equipe', 'eq')
-                                 ->orderBy('l.edition', 'DESC')
+                                 ->andWhere('l.edition =:edition')
+                                 ->setParameter('edition', $edition)
+                                 ->andWhere('l.categorie =:categorie')
+                                 ->setParameter('categorie','equipe')
                                  ->addOrderBy('eq.lettre','ASC')
                                  ->getQuery()->getResult();
+           
                     $content = $this
                  ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type]);;
         }
         if ($type=='profs'){
             $listetextes=$this->getDoctrine()
                                  ->getManager()
-                                 ->getRepository('App:Livredorprofs')->CreateQueryBuilder('l')
+                                 ->getRepository('App:Livredor')->CreateQueryBuilder('l')
                                  ->select('l')
                                  ->andWhere('l.edition =:edition')
                                   ->setParameter('edition', $edition)
-                                 ->leftJoin('l.prof', 'u')
+                                 ->andWhere('l.categorie =:categorie')
+                                 ->setParameter('categorie','prof')
+                                 ->leftJoin('l.user', 'u')
                                  ->addOrderBy('u.nom','ASC')
                                  ->getQuery()->getResult();
            $equipes=$this->getDoctrine()
@@ -264,12 +275,13 @@ class LivredorController extends AbstractController
                                 ->getResult();
             $i=0;
             foreach($listetextes as $texte){
-                             $prof = $texte->getProf();
+                             $prof = $texte->getUser();
                              $lettres_equipes_prof[$i] ='';
                              foreach($equipes as $equipe){ 
                                  
                                
                                  if (($equipe->getIdProf1() == $prof->getId()) or ($equipe->getIdProf2() == $prof ->getId()) ){
+                                     
                                       if (strlen($lettres_equipes_prof[$i])>0){
                                      $lettres_equipes_prof[$i]= $lettres_equipes_prof[$i].', '.$equipe->getLettre();
                                       }
@@ -278,30 +290,29 @@ class LivredorController extends AbstractController
                                  }
                                
                              }
-               
-              
-               
-            /*   $qb=$this->getDoctrine()
-                                ->getManager()
-                                ->getRepository('App:Equipesadmin')
-                               ->createQueryBuilder('e')
-                               ->Where('e.edition =:edition')
-                               ->setParameter('edition', $edition)
-                               ->andWhere('e.idProf1 =:prof1')
-                               ->setParameter('prof1',$idprof)
-                               ->orWhere('e.idProf2 =:prof2')
-                               ->setParameter('prof2',$idprof)
-                                ->andWhere('e.selectionnee = 1')
-                               ->addOrderBy('e.lettre', 'ASC');
-               
-            $equipes[$i]=$qb->getQuery()->getResult();*/
-               $i=$i+1;
-           } 
+                             $i=$i+1;
+            }
+            $content = $this
+                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'lettres_equipes_prof'=>$lettres_equipes_prof,'choix'=>$type]);
+        }
+          if (($type=='comite') or ( $type=='jury')){
+            $listetextes=$this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:Livredor')->CreateQueryBuilder('l')
+                                 ->select('l')
+                                 ->andWhere('l.edition =:edition')
+                                  ->setParameter('edition', $edition)
+                                  ->andWhere('l.categorie =:categorie')
+                                 ->setParameter('categorie',$type)
+                                 ->leftJoin('l.user', 'u')
+                                 ->addOrderBy('u.nom','ASC')
+                                 ->getQuery()->getResult();
             
-           //dd($equipes);
+                    
+          
          
                     $content = $this
-                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'lettres_equipes_prof' =>$lettres_equipes_prof,'choix'=>$type]);;
+                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type]);;
                     }
         return new Response($content);
     
@@ -316,19 +327,22 @@ class LivredorController extends AbstractController
         
          $form = $this->createFormBuilder();
         
-       $form ->add('eleves', SubmitType::class, ['label' => 'Livre d\'or élèves'])
-                 ->add('profs', SubmitType::class, ['label' => 'Livre d\'or profs']);
+       $form ->add('equipe', SubmitType::class, ['label' => 'Livre d\'or élèves'])
+                 ->add('prof', SubmitType::class, ['label' => 'Livre d\'or des professeurs'])
+                 ->add('comite', SubmitType::class, ['label' => 'Livre d\'or du comité'])
+                 ->add('jury', SubmitType::class, ['label' => 'Livre d\'or du jury']);
            $form=$form ->getForm();
         
           $form->handleRequest($request);
     if ($form->isSubmitted() && $form->isValid()){
         
         $phpWord = new  PhpWord();
+       
         $section = $phpWord->addSection();
         $paragraphStyleName = 'pStyle';
-        $phpWord->addParagraphStyle($paragraphStyleName, array( 'alignment'  => 'center', 'spaceAfter' => 100));
+        $phpWord->addParagraphStyle($paragraphStyleName, array( 'align'  => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER, 'spaceAfter' => 100));
 
-        $phpWord->addTitleStyle(1, array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240, 'align'=>'center'));
+        $phpWord->addTitleStyle(1, array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240));
         $fontTitre = 'styletitre';
                 $phpWord->addFontStyle(
                     $fontTitre,
@@ -338,24 +352,28 @@ class LivredorController extends AbstractController
           $fontTexte = 'styletexte';
                 $phpWord->addFontStyle(
                     $fontTexte,
-                    array('name' => 'AbrazoScriptSSK', 'size' => 16, 'color' => '000000')
+                    array('name' => 'Arial', 'size' => 12, 'color' => '000000')
                 );
           
-        if ($form->get('profs')->isClicked()){
+        if (($form->get('prof')->isClicked()) or($form->get('comite')->isClicked())or($form->get('jury')->isClicked())){
             $livredor=$this->getDoctrine()
                                 ->getManager()
-                                ->getRepository('App:Livredorprofs')->createQueryBuilder('l')
-                                                                                         ->leftJoin('l.prof','p')
+                                ->getRepository('App:Livredor')->createQueryBuilder('l')
+                                                                                         ->leftJoin('l.user','p')
                                                                                          ->addOrderBy('p.nom','ASC')
+                                                                                         ->andWhere('l.categorie =:categorie')
+                                                                                         ->setParameter('categorie', $form->getClickedButton()->getName())  
                                                                                         ->getQuery()->getResult();
             
+          if ($form->get('prof')->isClicked())  {
            $equiperepository= $this->getDoctrine()
                                 ->getManager()
                                 ->getRepository('App:Equipesadmin');
-             $section->addTexte('Livre d\'or des professeurs - Edition '.$this->session->get('edition')->getEd(), null, 'pStyle');
+             $section->addText('Livre d\'or des professeurs - Edition '.$this->session->get('edition')->getEd(),  array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240), 'pStyle');
+              $section->addTextBreak(3);
              if ($livredor!=null){
               foreach($livredor as $texte){ 
-                  $prof=$texte->getProf();
+                  $prof=$texte->getUser();
                   
                   $equipes=$equiperepository->getEquipes_prof_cn($prof);
                   if (count($equipes)>1){
@@ -371,17 +389,102 @@ class LivredorController extends AbstractController
                 }
                 $titreprof=$titreprof.' )';
            $section->addText($titreprof,'styletitre');  
-           
-            $section->addText($texte->getTexte(),'styletexte');  
+           $textlines = explode("\n", $texte->getTexte());
+
+           $textrun = $section->addTextRun();
+           $textrun->addText(array_shift($textlines), 'styletexte');
+                foreach($textlines as $line) {
+                    $textrun->addTextBreak();
+                    // maybe twice if you want to seperate the text
+                    // $textrun->addTextBreak(2);
+                    $textrun->addText($line,null, 'styletexte');
+               }
+           // $section->addText($texte->getTexte(),'styletexte');  
             //$lineStyle = array('weight' => 1, 'width' => 200, 'height' => 0, 'color'=> '0000FF');
             
             $section->addTextBreak(3);
              //$section->addLine($lineStyle);
-           $section->addText('o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o');
-              }
+           $section->addText('------',null,'pStyle');
+             }}
+             }
+               if (($form->get('comite')->isClicked())or($form->get('jury')->isClicked()))  {
+              
+             $categorie= $form->getClickedButton()->getName();;
+             $titrepage ='Livre d\'or du '.$categorie.' - Edition '.$this->session->get('edition')->getEd();
+             
+             
+             $section->addText($titrepage, array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240) , 'pStyle');
+             $section->addTextBreak(3);
+             if ($livredor!=null){
+            foreach($livredor as $texte){ 
+                  $titre=$texte->getNom();
+                                 
+           $section->addText($titre,'styletitre');  
+           
+            $textlines = explode("\n", $texte->getTexte());
+
+           $textrun = $section->addTextRun();
+           $textrun->addText(array_shift($textlines), 'styletexte');
+                foreach($textlines as $line) {
+                    $textrun->addTextBreak();
+                    // maybe twice if you want to seperate the text
+                    // $textrun->addTextBreak(2);
+                    $textrun->addText($line, 'styletexte');
+               }
             
+            $section->addTextBreak(3);
+             //$section->addLine($lineStyle);
+           $section->addText('------',null, 'pStyle');
+              }
+               
+             }
+               }
+        }
+             if ($form->get('equipe')->isClicked()){
+            $livredor=$this->getDoctrine()
+                                ->getManager()
+                                ->getRepository('App:Livredor')
+                                ->createQueryBuilder('e')
+                                ->where('e.edition =:edition')
+                                ->setParameter('edition',$this->session->get('edition'))
+                                ->andWhere('e.categorie =:categorie')
+                                ->setParameter('categorie', $form->getClickedButton()->getName())
+                                ->leftJoin('e.equipe','eq')
+                                ->orderBy('eq.lettre','ASC')
+                               ->getQuery()->getResult();
+                  
+          if ($livredor!=null){
+             $section->addText('Livre d\'or des élèves- Edition '.$this->session->get('edition')->getEd(),  array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240), 'pStyle');
+              $section->addTextBreak(3);
+         foreach($livredor as $texte){ 
+          
+           $equipe= $texte->getEquipe();
+           
+            $titreEquipe='Equipe '.$texte->getEquipe()->getInfoequipenat().' ('.$texte->getNom().')';
+           ;
+           $titre= $section->addText($titreEquipe);  
+           $titre->setFontStyle('styletitre');
+           
+           $textlines = explode("\n", $texte->getTexte());
+
+           $textrun = $section->addTextRun();
+           $textrun->addText(array_shift($textlines), 'styletexte');
+                foreach($textlines as $line) {
+                    $textrun->addTextBreak();
+                    // maybe twice if you want to seperate the text
+                    // $textrun->addTextBreak(2);
+                    $textrun->addText($line, 'styletexte');
+               }
+            //$lineStyle = array('weight' => 1, 'width' => 200, 'height' => 0, 'color'=> '0000FF');
+            $section->addTextBreak(3);
+            //$section->addLine($lineStyle);   
+            $texte=$section->addText('------',null,'pstyle');
+             }
+          }
+             }
+            $categorie=$form->getClickedButton()->getName();
             $filesystem = new Filesystem();
-            $fileName = $this->session->get('edition')->getEd().'livre d\'or profs.docx';  
+            $fileName = $this->session->get('edition')->getEd().'livre d\'or '.$categorie.'.docx';  
          
              $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord,'Word2007');
              $objWriter ->save($this->getParameter('app.path.tempdirectory').'/'.$fileName);
@@ -400,64 +503,13 @@ class LivredorController extends AbstractController
               
              
                 }
-               else{
-             
-                 return $this->redirectToRoute('core_home');
-                }
-          }
-         if ($form->get('eleves')->isClicked()){
-            $livredor=$this->getDoctrine()
-                                ->getManager()
-                                ->getRepository('App:Livredoreleves')
-                                ->createQueryBuilder('e')
-                                ->where('e.edition =:edition')
-                                ->setParameter('edition',$this->session->get('edition'))
-                                ->leftJoin('e.equipe','eq')
-                                ->orderBy('eq.lettre','ASC')
-                               ->getQuery()->getResult();
-                                
-          if ($livredor!=null)
-             $section->addTexte('Livre d\'or des élèves- Edition '.$this->session->get('edition')->getEd(), null, 'pStyle');
-         foreach($livredor as $texte){ 
+               
           
-           $equipe= $texte->getEquipe();
-           
-            $titreEquipe='Equipe '.$texte->getEquipe()->getInfoequipenat().' ('.$texte->getNoms().')';
-           ;
-           $titre= $section->addText($titreEquipe);  
-           $titre->setFontStyle('styletitre');
-           
-            $texte=$section->addText($texte->getTexte());  
-            $texte->setFontStyle('styletexte');
-            //$lineStyle = array('weight' => 1, 'width' => 200, 'height' => 0, 'color'=> '0000FF');
-            $section->addTextBreak(3);
-            //$section->addLine($lineStyle);   
-            $texte=$section->addText('o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o');
-             }
-             
-         $filesystem = new Filesystem();
-         $fileName=$this->session->get('edition')->getEd().'Livre-d-or-eleves.docx';
-         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord,'Word2007');
-         $objWriter ->save($this->getParameter('app.path.tempdirectory').'/'.$fileName);
-         $response = new Response(file_get_contents($this->getParameter('app.path.tempdirectory').'/'.$fileName));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
-         $disposition = HeaderUtils::makeDisposition(
-                                            HeaderUtils::DISPOSITION_ATTACHMENT,
-                                            $fileName
-                                                  );
-         $response->headers->set('Content-Type','application/msword'); 
-         $response->headers->set('Content-Disposition', $disposition);
-         $filesystem->remove($this->getParameter('app.path.tempdirectory').'/'.$fileName);   
-            return $response;   
         
-         }
-         else{
-             
-             return $this->redirectToRoute('core_home');
-         }
-       
+         
        
    
-    }
+  
      $content = $this
                                     ->renderView('livredor\choix_editer.html.twig', ['form'=>$form->createView()]);
                     

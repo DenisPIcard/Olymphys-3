@@ -348,7 +348,7 @@ class SecretariatadminController extends AbstractController
                   
                    
                    if(!$equipe){
-                   $equipe= new equipesadmin(); 
+                   $equipe= new Equipesadmin(); 
                     
                                     }
                                     
@@ -703,7 +703,7 @@ class SecretariatadminController extends AbstractController
                             ->setParameter('prenom',$prenom)
                             ->getQuery()->getResult();
                      If(count( $user) >1){
-                            foreach ($user as $jury){
+                            foreach ($user as $jury){//certains jurés sont parfois aussi organisateur des cia avec un autre compte.on ne sélectionne que le compte de role jury
 
                                 if ($jury->getRoles()[0]=='ROLE_JURY'){
                                   $jure->setIduser($jury);

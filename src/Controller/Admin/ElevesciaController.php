@@ -144,6 +144,7 @@ class ElevesciaController extends EasyAdminController
     }
     public function extract_tableau_excel_Eleves_sBatchAction(){
         $repositoryEdition = $this->getDoctrine()->getRepository('App:Elevesinter');
+        $repositoryEquipescn = $this->getDoctrine()->getRepository('App:Equipes');
             $edition= $this->session->get('edition');
                  // $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
@@ -163,7 +164,7 @@ class ElevesciaController extends EasyAdminController
                         ->setCreator("Olymphys")
                         ->setLastModifiedBy("Olymphys")
                         ->setTitle("CN   ".$edition->getEd()."ème édition - élèves sélectionnés avec mail")
-                        ->setSubject("Elèves non sélectionnés")
+                        ->setSubject("Elèves  sélectionnés")
                         ->setDescription("Office 2007 XLSX Document pour mailing diplomes participation ")
                         ->setKeywords("Office 2007 XLSX")
                         ->setCategory("Test result file");
@@ -181,7 +182,8 @@ class ElevesciaController extends EasyAdminController
                     ->setCellValue('D'.$ligne, 'Lettre')
                      ->setCellValue('E'.$ligne, 'Titre')  
                     ->setCellValue('F'.$ligne, 'Lycée')
-                   ->setCellValue('G'.$ligne, 'Commune');
+                   ->setCellValue('G'.$ligne, 'Commune')
+                   ->setCellValue('G'.$ligne, 'prix');
                    
                 
                 $ligne +=1; 
@@ -189,14 +191,21 @@ class ElevesciaController extends EasyAdminController
         	foreach ($liste_eleves as $eleve) 
                 {
                     $equipe=$eleve->getEquipe();
-                 
+                    $equipecn=$repositoryEquipescn->createQueryBuilder('e')
+                                                                         ->where('e.infoequipe =:equipe')
+                                                                         ->setParameter('equipe',$equipe)
+                                                                         ->getQuery()->getSingleResult();
+                   
                     $sheet->setCellValue('A'.$ligne,$eleve->getNom() )
                         ->setCellValue('B'.$ligne, $eleve->getPrenom())
                         ->setCellValue('C'.$ligne, $eleve->getCourriel())    
                         ->setCellValue('D'.$ligne, $equipe->getLettre())
                         ->setCellValue('E'.$ligne, $equipe->getTitreProjet())
                         ->setCellValue('F'.$ligne,$equipe->getRneId()->getNom())
-                        ->setCellValue('G'.$ligne, $equipe->getRneId()->getCommune());
+                        ->setCellValue('G'.$ligne, $equipe->getRneId()->getCommune())
+                        ->setCellValue('H'.$ligne, $equipecn->getPrix()->getClassement())
+                        ->setCellValue('I'.$ligne, $equipecn->getPrix()->getPrix())
+                        ->setCellValue('J'.$ligne, $equipecn->getPhrases()->getPrix());
                       $ligne +=1;
                 }
                     

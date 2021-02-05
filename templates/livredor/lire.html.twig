@@ -1,13 +1,17 @@
 {% extends "base.html.twig" %}
 {% block title %} LIvre d'or{% endblock %}
 {% block titre3 %}
-    Livre d'or des 
+    Livre d'or 
     {% if choix=='profs' %} 
-        professeurs de la {{ app.session.get('edition').ed }}<sup>e</sup> édition
+         des professeurs de la {{ app.session.get('edition').ed }}<sup>e</sup> édition
           
-        {% elseif  choix=='eleves'%}   
-             élèves  de la {{app.session.get('edition').ed }}<sup>e</sup> édition
-             {% endif %}
+     {% elseif  choix=='eleves'%}   
+            des élèves  de la {{app.session.get('edition').ed }}<sup>e</sup> édition
+     {% elseif  choix=='comite'%}   
+             du comité  -  {{app.session.get('edition').ed }}<sup>e</sup> édition        
+      {% elseif  choix=='jury'%}   
+           du jury  -  {{app.session.get('edition').ed }}<sup>e</sup> édition       
+     {% endif %}
 {% endblock %}
 
 
@@ -16,24 +20,20 @@
    {% for texte in listetextes %} 
        
        {% if choix=='profs'%} 
-                
-           
-          
-           <b><font color="blue">{{ texte.nom }} ( equipe{% if lettres_equipes_prof[i]|length > 3 %}s{% endif %}
-  
-     {{ lettres_equipes_prof[i] }} )</font></b>
-      
-    
-    
+      <b><font color="blue">{{ texte.nom }} ( equipe{% if lettres_equipes_prof[i]|length > 3 %}s{% endif %}
+      {{ lettres_equipes_prof[i] }} )</font></b>
+        
      {% set i = i+1 %}
-    {% endif %}
-    
-    
-     {% if choix=='eleves' %} 
-         <b><font color="blue">Equipe {{ texte.equipe.lettre  }} : {{ texte.equipe.titreProjet }} ({{ texte.noms }})</font></b>
+    {%elseif  choix=='eleves' %} 
+         <b><font color="blue">Equipe {{ texte.equipe.lettre  }} : {{ texte.equipe.titreProjet }} ({{ texte.nom }})</font></b>
+         
+      {%elseif  choix=='comite' or  choix=='jury'%} 
+         <b><font color="blue"> {{ texte.nom  }} </font></b>    
+         
+         
     {% endif %}
     :<br>
-    {{ texte.texte}}
+    {{ texte.texte|nl2br}}
     <hr>      
        
        

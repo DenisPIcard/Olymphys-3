@@ -8,6 +8,9 @@
         {% if type=='equipe'%}   
              Equipe {{equipe.lettre  }}
              {% endif %}
+              {% if type=='comite' or type=='jury'%}   
+             {{user.prenom  }} {{user.nom  }}
+             {% endif %}
 {% endblock %}
 
 

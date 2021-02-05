@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Livredoreleves;
+use App\Entity\Livredor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Livredoreleves|null find($id, $lockMode = null, $lockVersion = null)
- * @method Livredoreleves|null findOneBy(array $criteria, array $orderBy = null)
- * @method Livredoreleves[]    findAll()
- * @method Livredoreleves[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Livredor|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Livredor|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Livredor[]    findAll()
+ * @method Livredor[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class LivredorelevesRepository extends ServiceEntityRepository
+class LivredorRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Livredoreleves::class);
+        parent::__construct($registry, Livredor::class);
     }
 
     // /**
-    //  * @return Livredoreleves[] Returns an array of Livredoreleves objects
+    //  * @return Livredorprofs[] Returns an array of Livredorprofs objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class LivredorelevesRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Livredoreleves
+    public function findOneBySomeField($value): ?Livredorprofs
     {
         return $this->createQueryBuilder('l')
             ->andWhere('l.exampleField = :val')
