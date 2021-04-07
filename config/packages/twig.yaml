@@ -6,5 +6,5 @@ twig:
 
     globals: 
          type_fichier : ['memoires','annexes','resumes','presentation','fichessecur','diaporamas','autorisations']
-         type_fichier_lit : ['mémoire','annexe','résume','présentation(diaporama du concours national)pour le jury et publiée le lendemain du concours','fiche securité','diaporama', 'autorisations']
+         type_fichier_lit : ['mémoire','annexe','résume','diaporama','fiche securité','diaporama', 'autorisations']
         

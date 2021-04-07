@@ -86,14 +86,10 @@ class Photos
         */
       private $national;
       
-      /**
-       * @ORM\ManyToOne(targetEntity="App\Entity\User")
-       * @ORM\JoinColumn(name="user_id",  referencedColumnName="id" )
-       */
-      private $user;
+     
      /**
        * 
-       * x
+       * 
        * @ORM\Column(type="datetime", nullable=true)
        * @var \DateTime
        */

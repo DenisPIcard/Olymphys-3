@@ -640,12 +640,12 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                           $type_fichier=$this->getParameter('type_fichier')[$num_type_fichier];
                      
                             
-                      return $this->redirectToRoute('core_home');
+                      return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe.getId().'-'.$this->session->get('concours').'-liste_prof'));
                     }
                 if ($form3->get('NON')->isClicked())
                     {
                     $filesystem->remove($this->getParameter('app.path.tempdirectory').'/'.$nom_fichier);    
-                    return $this->redirectToRoute('core_home');
+                    return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe.getId().'-'.$this->session->get('concours').'-liste_prof'));
                     }
                 }
             $request->getSession()
@@ -692,8 +692,8 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
     //$type_fichier=$info[1];
     $phase=$info[1];
     $choix= $info[2];
-   
-    if (count($info)==4){
+  
+    if (count($info)==5){
      $id_citoyen= $info[3];
         
          if ($id_equipe !='prof'){
@@ -703,7 +703,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
            }
            else {
              $citoyen = $repositoryUser->find(['id'=>$id_citoyen]);
-            
+           
                }
       }
     
@@ -719,7 +719,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
    
       $dateconnect= new \datetime('now');
       
-      $form1=$this->createForm(ToutfichiersType::class, ['choix'=>$choix, 'role'=>$this->getUser()->getRoles()[0]]);
+      $form1=$this->createForm(ToutfichiersType::class, ['choix'=>$choix]);
       if(isset($equipe)){
       $nom_equipe=$equipe->getTitreProjet();
         $lettre_equipe= $equipe->getLettre();
@@ -1076,13 +1076,13 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 }        
     }
     
-            if ($choix == 'autorisation_photos'){
+            if ($choix == '6'){
                  $content = $this
-                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe,'citoyen'=>$citoyen, 'choix'=>$choix));
+                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe,'citoyen'=>$citoyen, 'choix'=>$choix,'infos'=>$infos));
             }
             else {
              $content = $this
-                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe, 'choix'=>$choix ));
+                             ->renderView('adminfichiers\charge_fichier_fichier.html.twig', array('form'=>$form1->createView(),'donnees_equipe'=>$donnees_equipe, 'choix'=>$choix, 'infos'=>$infos ));
             }
             return new Response($content);                             
  }
@@ -1158,7 +1158,46 @@ public function autorisations_photos(Request $request , $infos )
    
    
 }
- 
+           /**
+         * @Security("is_granted('ROLE_PROF')")
+         * 
+         * @Route("/fichiers/mon_espace", name="mon_espace")
+         * 
+         */          
+public function mon_espace(Request $request ){
+             $user = $this->getUser();
+             $id_user=$user->getId(); 
+             $edition=$this->session->get('edition');
+             $repositoryFichiersequipes= $this->getDoctrine()
+                              ->getManager()
+                              ->getRepository('App:Fichiersequipes');
+              $repositoryEquipesadmin= $this->getDoctrine()
+                              ->getManager()
+                              ->getRepository('App:Equipesadmin');
+              $qb3 =$repositoryEquipesadmin->createQueryBuilder('t')
+                             ->where('t.idProf1=:professeur')
+                             ->orwhere('t.idProf2=:professeur')
+                             ->andWhere('t.edition =:edition')
+                             ->setParameter('edition', $edition)
+                             ->setParameter('professeur', $id_user)
+                             ->orderBy('t.numero', 'ASC');
+             $liste_equipes=$qb3->getQuery()->getResult();
+             foreach($liste_equipes as $equipe){
+                 
+             $id_equipe=$equipe->getId();
+             $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')
+                             ->LeftJoin('t.equipe', 'e')
+                             ->Where('e.id=:id_equipe')
+                              ->andWhere('e.edition =:edition')
+                             ->setParameter('edition', $edition)
+                             ->setParameter('id_equipe', $id_equipe)
+                             ->addOrderBy('t.typefichier','ASC');
+               $liste_fichiers[$id_equipe]=$qb1->getQuery()->getResult();
+             }
+               return $this->render('/adminfichiers/espace_prof.html.twig', array('liste_equipes'=>$liste_equipes,'liste_fichiers'=>$liste_fichiers));
+    
+    
+            }
  
  
  
@@ -1170,7 +1209,8 @@ public function autorisations_photos(Request $request , $infos )
          * @Route("/fichiers/afficher_liste_fichiers_prof/,{infos}", name="fichiers_afficher_liste_fichiers_prof")
          * 
          */          
-public function afficher_liste_fichiers_prof(Request $request , $infos ){
+public function 
+        afficher_liste_fichiers_prof(Request $request , $infos ){
     $repositoryFichiersequipes= $this->getDoctrine()
                               ->getManager()
                               ->getRepository('App:Fichiersequipes');
@@ -1190,8 +1230,12 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                                  ->getManager()
                                  ->getRepository('App:Elevesinter');
     $Infos=explode('-',$infos);
-    
+
     $id_equipe=$Infos[0];
+    if ($id_equipe=='prof'){
+        
+        $id_equipe=$Infos[4];
+    }
     $concours=$Infos[1];
     $choix=$Infos[2];
     $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
@@ -1208,9 +1252,23 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->Where('e.id=:id_equipe')
                               ->andWhere('e.edition =:edition')
                              ->setParameter('edition', $edition)
-                             ->setParameter('id_equipe', $id_equipe)
-                             ->andWhere('t.typefichier <:type')
-                             ->setParameter('type', 6);
+                             ->setParameter('id_equipe', $id_equipe);
+    
+     if ($concours=='academique'){
+                      $qb1->andWhere('t.national =:national') 
+                             ->andWhere('t.typefichier in (0,1,2,4,5)')
+                             ->setParameter('national', FALSE) ;
+                     
+                     
+                 }
+                 if ($concours =='national' ){
+                             $qb1->andWhere('t.national =:national') 
+                             ->andWhere('t.typefichier in (0,1,2,3,4)')
+                             ->setParameter('national', TRUE) ;
+                }
+    
+    
+                          
                              
                            
     
@@ -1221,11 +1279,18 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
                              ->Where('e.id=:id_equipe')
                              ->setParameter('id_equipe', $id_equipe)
                             ->andWhere('e.edition =:edition')
-                             ->setParameter('edition', $edition) 
-                              ->andWhere('t.typefichier in (0,1,2,3,4,3,5)');
-               
+                             ->setParameter('edition', $edition);
+                            ;
+                 if ($concours=='academique'){
+                      $qb2->andWhere('t.national =:national') 
+                             ->andWhere('t.typefichier in (0,1,2,4,5)')
+                             ->setParameter('national', FALSE) ;
+                     
+                     
+                 }
                  if ($concours =='national' ){
-                             $qb2->andWhere('t.national =:national')
+                             $qb2->andWhere('t.national =:national') 
+                             ->andWhere('t.typefichier in (0,1,2,3,4)')
                              ->setParameter('national', TRUE) ;
                 }
                 
@@ -1438,7 +1503,7 @@ public function afficher_liste_fichiers_prof(Request $request , $infos ){
             }
             
              $content = $this
-                          ->renderView('adminfichiers\affiche_liste_fichiers_prof.html.twig', array('form'=>$Form, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
+                          ->renderView('adminfichiers\espace_prof.html.twig', array('form'=>$Form, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,
                                                         'equipe'=>$equipe_choisie, 'centre' =>$equipe_choisie->getCentre(),'concours'=>$concours, 'edition'=>$edition, 'choix'=>$choix, 'role'=>$role,
                                                          'liste_prof'=>$liste_prof, 'listeEleves'=>$listeEleves,'liste_fichiers'=>$liste_fichiers)
                                   ); 

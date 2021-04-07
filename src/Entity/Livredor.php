@@ -47,7 +47,7 @@ class Livredor
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity=equipesadmin::class, cascade={"remove"})
+     * @ORM\OneToOne(targetEntity=Equipesadmin::class, cascade={"remove"})
      */
     private $equipe;
 

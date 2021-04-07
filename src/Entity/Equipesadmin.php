@@ -12,7 +12,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 /**
  * Equipesadmin
  * @Vich\Uploadable
- * @ORM\Table(name="equipesadmin")
+ * @ORM\Table(name="Equipesadmin")
  * @ORM\Entity(repositoryClass="App\Repository\EquipesadminRepository")
  * @ORM\HasLifecycleCallbacks()
  */

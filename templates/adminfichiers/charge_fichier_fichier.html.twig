@@ -1,13 +1,16 @@
 {% extends "base.html.twig" %}
 {% block title %} Fichier {% endblock %}
 {% block titre3 %}  
-    {% if choix != 'autorisation_photos' %}
-    Dépôt  d'un fichier  de l'équipe : 
+    {% set categorie=['du ','de l\'', 'du ','du ','de la ', 'du '] %}
+    
+    
+    {% if choix != '6' %}
+    Dépôt   {{categorie[choix]}}{{ type_fichier_lit[choix] }} de l'équipe : 
    {% if donnees_equipe is defined %} 
     {{donnees_equipe}} 
     {% endif %}
     {%  endif %} 
-     {% if choix == 'autorisation_photos' %}
+     {% if choix == '6' %}
     Dépôt  de l'autorisation photos de  
    {% if citoyen is defined %} 
      {{ citoyen.prenom}} {{citoyen.nom}} 
@@ -56,15 +59,9 @@
                 
              <div class="form-group col-md-6">
              {{ form_widget(form.save, { 'label': 'Déposer le fichier' }) }}
-              {% if choix == 'autorisation_photos' %}
-                  <a href="{{ path('fichiers_choix_equipe',{choix: 'autorisation_photos' })  }}" type="button" class="btn btn-danger">Annuler</a>
-                  {%  endif %}
-                    {% if choix == 'diaporama_jury' %}
-                  <a href="{{ path('fichiers_choix_equipe',{choix: 'diaporama_jury' })  }}" type="button" class="btn btn-danger">Annuler</a>
-                  {%  endif %} 
-                  {%  if   choix == 'deposer' %}
-             <a href="{{ path('fichiers_choix_equipe',{choix: 'deposer' })  }}" type="button" class="btn btn-danger">Annuler</a>
-             {%  endif %}
+            
+                  <a href="{{ path('fichiers_afficher_liste_fichiers_prof', {'infos': infos} )  }}" type="button" class="btn btn-danger">Annuler</a>
+                 
              </div>
 {{ form_end(form) }}
        

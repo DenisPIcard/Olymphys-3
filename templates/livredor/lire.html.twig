@@ -16,6 +16,10 @@
 
 
 {% block body %}
+    <div class="row">
+        <div cllass="col"><a href="{{path('livredor_choix_edition',{action:'lire'})}}">Retour</a>
+        </div>
+    </div>
    {%  set i=0 %}
    {% for texte in listetextes %} 
        

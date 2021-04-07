@@ -59,8 +59,20 @@ public function liens_videos(Request $request, $infos){
     $id_video=$Infos[3];
    $videoequipe=$repositoryVideosequipes->find(['id'=>$id_video]);
     } 
-     
-    if ($choix !='modifier'){
+    if ($choix=='supprimer'){
+     $id_video=$request->get('myModalID');
+     $video =$repositoryVideosequipes->find(['id'=>$id_video]);   
+     $em=$this->getDoctrine()->getManager();
+                    
+                    $em->remove($video);
+                    $em->flush();
+                    
+                                            
+                      return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof',['infos'=>$infos]);
+                    }   
+        
+    
+    if ($choix =='nouvelle'){
     $videoequipe= new Videosequipes();
    }
       if (count($Infos)==5){
@@ -105,7 +117,7 @@ public function liens_videos(Request $request, $infos){
                     ->add('info','Le lien saisi n\'est pas valide') ;
             $infos=$infos.'-'.'Le lien saisi n\'est pas valide';
               
-            return $this->redirectToRoute('videos_liens_videos',['infos'=>$infos]);
+            return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof',['infos'=>$infos]);
        }
          /* if(($file_headers==false ) || ($file_headers[9] != 'Server: YouTube Frontend Proxy')|| (count($file_headers) >17)){          //  'HTTP/1.1 404 Not Found'){
              dd($url);
@@ -122,7 +134,7 @@ public function liens_videos(Request $request, $infos){
         $em->persist($videoequipe);
         $em->flush();
        
-        return $this->redirectToRoute('videos_liste_videos',['infos'=>$infos]);
+        return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof',['infos'=>$infos]);
                 }
     
                 $qb=$repositoryVideosequipes->createQueryBuilder('v')

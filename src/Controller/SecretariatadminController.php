@@ -54,7 +54,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -780,6 +780,9 @@ class SecretariatadminController extends AbstractController
             $repositoryEquipes=$this->getDoctrine()
 			->getManager()
 			->getRepository('App:Equipesadmin');
+            $repositoryEleves=$this->getDoctrine()
+			->getManager()
+			->getRepository('App:Elevesinter');
              $repositoryEdition=$this->getDoctrine()
 			->getManager()
 			->getRepository('App:Edition');
@@ -805,5 +808,96 @@ class SecretariatadminController extends AbstractController
        }
           return $this->redirectToRoute('core_home'); 
        }
-        
+        /**
+         * @Security("is_granted('ROLE_PROF')")
+         * 
+         * @Route("/secretariatadmin/modif_equipe,{idequipe}", name="modif_equipe")
+         * 
+         */                  
+       public function  modif_equipe(Request $request, $idequipe)
+       {    $em=$this->getDoctrine()->getManager();
+            $repositoryEquipesadmin= $this->getDoctrine()
+                                  ->getManager()
+                                  ->getRepository('App:Equipesadmin');
+     
+                                
+           $repositoryElevesinter= $this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:Elevesinter');
+           
+           $equipe= $repositoryEquipesadmin->findOneById(['id'=>$idequipe]);
+           $listeEleves=$repositoryElevesinter->findByEquipe(['equipe'=>$equipe]);
+           $i=0;
+           $form[$i] = $this->createFormBuilder($equipe)
+                   ->add('titreprojet',TextType::class,[
+                       'mapped'=>false,
+                       'data'=>$equipe->getTitreprojet(),
+                       
+                   ])
+                    ->add('saveE', SubmitType::class, ['label' => 'Sauvegarder'])
+                   ->getForm();
+              $form[$i]->handleRequest($request);
+             $formview[$i]=$form[$i]->createView();     
+             if ($form[$i] ->isSubmitted() && $form[$i] ->isValid()) {
+                 if ($form[$i]->get('saveE')->isClicked()){
+                    
+                $em->persist($equipe);
+                $em->flush();
+                 } 
+                 return $this->redirectToRoute('modif_equipe', array('idequipe'=>$idequipe));
+             }
+           $i++;
+           foreach($listeEleves as $eleve)
+           {
+            $form[$i] = $this->createFormBuilder()
+            ->add('nom', TextType::class,[
+                'mapped'=>false,
+                'data'=>$eleve->getNom(),
+            ])
+            ->add('prenom', TextType::class,[
+                'mapped'=>false,
+                'data'=>$eleve->getPrenom(),
+            ])
+            ->add('courriel',EmailType::class,[
+                'mapped'=>false,
+                'data'=>$eleve->getCourriel(),
+            ])
+            ->add('id',HiddenType::class, [
+                'mapped'=>false,
+                'data'=>$eleve->getId(),
+            ])
+            ->add('save'.$i, SubmitType::class, ['label' => 'Sauvegarder'])
+            ->getForm();
+           $form[$i]->handleRequest($request);
+           
+             $formview[$i]=$form[$i]->createView(); 
+             $i++;
+           } 
+           $imax=$i;
+           
+           for ($i=1; $i<$imax; $i++){
+            if ($form[$i] ->isSubmitted() && $form[$i] ->isValid()) {
+              
+               if ($form[$i]->get('save'.$i)->isClicked()){
+      
+                   
+               $elevemodif= $repositoryElevesinter->findOneById(['id'=>$form[$i]->get('id')->getData()]); 
+               $elevemodif->setNom($form[$i]->get('nom')->getData());
+               $elevemodif->setPrenom($form[$i]->get('prenom')->getData());
+               $elevemodif->setCourriel($form[$i]->get('courriel')->getData());
+                $em->persist($elevemodif);
+                $em->flush();
+               }
+               
+            return $this->redirectToRoute('modif_equipe', array('idequipe'=>$idequipe));
+            }
+       
+            
+        }
+            
+           
+        return $this->render('adminfichiers/modif_equipe.html.twig', [
+            'formtab' => $formview,'equipe' =>$equipe        ]);
+    } 
+           
 }

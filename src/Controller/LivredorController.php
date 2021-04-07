@@ -224,18 +224,58 @@ class LivredorController extends AbstractController
        return new Response($content);
         
     } 
-    /**
+     /**
      * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
-     * @Route("/livredor/lire,{type}", name="livredor_lire")
+     * @Route("/livredor/choix_edition,{action}", name="livredor_choix_edition")
      *  @return RedirectResponse|Response
      */
-    public function lire(Request $request,$type) : Response
+    public function choix_edition(Request $request,$action) : Response
     {   
+        $repositoryEdition= $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Edition');
+       $qb=$repositoryEdition->createQueryBuilder('e')
+                                      ->orderBy('e.ed', 'DESC');
+       $repositoryLivredor= $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Livredor');
+             
+       
+       $Editions = $qb->getQuery()->getResult();
+       
+       foreach($Editions as $edition  ){
+         $livredors[$edition->getid()] = $repositoryLivredor->createQueryBuilder('l')
+                 ->where('l.edition =:edition')
+                 ->setParameter('edition',$edition)
+                 ->getQuery()->getResult();
+           
+           
+       }
+           
+       
+       
+             return $this->render('livredor/choix_edition.html.twig', array('editions'=>$Editions,'livredors'=>$livredors,'action'=>$action));
+        }
         
-        $em=$this->getDoctrine()->getManager();
-        $edition= $this->session->get('edition');
-         $edition=$em->merge($edition);
-      
+        
+        
+  
+    
+    /**
+     * @IsGranted("IS_AUTHENTICATED_ANONYMOUSLY")
+     * @Route("/livredor/lire,{choix}", name="livredor_lire")
+     *  @return RedirectResponse|Response
+     */
+    public function lire(Request $request,$choix) : Response
+    {   
+        $type=explode('-',$choix)[1];
+        $idedition=explode('-',$choix)[0];
+        $edition = $repositoryEdition= $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Edition')->findOneById(['id'=>$idedition]);
+        
+        
+        
         if ($type=='eleves'){
             $listetextes=$this->getDoctrine()
                                  ->getManager()
@@ -319,22 +359,16 @@ class LivredorController extends AbstractController
     }
     /**
      * @IsGranted("ROLE_COMITE")
-     * @Route("/livredor/choix_editer", name="livredor_choix_editer")
+     * @Route("/livredor/editer,{choix}", name="livredor_editer")
      * 
      */
-    public function choix_editer(Request $request) {
+    public function editer(Request $request,$choix) {
         
-        
-         $form = $this->createFormBuilder();
-        
-       $form ->add('equipe', SubmitType::class, ['label' => 'Livre d\'or élèves'])
-                 ->add('prof', SubmitType::class, ['label' => 'Livre d\'or des professeurs'])
-                 ->add('comite', SubmitType::class, ['label' => 'Livre d\'or du comité'])
-                 ->add('jury', SubmitType::class, ['label' => 'Livre d\'or du jury']);
-           $form=$form ->getForm();
-        
-          $form->handleRequest($request);
-    if ($form->isSubmitted() && $form->isValid()){
+        $idedition=explode('-',$choix)[0];
+        $type=explode('-',$choix)[1];
+        $edition = $repositoryEdition= $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Edition')->findOneById(['id'=>$idedition]);
         
         $phpWord = new  PhpWord();
        
@@ -355,17 +389,19 @@ class LivredorController extends AbstractController
                     array('name' => 'Arial', 'size' => 12, 'color' => '000000')
                 );
           
-        if (($form->get('prof')->isClicked()) or($form->get('comite')->isClicked())or($form->get('jury')->isClicked())){
+        if (($type=='prof') or($type=='comite')or($type=='jury')){
             $livredor=$this->getDoctrine()
                                 ->getManager()
                                 ->getRepository('App:Livredor')->createQueryBuilder('l')
                                                                                          ->leftJoin('l.user','p')
                                                                                          ->addOrderBy('p.nom','ASC')
                                                                                          ->andWhere('l.categorie =:categorie')
-                                                                                         ->setParameter('categorie', $form->getClickedButton()->getName())  
+                                                                                         ->setParameter('categorie', $type)  
+                                                                                         ->andWhere('l.edition =:edition')
+                                                                                         ->setParameter('edition', $edition)  
                                                                                         ->getQuery()->getResult();
             
-          if ($form->get('prof')->isClicked())  {
+          if ($type=='prof') {
            $equiperepository= $this->getDoctrine()
                                 ->getManager()
                                 ->getRepository('App:Equipesadmin');
@@ -407,9 +443,9 @@ class LivredorController extends AbstractController
            $section->addText('------',null,'pStyle');
              }}
              }
-               if (($form->get('comite')->isClicked())or($form->get('jury')->isClicked()))  {
+               if (($type=='comite')or($type=='jury'))  {
               
-             $categorie= $form->getClickedButton()->getName();;
+             $categorie= $type;;
              $titrepage ='Livre d\'or du '.$categorie.' - Edition '.$this->session->get('edition')->getEd();
              
              
@@ -440,15 +476,15 @@ class LivredorController extends AbstractController
              }
                }
         }
-             if ($form->get('equipe')->isClicked()){
+             if ($type=='equipe'){
             $livredor=$this->getDoctrine()
                                 ->getManager()
                                 ->getRepository('App:Livredor')
                                 ->createQueryBuilder('e')
                                 ->where('e.edition =:edition')
-                                ->setParameter('edition',$this->session->get('edition'))
+                                ->setParameter('edition',$edition)
                                 ->andWhere('e.categorie =:categorie')
-                                ->setParameter('categorie', $form->getClickedButton()->getName())
+                                ->setParameter('categorie', $type)
                                 ->leftJoin('e.equipe','eq')
                                 ->orderBy('eq.lettre','ASC')
                                ->getQuery()->getResult();
@@ -482,7 +518,7 @@ class LivredorController extends AbstractController
              }
           }
              }
-            $categorie=$form->getClickedButton()->getName();
+            $categorie=$type;
             $filesystem = new Filesystem();
             $fileName = $this->session->get('edition')->getEd().'livre d\'or '.$categorie.'.docx';  
          
@@ -502,18 +538,7 @@ class LivredorController extends AbstractController
               
               
              
-                }
-               
-          
-        
-         
-       
-   
-  
-     $content = $this
-                                    ->renderView('livredor\choix_editer.html.twig', ['form'=>$form->createView()]);
-                    
-        return new Response($content);   
+      
         
     }
     

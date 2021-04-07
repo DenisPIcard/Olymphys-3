@@ -7,16 +7,13 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType ;
 use Symfony\Component\Form\AbstractType;
 use App\Form\ConfirmType;
 use App\Form\PhotosType;
-use App\Form\ThumbType;
 
-use App\Entity\Equipes ;
+
+use App\Entity\Equipesadmin ;
 use App\Entity\Eleves ;
 use App\Entity\Edition ;
-use App\Entity\Totalequipes ;
-use App\Entity \Photosinter;
-use App\Entity \Photosinterthumb;
-use App\Entity \Photoscn;
-use App\Entity \Photoscnthumb;
+
+
 use App\Entity \Photos;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -306,7 +303,7 @@ class PhotosController extends  AbstractController
              else {$role='IS_GRANTED_ANONIMOUSLY';
                        
              }
-             //dd($id_user);
+            
              $liste_centres=$repositoryCentrescia->findAll();
              $qb =$repositoryPhotos->createQueryBuilder('p')
                                ->andWhere('p.edition =:edition')
