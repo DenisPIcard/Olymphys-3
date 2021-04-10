@@ -28,21 +28,35 @@ class CoreController extends AbstractController
   {  
      
      $user=$this->getUser();
+     
    // dump($user);
+     if(($user==null) or  ($user->getRoles()[0]!='ROLE_SUPER_ADMIN')){
    $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-                  
+     
+     
+         }
+     if(($user!=null) and ($user->getRoles()[0]=='ROLE_SUPER_ADMIN')) {
+         $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+                  $edition=$repositoryEdition->createQueryBuilder('e')
+                          ->where('e.encours = TRUE')
+                          ->getQuery()->getSingleResult();
+        
+     }
+      
      $this->session->set('edition', $edition); 
     if (null != $user)
     {    
     $datelimcia = $edition->getDatelimcia();
-    $datelimnat=$edition->getDatelimnat(); 
-    $dateouverturesite=$edition->getDateouverturesite();
+    $datelimnat= $edition->getDatelimnat(); 
+     $datecia= $edition->getConcourscia();
+    $datecn= $edition->getConcourscn();
+   $dateouverturesite= $edition->getDateouverturesite();
     $dateconnect= new \datetime('now');
-      if ($dateconnect>$datelimcia) {
+      if ($dateconnect>$datecia) {
         $concours='national';
    }
-    if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datelimcia)) {
+    if (($dateconnect<=$datecia)) {
         $concours= 'interacadémique';
     }
      $datelimphotoscia=date_create();

@@ -289,7 +289,7 @@ class LivredorController extends AbstractController
                                  ->getQuery()->getResult();
            
                     $content = $this
-                 ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type]);;
+                 ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type,'edition'=>$edition]);;
         }
         if ($type=='profs'){
             $listetextes=$this->getDoctrine()
@@ -333,7 +333,7 @@ class LivredorController extends AbstractController
                              $i=$i+1;
             }
             $content = $this
-                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'lettres_equipes_prof'=>$lettres_equipes_prof,'choix'=>$type]);
+                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'lettres_equipes_prof'=>$lettres_equipes_prof,'choix'=>$type,'edition'=>$edition]);
         }
           if (($type=='comite') or ( $type=='jury')){
             $listetextes=$this->getDoctrine()
@@ -352,7 +352,7 @@ class LivredorController extends AbstractController
           
          
                     $content = $this
-                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type]);;
+                                    ->renderView('livredor\lire.html.twig', ['listetextes'=>$listetextes, 'choix'=>$type, 'edition'=>$edition]);;
                     }
         return new Response($content);
     

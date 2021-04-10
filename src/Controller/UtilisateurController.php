@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Rne;
 use App\Service\Mailer;
 use App\Form\UserType;
+use App\Form\UserRegistrationFormType;
 use App\Form\ResettingType;
 use App\Form\ProfileType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,16 +31,25 @@ class UtilisateurController extends AbstractController
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, Mailer $mailer, TokenGeneratorInterface $tokenGenerator): Response
     {
- 
+        $rneRepository=$this->getDoctrine()->getManager()->getRepository('App:Rne');
+        
         // création du formulaire
         $user = new User();
         // instancie le formulaire avec les contraintes par défaut, + la contrainte registration pour que la saisie du mot de passe soit obligatoire
-        $form = $this->createForm(UserType::class, $user,[
+        $form = $this->createForm(UserRegistrationFormType::class, $user,[
            'validation_groups' => array('User', 'registration'),
         ]);        
-        $form->handleRequest($request);
+        $form->handleRequest($request);  
         if ($form->isSubmitted() && $form->isValid()) {
- 
+            
+             $rne=$form->get('rne')->getData();
+             if ($rneRepository->findOneByRne(['rne'=>$rne])==null){
+             $request->getSession()
+                                ->getFlashBag()
+                                ->add('alert', 'Ce n° RNE n\'est pas valide !') ;   
+          
+             return   $this->redirectToRoute('register');
+            }    
             // Encode le mot de passe
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
@@ -47,6 +58,9 @@ class UtilisateurController extends AbstractController
             $user->setToken($tokenGenerator->generateToken());
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
+          
+           
+            
             // Enregistre le membre en base
             $em = $this->getDoctrine()->getManager();
             $em->persist($user); 

@@ -76,7 +76,7 @@
     </div>
    
     
-    
+
             <hr>
     
     <blockquote class="blockquote text-center">
@@ -87,20 +87,27 @@
     <div class="table-responsive">
   <table class="table">
       {% if  equipe.selectionnee == true %}
-          {%  set liste=[0,1,2,3,4]%}
+          
+          {%  set liste=[0,1,2,3,4]%}  
+          {% if role=='ROLE_JURY' or role=='ROLE_JURYCIA' %}
+                                    {%  set liste=[0,1,2,3]%}  
+          {% endif %}
        {% endif %}   
        {% if equipe.selectionnee ==false %}
            {%  set liste=[0,1,2,4,5]%}
+            {% if role=='ROLE_JURY' or role=='ROLE_JURYCIA' %}
+                                    {%  set liste=[0,1,2,5]%}  
+          {% endif %}
         {% endif %}   
       {%  for i in liste %} 
           
               
           
-            {% if i !=4 or (role!='ROLE_JURY' and role!='ROLE_JURY_CIA') %}
+            
       <tr>
-     
-      {%  if liste_fichiers!=null %}  
       {% set  attrib=0 %}
+      {%  if liste_fichiers!=null %}  
+     
           {% for fichier in liste_fichiers %}
             {% if fichier.typefichier==i %}
               
@@ -126,13 +133,41 @@
                  Non encore déposé
                  
              </td>
-           
+          
          {% endif %}
-         {% if (role!='ROLE_JURY' or role!='ROLE_JURY_CIA') %}
-     <th scope="col"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></th>
-         {% endif %}
+         {% if role!='ROLE_JURY'%}
+                   {%if role!='ROLE_JURYCIA' %}
+            
+               {%  if (role=='ROLE_PROF')%} 
+                {% if i!=4%}
+                  
+                  {% if (app.session.get('concours')=='interacademique') %}
+                       {% if i!=5 %} 
+                     {% if  (date()<= app.session.get('edition').datelimcia)%}
+                        <th scope="col"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></th>
+               {% endif %}
+             {% endif %}
+             {% endif %}
+                  {% if i!=3%}
+                   {% if (app.session.get('concours')=='national') %}
+                     {% if  (date()<= app.session.get('edition').datelimnat)%}
+                      <th scope="col"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></th>
+                      {% endif %}
+                {% endif %} 
+               {% endif %}
+                  {% endif %}
+               {% elseif (role!='ROLE_PROF') %}
+                       <th scope="col"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></th>    
+               {% endif %}   
+              {% if( i==4 or i==3 or i == 5 ) and (role=='ROLE_PROF')%}  
+                 <th scope="col"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></th>
+                      
+               {% endif %} 
+                
+               {% endif %}
+             {% endif %}
     </tr>
-    {% endif %}
+    
 
    
       {% endfor %}
@@ -185,12 +220,13 @@
               
               <tr> 
                     <th scope="col">   {{ video.nom}}</th>
-                    <th scope="col">   <a href ="{{video.lien}}" target="blank">{{ video.lien}}</a></th>
+                    <th scope="col">   <a href ="{{video.lien}}" target="blank">{{ video.lien}}</a></th>  
+                    <th scope="col">
                     {% if (role=='ROLE_PROF' ) %}
-                    <th scope="col"><a href="{{ path('videos_liens_videos',{infos: equipe.id~'-'~concours~'-'~'modifier-'~video.id} )}}" "> <button type="button" title="Modifier">  <i class="fa fa-edit"></i></button></a>
-
+                      <a href="{{ path('videos_liens_videos',{infos: equipe.id~'-'~concours~'-'~'modifier-'~video.id} )}}" "> <button type="button" title="Modifier">  <i class="fa fa-edit"></i></button></a>
+                     {% endif %}
                    <button type="button" id="{{ video.id }}" data-toggle="modal" data-target="#modalconfirm"  data-idvideo="{{ video.id }}" title="Supprimer">  <i class="fa fa-trash"></i></button></th>
-           {% endif %}
+           
                     </tr>
              {%  endfor %}
          
@@ -212,11 +248,11 @@
                </p>
           </blockquote>
       
-        
-              
+          <form  id="autorisations" method="GET"action="{{ path('fichiers_charge_autorisations') }}">{# #}
+          <div class="form-group" >  
            <div class="table-responsive">
              <table class="table">
-                 <tr>
+                 <tr><td></td>
                      <td>Des élèves : </td>
                      <td></td>
                      <td></td>
@@ -225,49 +261,62 @@
                 <tr> <td>
                                                {%  if eleve.autorisationphotos == null %}
                            
-                                                   <font color="red">  <b>{{ eleve.nom }} {{ eleve.prenom }} </b></font>
+                                               </td><td><font color="red">  <b>{{ eleve.nom }} {{ eleve.prenom }} </b></font>
                                                </td><td></td>
                         {% else %}
-                               
-                            
+                        
+                                    <div class="form-check">
+                                       
+                                        <input type="checkbox"name="check-eleve-{{loop.index}}" id="check- eleve-{{loop.index}}" checked ="true"/> 
+                                         <input type="hidden" name="eleve-{{loop.index}}" id="eleve-{{eleve.autorisationphotos.id}}" value="eleve-{{eleve.autorisationphotos.id}}"/> 
+                                    </div>
+                            </td>
+                            <td>
                             <font color="green"> <b>{{ eleve.nom }} {{ eleve.prenom }} </b></font>
                         </td><td>
                             
-                            <a href="{{ asset('/fichiers/autorisations/'~eleve.autorisationphotos.fichier)}}">{{eleve.autorisationphotos.fichier}}</a>
-                         
+          
+                        <a href="{{ asset('/fichiers/autorisations/'~eleve.autorisationphotos.fichier)}}">{{eleve.autorisationphotos.fichier}}</a>
+                        
                
                     
                     </td> {% endif %}
                     <td>
-                         {% if (role!='ROLE_JURY') or (role!='ROLE_JURY_CIA') %}
+                         {% if (role!='ROLE_JURY') or (role!='ROLE_JURYCIA') %}
                             <a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~ '-'~concours~'-6-'~eleve.id~'-'} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a>
+                      
                          {%  endif %} 
                         </td>
             </tr>
          {%  endfor %}
           
-          <tr>
+             <tr><td></td>
               <td>
          Des professeurs :
-              </td> <td> </td><td></td>
+              </td> <td> </td><td></td><td></td>
           </tr>
          {% for prof in liste_prof %}
               <tr><td>
              {%  if prof.autorisationphotos == null %}
-                           
+             </td><td>        
                  <font color="red" >  <b>{{ prof.nom }} {{ prof.prenom }}</font> </b></a>
              </td><td></td>
                         {% else %}
-                               
-                            
+                                       
+                                    <div class="form-check">
+                                        <input type="checkbox" name="check-prof-{{loop.index}}" id="check-prof-{{loop.index}}" checked ="true"/> 
+                                        <input type="hidden" name="prof-{{loop.index}}" id="prof-{{prof.autorisationphotos.id}}" value="prof-{{prof.autorisationphotos.id}}"/> 
+                                    </div>    
+              </td><td>
                             <font color="green" > <b>{{ prof.nom }} {{ prof.prenom }}</b>  </font>
+                            
                         </td><td><a href="{{ asset('/fichiers/autorisations/'~prof.autorisationphotos.fichier)}}">{{prof.autorisationphotos.fichier}}</a>
-                         
+               
                 {%  endif %} 
                                    
                   </td>
                   <td> 
-                      {% if (role!='ROLE_JURY' ) or (role!='ROLE_JURY_CIA') %}
+                      {% if (role!='ROLE_JURY' ) or (role!='ROLE_JURYCIA') %}
                       <a href="{{ path('fichiers_charge_fichiers',{infos : 'prof'~ '-'~concours~'-6-'~prof.id~'-'~equipe.id} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a> 
                       
                      {% endif %}
@@ -277,6 +326,9 @@
          
              </table>
            </div>
+             <button type="submit" class="btn btn-primary" id ="button">Télécharger</button>
+         </div>
+      </form>
              {% endif %}
           </div>
           {% else %}
@@ -349,12 +401,6 @@
             });
         </script>    
   
-  
-  
-  
-  
-  
-  
-  
+       
     {% endblock %}  
 {% endblock %}

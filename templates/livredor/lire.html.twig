@@ -3,14 +3,14 @@
 {% block titre3 %}
     Livre d'or 
     {% if choix=='profs' %} 
-         des professeurs de la {{ app.session.get('edition').ed }}<sup>e</sup> édition
+         des professeurs de la {{ edition.ed }}<sup>e</sup> édition
           
      {% elseif  choix=='eleves'%}   
-            des élèves  de la {{app.session.get('edition').ed }}<sup>e</sup> édition
+            des élèves  de la {{ edition.ed }}<sup>e</sup> édition
      {% elseif  choix=='comite'%}   
-             du comité  -  {{app.session.get('edition').ed }}<sup>e</sup> édition        
+             du comité  -  {{ edition.ed}}<sup>e</sup> édition        
       {% elseif  choix=='jury'%}   
-           du jury  -  {{app.session.get('edition').ed }}<sup>e</sup> édition       
+           du jury  -  {{ edition.ed }}<sup>e</sup> édition       
      {% endif %}
 {% endblock %}
 

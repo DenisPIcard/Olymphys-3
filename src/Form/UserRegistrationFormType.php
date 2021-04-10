@@ -25,11 +25,11 @@ class UserRegistrationFormType extends AbstractType
             ->add('username',TextType::class)
             ->add('email', EmailType::class)
             ->add('plainPassword', RepeatedType::class, array(
-                    'mapped' => false,
+                    'mapped' => true,
                     'type' => PasswordType::class,
                     'first_options'  => array('label' => 'Mot de passe'),
                     'second_options' => array('label' => 'Confirmer le mot de passe'),))
-            ->add('nom',TextType::class)
+            //->add('nom',TextType::class)
             ->add('rne',TextType::class)
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,

@@ -69,6 +69,11 @@ class Edition
         *  @ORM\Column(name="concours_cn", type="date",nullable=true)
         */    
         protected $concourscn;
+
+        /**
+         * @ORM\Column(type="boolean", nullable=true)
+         */
+        private $encours;
    
        
 
@@ -172,6 +177,18 @@ class Edition
     public function getConcourscn()
     {
         return $this->concourscn;
+    }
+
+    public function getEncours(): ?bool
+    {
+        return $this->encours;
+    }
+
+    public function setEncours(?bool $encours): self
+    {
+        $this->encours = $encours;
+
+        return $this;
     }
     
     

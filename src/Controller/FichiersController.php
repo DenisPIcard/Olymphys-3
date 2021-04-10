@@ -125,7 +125,7 @@ public function choix_centre(Request $request) {
     $repositoryEquipesAdmin=$this->getDoctrine()
 		->getManager()
 		->getRepository('App:Equipesadmin');
-    $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);  
+    $edition=$this->session ->get('edition');
     $centres=$repositoryCentres->findAll();
     $equipes=$repositoryEquipesAdmin->findByEdition(['edition'=>$edition]);
     if ($equipes!=null){
@@ -184,7 +184,8 @@ public function choix_equipe(Request $request,$choix) {
      $repositoryEleves=$this->getDoctrine()
 		->getManager()
 		->getRepository('App:Elevesinter');
-    $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);       
+    $edition=$this->session->get('edition');
+   
     $centres=$repositoryCentres->findAll();
     $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat(); 
@@ -227,7 +228,7 @@ public function choix_equipe(Request $request,$choix) {
    if ($dateconnect>$datelimcia) {
         $phase='national';
    }
-    if (($dateconnect>$dateouverturesite) and ($dateconnect<=$datecia)) {
+    if (($dateconnect<=$datecia)) {
         $phase= 'interacadémique';
     }
              
@@ -305,7 +306,7 @@ public function choix_equipe(Request $request,$choix) {
                          }
     }
     
-   if ($choix=='presentation'){//pour le dépôt des présentations
+  /* if ($choix=='presentation'){//pour le dépôt des présentations
           if ($dateconnect>$this->session->get('datelimdiaporama') )  {
                                           $qb3->andWhere('t.selectionnee=:selectionnee')
                                                               ->setParameter('selectionnee', TRUE);
@@ -326,12 +327,13 @@ public function choix_equipe(Request $request,$choix) {
                                                  ->add('info', 'Le site n\'est pas encore prêt pour une saisie des diaporamas ou vous n\'avez pas d\'équipe inscrite pour le concours national de la '.$edition->getEd().'e edition') ;
                                          return $this->redirectToRoute('core_home');
                                           }
-                                       }
-if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$choix=='autorisation_photos'){
+                                       }*/
+if (($choix=='liste_prof')){
                                       
                                           if (($phase=='interacadémique') or ($role=='ROLE_ORGACIA'))     {
                                            if ($role=='ROLE_PROF') {  
                                          $liste_equipes=$qb3->getQuery()->getResult();    
+                                        
                                            }
                                            if ($role=='ROLE_ORGACIA'){
                                              $centre=$this->getUser()->getCentrecia();
@@ -347,9 +349,9 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                           }
                                    if ( ($role!='ROLE_ORGACIA')){
                                          if ($dateconnect>$datecia) {
-                                             $qb3->andWhere('t.selectionnee=:selectionnee')
+                                             /*$qb3->andWhere('t.selectionnee=:selectionnee')
                                                      ->setParameter('selectionnee', TRUE)
-                                                     ->orderBy('t.lettre', 'ASC');                                                    
+                                                     ->orderBy('t.lettre', 'ASC');    */                                                
                                             $liste_equipes=$qb3->getQuery()->getResult();     
                                             
                                          }
@@ -373,7 +375,7 @@ if (($choix=='liste_prof') || ($choix=='video') || ($choix=='liste_video')||$cho
                                              }
    }
    
-  if (($choix=='deposer') ||($choix=='diaporama_jury')) {//pour le dépôt des fichiers autres que les présentations
+  if (($choix=='deposer')) {//pour le dépôt des fichiers autres que les présentations
       
                                             if ($role=='ROLE_PROF') {
                                                 
@@ -1137,6 +1139,10 @@ public function autorisations_photos(Request $request , $infos )
    $liste_prof[1]= $repositoryUser->find(['id'=>$equipe->getIdProf1()]) ;
    if (null!=$equipe->getIdProf2()){
    $liste_prof[2]=$repositoryUser->find(['id'=>$equipe->getIdProf2()]) ;
+   
+   
+   
+   
       }
     
 
@@ -1209,8 +1215,7 @@ public function mon_espace(Request $request ){
          * @Route("/fichiers/afficher_liste_fichiers_prof/,{infos}", name="fichiers_afficher_liste_fichiers_prof")
          * 
          */          
-public function 
-        afficher_liste_fichiers_prof(Request $request , $infos ){
+public function     afficher_liste_fichiers_prof(Request $request , $infos ){
     $repositoryFichiersequipes= $this->getDoctrine()
                               ->getManager()
                               ->getRepository('App:Fichiersequipes');
@@ -1238,7 +1243,8 @@ public function
     }
     $concours=$Infos[1];
     $choix=$Infos[2];
-    $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
+  
+    $edition=$this->session->get('edition');
     $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat();
     $dateouverturesite=$edition->getDateouverturesite();
@@ -1266,14 +1272,7 @@ public function
                              ->andWhere('t.typefichier in (0,1,2,3,4)')
                              ->setParameter('national', TRUE) ;
                 }
-    
-    
-                          
-                             
-                           
-    
-    
-    
+   
     $qb2 =$repositoryFichiersequipes->createQueryBuilder('t')    //pour le prof, le comité : tout  fichier cia ou cn
                              ->LeftJoin('t.equipe', 'e')
                              ->Where('e.id=:id_equipe')
@@ -1321,9 +1320,7 @@ public function
        
       }            
       if($role=='ROLE_PROF'){  // Liste de tous les fichiers 
-          if ($this->session->get('concours')=='national'){
-              $qb1->andWhere('t.national = TRUE');
-                        }
+         
           $liste_fichiers=$qb1->getQuery()->getResult();    
         $autorisations=$qb1
                             ->andWhere('t.typefichier = 6')
@@ -1337,8 +1334,10 @@ public function
                            ->getQuery()->getResult();
                 }
        if ($role=='ROLE_JURYCIA'){         
-           $qb1->andWhere('t.typefichier in (0,1,2,3,5)');
+           $qb1->andWhere('t.typefichier in (0,1,2,5)');
            $liste_fichiers=$qb1->getQuery()->getResult();
+           
+          
         $autorisations=[];
       } 
     if($role=='ROLE_JURY'){
@@ -1673,7 +1672,63 @@ public function
         }
         }
 }
-
+         /**
+         *@IsGranted("ROLE_COMITE")
+         * 
+         * @Route("/fichiers/charge_autorisations", name="fichiers_charge_autorisations")
+         * 
+         */    
+public function charge_autorisation(Request $request){
+    $repositoryFichiersequipes = $this->getDoctrine()
+		->getManager()
+		->getRepository('App:Fichiersequipes'); 
+   $query=$request->query;;
+  
+   for($i=0;$i<8;$i++){
+       
+       try{
+           if($query->get('check-eleve-'.$i)=="on"){
+           $autorisationelevesid[$i]=explode('-',$query->get('eleve-'.$i))[1];}
+              if($query->get('check-prof-'.$i)=="on"){
+       $autorisationprofsid[$i]=explode('-',$query->get('prof-'.$i))[1];
+              }
+       }
+       catch(\Exception $e){
+       
+       }
+    
+   }
+ 
+   $zipFile = new \ZipArchive();
+                $FileName='Autorisations'.date('now');
+                if ($zipFile->open($FileName, ZipArchive::CREATE) === TRUE){
+                    
+                    if (isset($autorisationprofsid)){
+                   foreach( $autorisationprofsid as $id) {
+                   $fichierprof= $repositoryFichiersequipes->findOneById(['id'=>$id]);
+                   $fichierName=$this->getParameter('app.path.fichiers').'/autorisations/'.$fichierprof->getFichier();
+                    $zipFile->addFromString(basename($fichierName),  file_get_contents($fichierName));
+                    }}
+                     if (isset($autorisationelevesid)){
+                    foreach( $autorisationelevesid as $id) {
+                   $fichiereleve= $repositoryFichiersequipes->findOneById(['id'=>$id]);
+                   $fichierName=$this->getParameter('app.path.fichiers').'/autorisations/'.$fichiereleve->getFichier();
+                    $zipFile->addFromString(basename($fichierName),  file_get_contents($fichierName));
+                   }
+                     }
+                    $zipFile->close();
+                    $response = new Response(file_get_contents($FileName));//voir https://stackoverflow.com/questions/20268025/symfony2-create-and-download-zip-file
+                    $disposition = HeaderUtils::makeDisposition(
+                                            HeaderUtils::DISPOSITION_ATTACHMENT,
+                                            $FileName
+                                                  );
+                    $response->headers->set('Content-Type', 'application/zip'); 
+                    $response->headers->set('Content-Disposition', $disposition);
+                    @unlink($FileName);
+                    return $response; 
+                    }
+  
+}
 
 
 
