@@ -72,14 +72,14 @@ class Totalequipes
     /**
      * @var int
      *
-     * @ORM\Column(name="id_prof1", type="smallint", unique=true, nullable=true)
+     * @ORM\Column(name="id_prof1", type="smallint", unique=false, nullable=true)
      */
     private $idprof1;
 
    /**
      * @var int
      *
-     * @ORM\Column(name="id_prof2", type="smallint", unique=true, nullable=true)
+     * @ORM\Column(name="id_prof2", type="smallint", unique=false, nullable=true)
      */
     private $idprof2;
     
@@ -121,7 +121,7 @@ class Totalequipes
      /**
      * @var string
      *
-     * @ORM\Column(name="rne", type="string", unique=true, nullable=true)
+     * @ORM\Column(name="rne", type="string", unique=false, nullable=true)
      */
     private $rne;
 

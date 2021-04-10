@@ -696,12 +696,14 @@ class SecretariatadminController extends AbstractController
                     $jure->setNomJure($nom);
                     $initiales = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
                     $jure->setInitialesJure($initiales);
+                  
                     $user=$repositoryUser->createQueryBuilder('u')
                             ->where('u.nom =:nom')
                             ->setParameter('nom', $nom)
                             ->andWhere('u.prenom =:prenom')
                             ->setParameter('prenom',$prenom)
                             ->getQuery()->getResult();
+              
                      If(count( $user) >1){
                             foreach ($user as $jury){//certains jurés sont parfois aussi organisateur des cia avec un autre compte.on ne sélectionne que le compte de role jury
 

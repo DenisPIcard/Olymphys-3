@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Equipesadmin;
 use App\Entity\Rne;
 use App\Service\Mailer;
 use App\Form\UserType;
 use App\Form\UserRegistrationFormType;
+use App\Form\InscrireEquipeType;
 use App\Form\ResettingType;
 use App\Form\ProfileType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Mailer\MailerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class UtilisateurController extends AbstractController
@@ -263,4 +266,39 @@ class UtilisateurController extends AbstractController
             'user' => $user,
         ));
     }
+    
+     /**
+     * 
+     *
+     *  @Security("is_granted('ROLE_PROF')")
+     * @Route("/Utilisateur/inscrire_equipe", name="inscrire_equipe")
+     */
+    public function inscrire_equipe (Request $request)
+    {
+        if( null!=$this->getUser()){
+           
+         $equipe = new Equipesadmin;   
+         $form1=$this->createForm(InscrireEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne()]);
+        $form1->handleRequest($request); 
+          if ($form1->isSubmitted() && $form1->isValid()){
+          
+          }
+         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView()));
+             
+                  
+        }
+        
+        else{
+            
+            return $this->redirectToRoute('login');
+           
+        }
+        
+        
+        
+    }
+    
+    
+    
+    
 }

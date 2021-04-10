@@ -299,33 +299,7 @@ class SecurityController extends AbstractController
         ));
     }
     
-    /**
-     * 
-     *
-     * 
-     * @Route("Security/inscrire_equipe", name="inscrire_equipe")
-     */
-    public function inscrire_equipe (Request $request)
-    {
-        if( null!=$this->getUser()){
-            
-            
-            
-            
-            
-        }
-        
-        else{
-            
-            return $this->redirectToRoute('login');
-                   
-            
-            
-        }
-        
-        
-        
-    }
+   
     
 
 }

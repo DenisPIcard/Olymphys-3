@@ -9,8 +9,9 @@ use App\Entity\User;
 use App\Entity\Jures;
 use App\Repository\JuresRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Doctrine\Persistence\ObjectManager;
 
 
 class UserFixetures extends Fixture

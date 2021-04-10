@@ -42,13 +42,7 @@ class Equipesadmin
    ////
     private $numero; 
           
-     /**
-     * 
-     * @var int
-     * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
-     * @ORM\JoinColumn(name ="centre_id", referencedColumnName="id", nullable=true, unique=false)
-     */
-    private $centre; 
+ 
     
     /**
      * @var boolean
@@ -128,7 +122,7 @@ class Equipesadmin
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Rne")
-     * @ORM\JoinColumn(name ="rne_id", referencedColumnName = "id",nullable=true, unique=false)
+     * 
      */
     private $rneId;
 
@@ -144,11 +138,19 @@ class Equipesadmin
      */
     private $idProf2; 
     
+  
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
+     */
+    private $centre;
+
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
-     * @ORM\JoinColumn(name ="edition_id",referencedColumnName = "id", nullable=true)
      */
     private $edition;
+
+    
    
    
   
@@ -238,22 +240,7 @@ class Equipesadmin
         return $this->lettre;
     }
       
-    /**
-     * Set centre
-     *
-     * @param  App\Entity\Centrescia $centre
-     *
-     * @return Equipesadmin
-     */
-    public function setCentre(\App\Entity\Centrescia $centre = null)
-    {  
-           
-        //$centre=$centre->getCentre();
-         
-        $this->centre = $centre;
-
-        return $this;
-    }
+    
 
     /**
      * Get fichesecur
@@ -287,16 +274,7 @@ class Equipesadmin
     
     
 
-    /**
-     * Get centre
-     *
-     * @return string
-     */
-    public function getCentre()
-    {    
-        return $this->centre;
-    }
-    
+   
 
 
     /**
@@ -634,17 +612,33 @@ class Equipesadmin
        return $this;
    }
    
-   public function getEdition()
+   
+
+   public function getCentre(): ?centrescia
+   {
+       return $this->centre;
+   }
+
+   public function setCentre(?centrescia $centre): self
+   {
+       $this->centre = $centre;
+
+       return $this;
+   }
+
+   public function getEdition(): ?edition
    {
        return $this->edition;
    }
 
-   public function setEdition($edition)
+   public function setEdition(?edition $edition): self
    {
        $this->edition = $edition;
 
        return $this;
    }
+
+
    
    
 }

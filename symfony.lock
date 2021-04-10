@@ -29,6 +29,9 @@
     "doctrine/dbal": {
         "version": "v2.10.1"
     },
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.0",
         "recipe": {
@@ -126,6 +129,9 @@
     },
     "laminas/laminas-code": {
         "version": "3.4.1"
+    },
+    "laminas/laminas-escaper": {
+        "version": "2.7.0"
     },
     "laminas/laminas-eventmanager": {
         "version": "3.2.1"
@@ -672,9 +678,6 @@
     },
     "zendframework/zend-code": {
         "version": "3.4.1"
-    },
-    "zendframework/zend-escaper": {
-        "version": "2.6.1"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"
