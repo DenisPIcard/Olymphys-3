@@ -150,6 +150,36 @@ class Equipesadmin
      */
     private $edition;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $contribfinance;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $origineprojet;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $recompense;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $partenaire;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $niveau;
+
     
    
    
@@ -177,6 +207,8 @@ class Equipesadmin
      */
     public function setTitreProjet($titreProjet)
     {
+       
+        $this->createdAt= new \DateTime('now');
         $this->titreProjet = $titreProjet;
 
         return $this;
@@ -634,6 +666,78 @@ class Equipesadmin
    public function setEdition(?edition $edition): self
    {
        $this->edition = $edition;
+
+       return $this;
+   }
+
+   public function getContribfinance(): ?string
+   {
+       return $this->contribfinance;
+   }
+
+   public function setContribfinance(?string $contribfinance): self
+   {
+       $this->contribfinance = $contribfinance;
+
+       return $this;
+   }
+
+   public function getOrigineprojet(): ?string
+   {
+       return $this->origineprojet;
+   }
+
+   public function setOrigineprojet(?string $origineprojet): self
+   {
+       $this->origineprojet = $origineprojet;
+
+       return $this;
+   }
+
+   public function getRecompense(): ?string
+   {
+       return $this->recompense;
+   }
+
+   public function setRecompense(?string $recompense): self
+   {
+       $this->recompense = $recompense;
+
+       return $this;
+   }
+
+   public function getPartenaire(): ?string
+   {
+       return $this->partenaire;
+   }
+
+   public function setPartenaire(?string $partenaire): self
+   {
+       $this->partenaire = $partenaire;
+
+       return $this;
+   }
+
+   public function getCreatedAt(): ?\DateTimeInterface
+   {
+       return $this->createdAt;
+   }
+
+   public function setCreatedAt(\DateTimeInterface $createdAt): self
+   {
+       $this->createdAt = $createdAt;
+
+       return $this;
+   }
+
+   public function getNiveau(): ?string
+   {
+       return $this->niveau;
+   }
+
+   public function setNiveau(?string $niveau): self
+   {
+       $this->niveau = $niveau;
 
        return $this;
    }

@@ -2,7 +2,183 @@
 {% block title %}
 Inscrire une équipe
 {% endblock %}
+{% block titre3 %} 
+ Inscrire une équipe
+   
+{% endblock %}
 {% block body %}
-{{ form(form) }}   
     
+
+    <div class="container-fluid">
+        
+       {{ form_start(form) }}
+       <div class="row">
+          
+           <div class="col-12">
+               Titre du projet : 
+            {{ form_row(form.titreProjet,{'label':' *'}) }}
+           </div>
+          </div>
+         <div class="row">
+                    <div class="col">
+                        Le professeur encadrant : 
+                      {{ form_row(form.idProf1,{'label':'*'} )}}
+                    </div>
+                    <div class="col">Le second professeur encadrant : 
+                        {{ form_row(form.idProf2,{'label':' '}) }}
+                   </div>
+        </div>  
+        <div class="row">
+                    <div class="col">
+                        Nom de l'élève 1 : 
+                      {{ form_row(form.nomeleve1,{'label':'*'}) }}
+                    </div>
+                   <div class="col">
+                       Prénom de l'élève 1 : 
+                      {{ form_row(form.prenomeleve1,{'label':'*'}) }}
+                   </div>
+                   <div class="col">
+                       Courriel de l'élève 1
+                      {{ form_row(form.maileleve1,{'label':'*'}) }}
+                   </div>
+                     <div class="col-2">
+                       Genre : 
+                      {{ form_row(form.genreeleve1,{'label':'*'}) }}
+                   </div>
+           </div>     
+       
+       
+        <div class="row">
+                    <div class="col">
+                        Nom de l'élève 2 : 
+                      {{ form_row(form.nomeleve2,{'label':'*'}) }}
+                    </div>
+                   <div class="col">
+                       Prénom de l'élève 2 : 
+                      {{ form_row(form.prenomeleve2,{'label':'*'}) }}
+                   </div>
+                   <div class="col">
+                       Courriel de l'élève 2
+                      {{ form_row(form.maileleve2,{'label':'*'}) }}
+                   </div>
+                    <div class="col-2">
+                       Genre : 
+                      {{ form_row(form.genreeleve2,{'label':'*'}) }}
+                   </div>
+           </div>       
+          <div class="row">
+                <div class="col">
+                    Nom de l'élève 3 :
+                    {{ form_row(form.nomeleve3,{'label':' '}) }}
+                </div>
+                <div class="col">
+                     Prénom de l'élève 3 : 
+                    {{ form_row(form.prenomeleve3,{'label':' '}) }}
+               </div>
+                 <div class="col">
+                      Courriel de l'élève 3
+                   {{ form_row(form.maileleve3,{'label':' '}) }}
+               </div>
+                 <div class="col-2">
+                       Genre : 
+                      {{ form_row(form.genreeleve3,{'label':' '}) }}
+                   </div>
+        </div>     
+          <div class="row">
+                <div class="col">
+                    Nom de l'élève 4 :
+                    {{ form_row(form.nomeleve4,{'label':' '})}}
+                </div>
+                <div class="col">
+                     Prénom de l'élève 4 : 
+                   {{ form_row(form.prenomeleve4,{'label':' '}) }}
+               </div>
+                 <div class="col">
+                      Courriel de l'élève 4 :
+                    {{ form_row(form.maileleve4,{'label':' '}) }}
+                 </div>
+                      <div class="col-2">
+                       Genre : 
+                      {{ form_row(form.genreeleve4,{'label':' '}) }}
+                   </div>
+               </div>
+           
+          <div class="row">
+                <div class="col">
+                    Nom de l'élève 5 :
+                    {{ form_row(form.nomeleve5,{'label':' '} )}}
+                </div>
+                <div class="col">
+                       Prénom de l'élève 5 : 
+                    {{ form_row(form.prenomeleve5,{'label':' '}) }}
+               </div>
+                 <div class="col">
+                      Courriel de l'élève 5 : 
+                    {{ form_row(form.maileleve5,{'label':' '} )}} 
+                 </div>
+                      <div class="col-2">
+                       Genre : 
+                      {{ form_row(form.genreeleve5,{'label':' '}) }}
+                 
+               </div>
+          </div>
+          
+         <div class="row">
+                <div class="col">
+                    Nom de l'élève 6 :
+                    {{ form_row(form.nomeleve6,{'label':' '} )}}
+                </div>
+                <div class="col">
+                       Prénom de l'élève 6 : 
+                    {{ form_row(form.prenomeleve6,{'label':' '}) }}
+               </div>
+                 <div class="col">
+                      Courriel de l'élève 6
+                    {{ form_row(form.maileleve6,{'label':' '}) }}
+                     </div>
+                      <div class="col-2">
+                       Genre : 
+                      {{ form_row(form.genreeleve6,{'label':' '}) }}
+                   </div>
+         </div>
+          
+        <div class="row">
+                <div class="col">
+                    Origine du projet(Club sciences, projet Grand Oral, ou autre ..)
+                    {{ form_row(form.origineprojet,{'label':'*'} )}}
+                </div>
+                <div class="col">
+                    Niveau :
+                    {{ form_row(form.niveau,{'label':'*'}) }}
+               </div>
+                 <div class="col">
+                     Partenaire : 
+                    {{ form_row(form.partenaire,{'label':' '}) }}
+               </div>
+        </div>     
+        <div class="row">
+                <div class="col">
+                    Contribution financière versée à :
+                    {{ form_row(form.contribfinance,{'label':'*'}) }}
+                </div>
+                <div class="col">
+                    Récompense versée à : 
+                    {{ form_row(form.recompense,{'label':' '}) }}
+               </div>
+               
+        </div>     
+         <div class="row">
+                <div class="col">
+                    {{ form_row(form.save,{'label':'Enregistrer '} )}}
+                </div>
+          </div>
+        
+        
+       
+       {{ form_end(form) }}
+    </div>
+    
+    
+    
+  
 {% endblock %}    

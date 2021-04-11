@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Equipesadmin;
+use App\Entity\Elevesinter;
 use App\Entity\Rne;
 use App\Service\Mailer;
 use App\Form\UserType;
@@ -24,10 +25,16 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Mailer\MailerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 
 class UtilisateurController extends AbstractController
-{
+{    private $session;
+   
+    public function __construct(SessionInterface $session)
+        {
+            $this->session = $session;
+        }
     
     /**
      * @Route("/register", name="register")
@@ -274,13 +281,50 @@ class UtilisateurController extends AbstractController
      * @Route("/Utilisateur/inscrire_equipe", name="inscrire_equipe")
      */
     public function inscrire_equipe (Request $request)
-    {
+    {    
+        $em=$this->getDoctrine()->getManager();
+      
         if( null!=$this->getUser()){
            
-         $equipe = new Equipesadmin;   
+         $equipe = new Equipesadmin();   
          $form1=$this->createForm(InscrireEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne()]);
         $form1->handleRequest($request); 
           if ($form1->isSubmitted() && $form1->isValid()){
+           
+              $repositoryEleves=$em->getRepository('App:Elevesinter');
+              $repositoryRne=$em->getRepository('App:Rne');
+              $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
+              $idprof1=$form1->get('idProf1')->getData()->getId();
+              $idprof2=$form1->get('idProf2')->getData()->getId();
+              $equipe->setIdProf1($idprof1);
+               $equipe->setIdProf2($idprof2);
+               $equipe->setPrenomprof1($form1->get('idProf1')->getData()->getPrenom());
+               $equipe->setNomprof1($form1->get('idProf1')->getData()->getNom());
+                $equipe->setPrenomprof2($form1->get('idProf2')->getData()->getPrenom());
+               $equipe->setNomprof2($form1->get('idProf2')->getData()->getNom());
+               $equipe->setEdition($this->session->get('edition'));
+               $equipe->setRne($this->getUser()->getRne());
+               $equipe->setRneid($rne_objet);
+               $equipe->setDenominationLycee($rne_objet->getDenominationPrincipale());
+                $equipe->setDenominationLycee($rne_objet->getApellationOficielle());
+              $em->persist($equipe);
+              $em->flush();
+               for($i=1;$i<7;$i++){
+                  if ($form1->get('prenomeleve'.$i)!=null){
+                      $eleve[$i]=new Elevesinter();
+                      $eleve[$i]->setPrenom($form1->get('prenomeleve'.$i)->getData());
+                      $eleve[$i]->setNom($form1->get('nomeleve'.$i)->getData());
+                      $eleve[$i]->setCourriel($form1->get('maileleve'.$i)->getData());
+                     $eleve[$i]->setGenre($form1->get('genreeleve'.$i)->getData());
+                      $eleve[$i]->setClasse($form1->get('niveau')->getData());
+                      $eleve[$i]->setEquipe($equipe);
+                     $em->persist($eleve[$i]);
+                      $em->flush();
+                  }
+               }
+              dd($eleve);
+              return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView()));
+              
           
           }
          return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView()));

@@ -30,7 +30,7 @@ class InscrireEquipeType extends AbstractType
       
         $builder ->add('titreProjet', TextType::class, [
                                 'label' => 'Titre du projet',
-                                'mapped'=>false
+                                'mapped'=>true
               ])
                 
                 
@@ -44,6 +44,7 @@ class InscrireEquipeType extends AbstractType
                                                                 ->addOrderBy('u.nom', 'ASC');
                                                                 
                                                         ;},
+                            'choice_value' => 'getId'                 ,                 
                             'choice_label' =>'getPrenomNom',
                              'mapped'=>false
                              ] )
@@ -55,22 +56,75 @@ class InscrireEquipeType extends AbstractType
                                                                 ->setParameter('rne',$rne)
                                                                 ->addOrderBy('u.nom', 'ASC');
                             } ,
+                           'choice_value' =>'getId',
                             'choice_label' =>'getPrenomNom',
                              'mapped'=>false
                              ] );
-        for($i=1; $i<7;$i++) {                                                       
+        for($i=1; $i<7;$i++) {        
+          if($i<=1){   
          $builder->add('prenomeleve'.$i, TextType::class,[
                               'mapped' => false,
                              ]) 
-         ->add('nomeleve'.$i, TextType::class,[
+                        ->add('nomeleve'.$i, TextType::class,[
+                                             'mapped' => false,
+                                            ])
+
+                        ->add('maileleve'.$i, EmailType::class,[
+                                             'mapped' =>false,
+                                            ])
+                        ->add('genreeleve'.$i, ChoiceType::class,[
+                                             'mapped' =>false,
+                                           'choices'=>['F'=>'F',
+                                                              'M'=>'M']]);    
+                   }
+        if($i>1){$builder->add('prenomeleve'.$i, TextType::class,[
+                              'mapped' =>false,
+                              'required'=>false,
+                             ]) 
+                                  ->add('nomeleve'.$i, TextType::class,[
                               'mapped' => false,
-                             ])                                                           
-         ->add('maileleve'.$i, EmailType::class,[
+                               'required'=>false,
+                             ])
+                               ->add('maileleve'.$i, EmailType::class,[
                               'mapped' => false,
-                             ]);    
-        }                                                      
+                              'required'=>false,
+                             ])  ->add('genreeleve'.$i, ChoiceType::class,[
+                              'mapped' =>false,
+                            'choices'=>['F'=>'F',
+                                               'M'=>'M']]);            
+                         }
+             }                                                      
                                                             
-          $builder->add('save',      SubmitType::class);
+          $builder->add('partenaire',TextType::class,[
+                              'mapped' =>true,
+                              'required'=>false,
+                             ])          
+                       ->add('contribfinance',ChoiceType::class,[
+                              'mapped' =>true,
+                            'choices'=>['Prof1'=>1,
+                                               'Prof2'=>2,
+                                               'Gestionnaire du lycée'=>3,
+                                               'Autre'=>4
+                              ],
+                             
+                             ])      
+                      ->add('recompense',TextType::class,[
+                              'mapped' => true,
+                              'required'=>false,
+                             ])
+                      ->add('origineprojet',TextType::class,[
+                              'mapped' => false,
+                            
+                             ])  
+                  ->add('niveau',ChoiceType::class,[
+                              'choices'=>['seconde'=>'2nde',
+                                                 'première'=>'1ere',
+                                                 'terminale'=>'Term',
+                              ],
+                              'mapped' => true,
+                             
+                             ])  
+                      ->add('save',      SubmitType::class);
        
             
     }
@@ -80,7 +134,7 @@ class InscrireEquipeType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => null,'rne'=>null]);
+        $resolver->setDefaults(['data_class' => Equipesadmin::class,'rne'=>null]);
        
     }
 }
