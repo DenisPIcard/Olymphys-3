@@ -70,10 +70,7 @@ class Edition
         */    
         protected $concourscn;
 
-        /**
-         * @ORM\Column(type="boolean", nullable=true)
-         */
-        private $encours;
+       
         
   
        

@@ -30,7 +30,7 @@ class CoreController extends AbstractController
      $user=$this->getUser();
      
    // dump($user);
-     if(($user==null) or  ($user->getRoles()[0]!='ROLE_SUPER_ADMIN')){
+  /*   if(($user==null) or  ($user->getRoles()[0]!='ROLE_SUPER_ADMIN')){
    $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
      
@@ -42,8 +42,8 @@ class CoreController extends AbstractController
                           ->where('e.encours = TRUE')
                           ->getQuery()->getSingleResult();
         
-     }
-      
+     }*/
+      $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
      $this->session->set('edition', $edition); 
     if (null != $user)
     {    
