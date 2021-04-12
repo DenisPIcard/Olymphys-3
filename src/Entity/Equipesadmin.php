@@ -126,17 +126,7 @@ class Equipesadmin
      */
     private $rneId;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="id")
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $idProf1;
-
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="id")
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $idProf2; 
+   
     
   
 
@@ -146,7 +136,7 @@ class Equipesadmin
     private $centre;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Edition"))
      */
     private $edition;
 
@@ -175,17 +165,25 @@ class Equipesadmin
      */
     private $createdAt;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $niveau;
-
-    
-   
-   
   
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $idProf1;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $idProf2;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $description;
+
    
-       
+
     
    
     /**
@@ -620,29 +618,9 @@ class Equipesadmin
        return $this->getPrenomProf2().' '.$this->getNomProf2();
    }
 
-   public function getIdProf1()
-   {
-       return $this->idProf1;
-   }
 
-   public function setIdProf1(int $idProf1): self
-   {
-       $this->idProf1 = $idProf1;
 
-       return $this;
-   }
-
-   public function getIdProf2()
-   {
-       return $this->idProf2;
-   }
-
-   public function setIdProf2(int $idProf2): self
-   {
-       $this->idProf2 = $idProf2;
-
-       return $this;
-   }
+  
    
    
 
@@ -663,7 +641,7 @@ class Equipesadmin
        return $this->edition;
    }
 
-   public function setEdition(?edition $edition): self
+   public function setEdition(?edition $edition)
    {
        $this->edition = $edition;
 
@@ -730,14 +708,39 @@ class Equipesadmin
        return $this;
    }
 
-   public function getNiveau(): ?string
+
+   public function getIdProf1(): ?user
    {
-       return $this->niveau;
+       return $this->idProf1;
    }
 
-   public function setNiveau(?string $niveau): self
+   public function setIdProf1(?user $idProf1): self
    {
-       $this->niveau = $niveau;
+       $this->idProf1 = $idProf1;
+
+       return $this;
+   }
+
+   public function getIdProf2(): ?user
+   {
+       return $this->idProf2;
+   }
+
+   public function setIdProf2(?user $idProf2): self
+   {
+       $this->idProf2 = $idProf2;
+
+       return $this;
+   }
+
+   public function getDescription(): ?string
+   {
+       return $this->description;
+   }
+
+   public function setDescription(?string $description): self
+   {
+       $this->description = $description;
 
        return $this;
    }

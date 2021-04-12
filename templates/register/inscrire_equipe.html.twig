@@ -9,167 +9,191 @@ Inscrire une équipe
 {% block body %}
     
 
-    <div class="container-fluid">
-        
+    <div class="container-fluid ">
+        <div class="formulaire">
        {{ form_start(form) }}
        <div class="row">
           
-           <div class="col-12">
+           <div class="col-12 px-md-4">
                Titre du projet : 
-            {{ form_row(form.titreProjet,{'label':' *'}) }}
+            {{ form_widget(form.titreProjet,{'label':' *'}) }}
            </div>
           </div>
          <div class="row">
-                    <div class="col">
+                    <div class="col px-md-4" >
                         Le professeur encadrant : 
-                      {{ form_row(form.idProf1,{'label':'*'} )}}
+                      {{ form_widget(form.idProf1,{'label':'*'} )}}
                     </div>
-                    <div class="col">Le second professeur encadrant : 
-                        {{ form_row(form.idProf2,{'label':' '}) }}
+                    <div class="col px-md-4">Le second professeur encadrant : 
+                        {{ form_widget(form.idProf2,{'label':' '}) }}
                    </div>
         </div>  
         <div class="row">
-                    <div class="col">
+                    <div class="col px-md-4">
                         Nom de l'élève 1 : 
-                      {{ form_row(form.nomeleve1,{'label':'*'}) }}
+                      {{ form_widget(form.nomeleve1,{'label':'*'}) }}
                     </div>
                    <div class="col">
                        Prénom de l'élève 1 : 
-                      {{ form_row(form.prenomeleve1,{'label':'*'}) }}
+                      {{ form_widget(form.prenomeleve1,{'label':'*'}) }}
                    </div>
                    <div class="col">
                        Courriel de l'élève 1
-                      {{ form_row(form.maileleve1,{'label':'*'}) }}
+                      {{ form_widget(form.maileleve1,{'label':'*'}) }}
                    </div>
-                     <div class="col-2">
+                     <div class="col-1">
                        Genre : 
-                      {{ form_row(form.genreeleve1,{'label':'*'}) }}
+                      {{ form_widget(form.genreeleve1,{'label':'*'}) }}
+                   </div>
+                   <div class="col-1 px-md-4">
+                       Classe : 
+                      {{ form_widget(form.classeeleve1,{'label':'*'}) }}
                    </div>
            </div>     
        
        
         <div class="row">
-                    <div class="col">
+                    <div class="col px-md-4">
                         Nom de l'élève 2 : 
-                      {{ form_row(form.nomeleve2,{'label':'*'}) }}
+                      {{ form_widget(form.nomeleve2,{'label':'*'}) }}
                     </div>
-                   <div class="col">
+                   <div class="col ">
                        Prénom de l'élève 2 : 
-                      {{ form_row(form.prenomeleve2,{'label':'*'}) }}
+                      {{ form_widget(form.prenomeleve2,{'label':'*'}) }}
                    </div>
                    <div class="col">
                        Courriel de l'élève 2
-                      {{ form_row(form.maileleve2,{'label':'*'}) }}
+                      {{ form_widget(form.maileleve2,{'label':'*'}) }}
                    </div>
-                    <div class="col-2">
+                    <div class="col-1">
                        Genre : 
-                      {{ form_row(form.genreeleve2,{'label':'*'}) }}
+                      {{ form_widget(form.genreeleve2,{'label':'*'}) }}
+                   </div>
+                   <div class="col-1 px-md-4">
+                       Classe : 
+                      {{ form_widget(form.classeeleve2,{'label':' '}) }}
                    </div>
            </div>       
           <div class="row">
-                <div class="col">
+                <div class="col px-md-4">
                     Nom de l'élève 3 :
-                    {{ form_row(form.nomeleve3,{'label':' '}) }}
+                    {{ form_widget(form.nomeleve3,{'label':' '}) }}
                 </div>
                 <div class="col">
                      Prénom de l'élève 3 : 
-                    {{ form_row(form.prenomeleve3,{'label':' '}) }}
+                    {{ form_widget(form.prenomeleve3,{'label':' '}) }}
                </div>
-                 <div class="col">
+                 <div class="col ">
                       Courriel de l'élève 3
-                   {{ form_row(form.maileleve3,{'label':' '}) }}
+                   {{ form_widget(form.maileleve3,{'label':' '}) }}
                </div>
-                 <div class="col-2">
+                 <div class="col-1">
                        Genre : 
-                      {{ form_row(form.genreeleve3,{'label':' '}) }}
+                      {{ form_widget(form.genreeleve3,{'label':' '}) }}
+                   </div>
+                   <div class="col-1 px-md-4">
+                       Classe : 
+                      {{ form_widget(form.classeeleve3,{'label':' '}) }}
                    </div>
         </div>     
           <div class="row">
-                <div class="col">
+                <div class="col px-md-4">
                     Nom de l'élève 4 :
-                    {{ form_row(form.nomeleve4,{'label':' '})}}
+                    {{ form_widget(form.nomeleve4,{'label':' '})}}
                 </div>
                 <div class="col">
                      Prénom de l'élève 4 : 
-                   {{ form_row(form.prenomeleve4,{'label':' '}) }}
+                   {{ form_widget(form.prenomeleve4,{'label':' '}) }}
                </div>
                  <div class="col">
                       Courriel de l'élève 4 :
-                    {{ form_row(form.maileleve4,{'label':' '}) }}
+                    {{ form_widget(form.maileleve4,{'label':' '}) }}
                  </div>
-                      <div class="col-2">
+                      <div class="col-1">
                        Genre : 
-                      {{ form_row(form.genreeleve4,{'label':' '}) }}
+                      {{ form_widget(form.genreeleve4,{'label':' '}) }}
+                   </div>
+                   <div class="col-1 px-md-4">
+                       Classe : 
+                      {{ form_widget(form.classeeleve4,{'label':' '}) }}
                    </div>
                </div>
            
           <div class="row">
-                <div class="col">
+                <div class="col px-md-4">
                     Nom de l'élève 5 :
-                    {{ form_row(form.nomeleve5,{'label':' '} )}}
+                    {{ form_widget(form.nomeleve5,{'label':' '} )}}
                 </div>
                 <div class="col">
                        Prénom de l'élève 5 : 
-                    {{ form_row(form.prenomeleve5,{'label':' '}) }}
+                    {{ form_widget(form.prenomeleve5,{'label':' '}) }}
                </div>
                  <div class="col">
                       Courriel de l'élève 5 : 
-                    {{ form_row(form.maileleve5,{'label':' '} )}} 
+                    {{ form_widget(form.maileleve5,{'label':' '} )}} 
                  </div>
-                      <div class="col-2">
+                      <div class="col-1">
                        Genre : 
-                      {{ form_row(form.genreeleve5,{'label':' '}) }}
+                      {{ form_widget(form.genreeleve5,{'label':' '}) }}
                  
                </div>
+                      <div class="col-1 px-md-4">
+                       Classe : 
+                      {{ form_widget(form.classeeleve5,{'label':' '}) }}
+                   </div>
           </div>
           
          <div class="row">
-                <div class="col">
+                <div class="col px-md-4">
                     Nom de l'élève 6 :
-                    {{ form_row(form.nomeleve6,{'label':' '} )}}
+                    {{ form_widget(form.nomeleve6,{'label':' '} )}}
                 </div>
-                <div class="col">
+                <div class="col ">
                        Prénom de l'élève 6 : 
-                    {{ form_row(form.prenomeleve6,{'label':' '}) }}
+                    {{ form_widget(form.prenomeleve6,{'label':' '}) }}
                </div>
                  <div class="col">
                       Courriel de l'élève 6
-                    {{ form_row(form.maileleve6,{'label':' '}) }}
+                    {{ form_widget(form.maileleve6,{'label':' '}) }}
                      </div>
-                      <div class="col-2">
+                      <div class="col-1">
                        Genre : 
-                      {{ form_row(form.genreeleve6,{'label':' '}) }}
+                      {{ form_widget(form.genreeleve6,{'label':' '}) }}
+                   </div>
+                   <div class="col-1 px-md-4">
+                       Classe : 
+                      {{ form_widget(form.classeeleve6,{'label':' '}) }}
                    </div>
          </div>
           
         <div class="row">
-                <div class="col">
+                <div class="col px-md-4">
                     Origine du projet(Club sciences, projet Grand Oral, ou autre ..)
-                    {{ form_row(form.origineprojet,{'label':'*'} )}}
+                    {{ form_widget(form.origineprojet,{'label':'*'} )}}
                 </div>
-                <div class="col">
-                    Niveau :
-                    {{ form_row(form.niveau,{'label':'*'}) }}
+                <div class="col ">
+                    Courte description :
+                    {{ form_widget(form.description,{'label':'*'}) }}
                </div>
-                 <div class="col">
+                 <div class="col px-md-4">
                      Partenaire : 
-                    {{ form_row(form.partenaire,{'label':' '}) }}
+                    {{ form_widget(form.partenaire,{'label':' '}) }}
                </div>
         </div>     
         <div class="row">
-                <div class="col">
+                <div class="col px-md-4">
                     Contribution financière versée à :
-                    {{ form_row(form.contribfinance,{'label':'*'}) }}
+                    {{ form_widget(form.contribfinance,{'label':'*'}) }}
                 </div>
-                <div class="col">
+                <div class="col px-md-4">
                     Récompense versée à : 
-                    {{ form_row(form.recompense,{'label':' '}) }}
+                    {{ form_widget(form.recompense,{'label':' '}) }}
                </div>
                
         </div>     
          <div class="row">
-                <div class="col">
-                    {{ form_row(form.save,{'label':'Enregistrer '} )}}
+                <div class="col px-md-4">
+                    {{ form_widget(form.save,{'label':'Enregistrer '} )}}
                 </div>
           </div>
         
@@ -178,7 +202,7 @@ Inscrire une équipe
        {{ form_end(form) }}
     </div>
     
-    
+    </div>
     
   
 {% endblock %}    

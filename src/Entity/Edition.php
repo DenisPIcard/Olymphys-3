@@ -74,7 +74,8 @@ class Edition
          * @ORM\Column(type="boolean", nullable=true)
          */
         private $encours;
-   
+        
+  
        
 
     public function getId(): ?int

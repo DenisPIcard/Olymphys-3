@@ -46,7 +46,8 @@ class InscrireEquipeType extends AbstractType
                                                         ;},
                             'choice_value' => 'getId'                 ,                 
                             'choice_label' =>'getPrenomNom',
-                             'mapped'=>false
+                             'mapped'=>true,
+                             'required'=>true,
                              ] )
           ->add('idProf2', EntityType::class, [
                             'class'=>'App:User',
@@ -57,19 +58,28 @@ class InscrireEquipeType extends AbstractType
                                                                 ->addOrderBy('u.nom', 'ASC');
                             } ,
                            'choice_value' =>'getId',
-                            'choice_label' =>'getPrenomNom',
-                             'mapped'=>false
+                           'choice_label' =>'getPrenomNom',
+                           'mapped'=>true,
+                           'required'=>true,
                              ] );
         for($i=1; $i<7;$i++) {        
           if($i<=1){   
          $builder->add('prenomeleve'.$i, TextType::class,[
                               'mapped' => false,
+                              'required'=>true,
                              ]) 
                         ->add('nomeleve'.$i, TextType::class,[
                                              'mapped' => false,
                                             ])
 
                         ->add('maileleve'.$i, EmailType::class,[
+                                             'mapped' =>false,
+                                            ])
+                        ->add('classeeleve'.$i, ChoiceType::class,[
+                              'choices'=>['seconde'=>'2nde',
+                                                 'première'=>'1ere',
+                                                 'terminale'=>'Term',
+                                           ],
                                              'mapped' =>false,
                                             ])
                         ->add('genreeleve'.$i, ChoiceType::class,[
@@ -88,8 +98,18 @@ class InscrireEquipeType extends AbstractType
                                ->add('maileleve'.$i, EmailType::class,[
                               'mapped' => false,
                               'required'=>false,
-                             ])  ->add('genreeleve'.$i, ChoiceType::class,[
+                             ]) 
+                               ->add('classeeleve'.$i, ChoiceType::class,[
+                              'choices'=>['2de'=>'2de',
+                                                 '1ère'=>'1ère',
+                                                 'Term'=>'Term',
+                              ],
+                                             'mapped' =>false,
+                                              'required'=>false,
+                                            ])
+                                ->add('genreeleve'.$i, ChoiceType::class,[
                               'mapped' =>false,
+                              'required'=>false,
                             'choices'=>['F'=>'F',
                                                'M'=>'M']]);            
                          }
@@ -101,6 +121,7 @@ class InscrireEquipeType extends AbstractType
                              ])          
                        ->add('contribfinance',ChoiceType::class,[
                               'mapped' =>true,
+                               'required'=>true,
                             'choices'=>['Prof1'=>1,
                                                'Prof2'=>2,
                                                'Gestionnaire du lycée'=>3,
@@ -113,14 +134,12 @@ class InscrireEquipeType extends AbstractType
                               'required'=>false,
                              ])
                       ->add('origineprojet',TextType::class,[
-                              'mapped' => false,
-                            
+                              'mapped' =>true,
+                              'required'=>true,
                              ])  
-                  ->add('niveau',ChoiceType::class,[
-                              'choices'=>['seconde'=>'2nde',
-                                                 'première'=>'1ere',
-                                                 'terminale'=>'Term',
-                              ],
+                  ->add('description',TextType::class,[
+                            
+                               'required'=>true,
                               'mapped' => true,
                              
                              ])  
