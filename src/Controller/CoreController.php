@@ -28,10 +28,10 @@ class CoreController extends AbstractController
   {  
      
      $user=$this->getUser();
-     
+      $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
    // dump($user);
   /*   if(($user==null) or  ($user->getRoles()[0]!='ROLE_SUPER_ADMIN')){
-   $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+  
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
      
      

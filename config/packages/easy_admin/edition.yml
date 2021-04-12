@@ -6,10 +6,10 @@ easy_admin :
             list:
                 title : 'Réglage du site'
                 max_results: 30
-                fields: ['ed', 'ville', 'date' ,'lieu' , 'dateouverturesite', 'datelimcia', 'datelimnat', 'concourscia','concourscn'']
+                fields: ['ed', 'ville', 'date' ,'lieu' , 'dateouverturesite', 'datelimcia', 'datelimnat', 'concourscia','concourscn']
         
             edit : 
-                fields :  ['ed', 'ville', 'date' , 'lieu', 'dateouverturesite', 'datelimcia', 'datelimnat', 'concourscia','concourscn'']
+                fields :  ['ed', 'ville', 'date' , 'lieu', 'dateouverturesite', 'datelimcia', 'datelimnat', 'concourscia','concourscn']
                 
             new : 
                 fields :  ['ed', 'ville', 'date' , 'lieu', 'dateouverturesite', 'datelimcia', 'datelimnat', 'concourscia','concourscn']

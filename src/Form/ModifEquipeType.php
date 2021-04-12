@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -67,7 +68,8 @@ class ModifEquipeType extends AbstractType
                            'mapped'=>true,
                            'required'=>false,
                              ] );
-        for($i=1; $i<=$nbEleves;$i++) {        
+                            $i=1;
+        foreach($eleves as $eleve) {        
           
          $builder->add('prenomeleve'.$i, TextType::class,[
                                             'mapped' => false,
@@ -105,7 +107,12 @@ class ModifEquipeType extends AbstractType
                                                'placeholder'=>$eleves[$i-1]->getGenre(),
                                              'required'=>$required[$i-1],
                                             'choices'=>['F'=>'F',
-                                                              'M'=>'M']]);    
+                                                              'M'=>'M']])
+                       ->add('id'.$i,HiddenType::class,[
+                             'data'=> $eleve->getId(),
+                              'mapped'=>false
+                       ]);    
+         $i++;
                    }
                    
          for($i=$nbEleves+1; $i<7;$i++) {                
@@ -170,7 +177,7 @@ class ModifEquipeType extends AbstractType
                              ])  
                     ->add('save',      SubmitType::class)
                     ->add('inscrite',     CheckboxType::class,[
-                             'data'=>'checked',
+                             'value'=>1,
                              'required'=>true,
                              'mapped' => true,
                         

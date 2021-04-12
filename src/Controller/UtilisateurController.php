@@ -328,16 +328,16 @@ class UtilisateurController extends AbstractController
                                                                             ->andWhere('e.edition = :edition')
                                                                             ->setParameter('edition', $edition)
                                                                             ->getQuery()->getSingleResult();
-         
-              if($lastEquipe['max_numero']==null){
+              
+              if(($lastEquipe['max_numero']==null) and ($modif==false)){
                   $numero=1;
-                
+                $equipe->setNumero($numero);
               }
-              else{
+              elseif( $modif==false){
                   $numero= intval($lastEquipe['max_numero'])+1;
-                  
+                  $equipe->setNumero($numero);
               }
-             
+              
              $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
              $equipe->setPrenomprof1($form1->get('idProf1')->getData()->getPrenom());
              $equipe->setNomprof1($form1->get('idProf1')->getData()->getNom());
@@ -350,13 +350,19 @@ class UtilisateurController extends AbstractController
              $equipe->setNomLycee($rne_objet->getAppellationOfficielle());
              $equipe->setLyceeAcademie($rne_objet->getAcademie());
              $equipe->setLyceeLocalite($rne_objet->getAcheminement()); 
-             $equipe->setNumero($numero);
+             
              $em->persist($equipe);
              $em->flush();
              
                for($i=1;$i<7;$i++){
                   if ($form1->get('prenomeleve'.$i)->getData()!=null){
-                      $eleve[$i]=new Elevesinter();
+                      if ($form1->get('id'.$i)->getData()==null){
+                        $eleve[$i]=new Elevesinter();  
+                     }
+                      else{
+                      $eleve[$i]=$repositoryEleves->find(['id'=>$form1->get('id'.$i)->getData()]);
+                       }
+                      
                       $eleve[$i]->setPrenom($form1->get('prenomeleve'.$i)->getData());
                       $eleve[$i]->setNom($form1->get('nomeleve'.$i)->getData());
                       $eleve[$i]->setCourriel($form1->get('maileleve'.$i)->getData());
