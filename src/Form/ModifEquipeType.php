@@ -96,15 +96,15 @@ class ModifEquipeType extends AbstractType
                                                  'terminale'=>'Term',
                                                  ],
                                              'mapped' =>false,
-                                              'empty_data'=>$eleves[$i-1]->getClasse(),
+                                              'data'=>$eleves[$i-1]->getClasse(),
                                               'placeholder'=>$eleves[$i-1]->getClasse(),
                                               'required'=>$required[$i-1],
                             
                                                ])
                         ->add('genreeleve'.$i, ChoiceType::class,[
                                              'mapped' =>false,
-                                             'empty_data'=>$eleves[$i-1]->getGenre(),
-                                               'placeholder'=>$eleves[$i-1]->getGenre(),
+                                             'data'=>$eleves[$i-1]->getGenre(),
+                                              'placeholder'=>$eleves[$i-1]->getGenre(),
                                              'required'=>$required[$i-1],
                                             'choices'=>['F'=>'F',
                                                               'M'=>'M']])
@@ -180,7 +180,7 @@ class ModifEquipeType extends AbstractType
                              'value'=>1,
                              'required'=>true,
                              'mapped' => true,
-                        
+                             'disabled'=>true
                         
                     ]);
           

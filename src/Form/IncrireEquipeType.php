@@ -79,9 +79,9 @@ class InscrireEquipeType extends AbstractType
                                                'required'=>true,
                                             ])
                         ->add('classeeleve'.$i, ChoiceType::class,[
-                              'choices'=>['seconde'=>'2nde',
-                                                 'première'=>'1ere',
-                                                 'terminale'=>'Term',
+                              'choices'=>['2nde'=>'2nde',
+                                                 '1ère'=>'1ere',
+                                                 'Term'=>'Term',
                                            ],
                                              'mapped' =>false,
                                                'required'=>true,

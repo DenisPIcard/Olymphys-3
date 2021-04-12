@@ -356,13 +356,14 @@ class UtilisateurController extends AbstractController
              
                for($i=1;$i<7;$i++){
                   if ($form1->get('prenomeleve'.$i)->getData()!=null){
-                      if ($form1->get('id'.$i)->getData()==null){
-                        $eleve[$i]=new Elevesinter();  
+                     try {
+                         
+                        $id= $form1->get('id'.$i)->getData();
+                        $eleve[$i]=$repositoryEleves->find(['id'=>$form1->get('id'.$i)->getData()]);
+                     } catch (\Exception $ex) {
+                              $eleve[$i]=new Elevesinter(); 
                      }
-                      else{
-                      $eleve[$i]=$repositoryEleves->find(['id'=>$form1->get('id'.$i)->getData()]);
-                       }
-                      
+                     
                       $eleve[$i]->setPrenom($form1->get('prenomeleve'.$i)->getData());
                       $eleve[$i]->setNom($form1->get('nomeleve'.$i)->getData());
                       $eleve[$i]->setCourriel($form1->get('maileleve'.$i)->getData());

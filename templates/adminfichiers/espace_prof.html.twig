@@ -69,11 +69,11 @@
                 <div class="row">
                     <div class="col">
                        
-                        <a href="{{ path('inscrire_equipe', {'idequipe': equipe.id} )  }}" type="button" class="btn btn-warning">Modifier </a>
+                        <a href="{{ path('inscrire_equipe', {'idequipe': equipe.id} )  }}" type="button" class="btn btn-primary">Modifier </a>
                     </div>
                      <div class="col">
                       
-                        <button id="{{ equipe.id }}" data-toggle="modal" data-target="#modaldesinscrire"  data-idequipe="{{ equipe .id }}" title="Desinscrire" type="button" class="btn btn-warning"  type="button" class="btn btn-warning">
+                         <button id="{{ equipe.id }}" data-toggle="modal" data-target="#modaldesinscrire"  data-idequipe="{{ equipe .id }}" title="Desinscrire" type="button" class="btn btn-danger"  >Désincrire l'équipe</button>
                     </div>
                 </div>
                 {% endif %}
