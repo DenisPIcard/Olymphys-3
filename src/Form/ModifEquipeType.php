@@ -20,14 +20,18 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class InscrireEquipeType extends AbstractType
+class ModifEquipeType extends AbstractType
 {  
         
     public function buildForm(FormBuilderInterface $builder, array $options)
     {    
        
       $rne= $options['rne']   ;          
-    
+      $eleves= $options['eleves']   ;
+      $nbEleves=count($eleves);
+      $required=[true,true,false,false,false,false];
+      
+      
         $builder ->add('titreProjet', TextType::class, [
                                 'label' => 'Titre du projet',
                                 'mapped'=>true
@@ -35,7 +39,7 @@ class InscrireEquipeType extends AbstractType
                 
                 
                 
-          ->add('idProf1', EntityType::class, [
+                      ->add('idProf1', EntityType::class, [
                             'class'=>'App:User',
                             'query_builder'=>function (EntityRepository $er) use($rne) {
                                                         return $er->createQueryBuilder('u')
@@ -63,46 +67,61 @@ class InscrireEquipeType extends AbstractType
                            'mapped'=>true,
                            'required'=>false,
                              ] );
-        for($i=1; $i<7;$i++) {        
-          if($i<=2){   
+        for($i=1; $i<=$nbEleves;$i++) {        
+          
          $builder->add('prenomeleve'.$i, TextType::class,[
-                              'mapped' => false,
-                              'required'=>true,
+                                            'mapped' => false,
+                                            'empty_data'=>$eleves[$i-1]->getPrenom(),
+                                               'data'=>$eleves[$i-1]->getPrenom(),
+                                            'required'=>$required[$i-1],
                              ]) 
                         ->add('nomeleve'.$i, TextType::class,[
                                              'mapped' => false,
-                                            'required'=>true,
+                                             'empty_data'=>$eleves[$i-1]->getNom(),
+                                             'data'=>$eleves[$i-1]->getNom(),
+                                             'required'=>$required[$i-1],
                                             ])
 
                         ->add('maileleve'.$i, EmailType::class,[
                                              'mapped' =>false,
-                                               'required'=>true,
+                                             'empty_data'=>$eleves[$i-1]->getCourriel(),
+                                              'data'=>$eleves[$i-1]->getCourriel(),
+                                           'required'=>$required[$i-1],
                                             ])
                         ->add('classeeleve'.$i, ChoiceType::class,[
-                              'choices'=>['seconde'=>'2nde',
+                                            'choices'=>['seconde'=>'2nde',
                                                  'première'=>'1ere',
                                                  'terminale'=>'Term',
-                                           ],
+                                                 ],
                                              'mapped' =>false,
-                                               'required'=>true,
-                                            ])
+                                              'empty_data'=>$eleves[$i-1]->getClasse(),
+                                              'placeholder'=>$eleves[$i-1]->getClasse(),
+                                              'required'=>$required[$i-1],
+                            
+                                               ])
                         ->add('genreeleve'.$i, ChoiceType::class,[
                                              'mapped' =>false,
-                                             'required'=>true,
-                                           'choices'=>['F'=>'F',
+                                             'empty_data'=>$eleves[$i-1]->getGenre(),
+                                               'placeholder'=>$eleves[$i-1]->getGenre(),
+                                             'required'=>$required[$i-1],
+                                            'choices'=>['F'=>'F',
                                                               'M'=>'M']]);    
                    }
-        if($i>2){$builder->add('prenomeleve'.$i, TextType::class,[
+                   
+         for($i=$nbEleves+1; $i<7;$i++) {                
+                   
+                   
+                 $builder->add('prenomeleve'.$i, TextType::class,[
                               'mapped' =>false,
-                              'required'=>false,
+                              'required'=>$required[$i-1],
                              ]) 
                                   ->add('nomeleve'.$i, TextType::class,[
                               'mapped' => false,
-                               'required'=>false,
+                              'required'=>$required[$i-1],
                              ])
                                ->add('maileleve'.$i, EmailType::class,[
                               'mapped' => false,
-                              'required'=>false,
+                               'required'=>$required[$i-1],
                              ]) 
                                ->add('classeeleve'.$i, ChoiceType::class,[
                               'choices'=>['2de'=>'2de',
@@ -110,15 +129,15 @@ class InscrireEquipeType extends AbstractType
                                                  'Term'=>'Term',
                               ],
                                              'mapped' =>false,
-                                              'required'=>false,
+                                              'required'=>$required[$i-1],
                                             ])
                                 ->add('genreeleve'.$i, ChoiceType::class,[
                               'mapped' =>false,
-                              'required'=>false,
+                              'required'=>$required[$i-1],
                             'choices'=>['F'=>'F',
                                                'M'=>'M']]);            
                          }
-             }                                                      
+                                              
                                                             
           $builder->add('partenaire',TextType::class,[
                               'mapped' =>true,
@@ -149,14 +168,15 @@ class InscrireEquipeType extends AbstractType
                               'mapped' => true,
                              
                              ])  
-                      ->add('save',      SubmitType::class)
-                       ->add('inscrite',     CheckboxType::class,[
-                             'value'=>1,
+                    ->add('save',      SubmitType::class)
+                    ->add('inscrite',     CheckboxType::class,[
+                             'data'=>'checked',
                              'required'=>true,
                              'mapped' => true,
                         
                         
                     ]);
+          
        
             
     }
@@ -166,7 +186,7 @@ class InscrireEquipeType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(['data_class' => Equipesadmin::class,'rne'=>null]);
+        $resolver->setDefaults(['data_class' => Equipesadmin::class,'rne'=>null, 'eleves'=>null]);
        
     }
 }

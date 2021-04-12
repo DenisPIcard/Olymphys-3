@@ -642,12 +642,12 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                           $type_fichier=$this->getParameter('type_fichier')[$num_type_fichier];
                      
                             
-                      return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe.getId().'-'.$this->session->get('concours').'-liste_prof'));
+                      return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));
                     }
                 if ($form3->get('NON')->isClicked())
                     {
                     $filesystem->remove($this->getParameter('app.path.tempdirectory').'/'.$nom_fichier);    
-                    return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe.getId().'-'.$this->session->get('concours').'-liste_prof'));
+                    return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));
                     }
                 }
             $request->getSession()
@@ -1245,6 +1245,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
     $choix=$Infos[2];
   
     $edition=$this->session->get('edition');
+    $edition= $edition=$this->getDoctrine()->getManager()->merge($edition);
     $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat();
     $dateouverturesite=$edition->getDateouverturesite();
@@ -1324,14 +1325,14 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
           $liste_fichiers=$qb1->getQuery()->getResult();    
         $autorisations=$qb1
                             ->andWhere('t.typefichier = 6')
-                           ->getQuery()->getResult(); 
+                            ->getQuery()->getResult(); 
           
       }
       if( ($role=='ROLE_ORGACIA')  or ($role=='ROLE_SUPER_ADMIN')) {               
         $liste_fichiers=$qb1->getQuery()->getResult();    
         $autorisations=$qb1
                             ->andWhere('t.typefichier = 6')
-                           ->getQuery()->getResult();
+                            ->getQuery()->getResult();
                 }
        if ($role=='ROLE_JURYCIA'){         
            $qb1->andWhere('t.typefichier in (0,1,2,5)');
@@ -1460,7 +1461,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
              $liste_fichiers=[];
          }
        
-        if(($liste_fichiers==null) and ($listevideos==null) and ($autorisations==null)){
+      /*  if(($liste_fichiers==null) and ($listevideos==null) and ($autorisations==null)){
          
                 if ($role=='ROLE_PROF'){
                     $num_equipe='n° '.$equipe_choisie->getNumero();
@@ -1499,7 +1500,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
                     ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe n°'.$equipe_choisie->getNumero().'pour le concours'.$concours) ;
                      return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'centre')  );
                              }
-            }
+            }*/
             
              $content = $this
                           ->renderView('adminfichiers\espace_prof.html.twig', array('form'=>$Form, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,

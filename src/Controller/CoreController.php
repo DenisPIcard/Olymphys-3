@@ -79,6 +79,7 @@ class CoreController extends AbstractController
      $this->session->set('datelimlivredor', $datelimlivredor);
      $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
      $this->session->set('datelimdiaporama', $datelimdiaporama);
+     
      //dd($this->session);
      //$session->set('edition',$edition);  
      //  dd($user);

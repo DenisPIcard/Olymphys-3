@@ -69,7 +69,11 @@
                 <div class="row">
                     <div class="col">
                        
-                        <a href="{{ path('modif_equipe', {'idequipe': equipe.id} )  }}" type="button" class="btn btn-warning">Modifier </a>
+                        <a href="{{ path('inscrire_equipe', {'idequipe': equipe.id} )  }}" type="button" class="btn btn-warning">Modifier </a>
+                    </div>
+                     <div class="col">
+                      
+                        <button id="{{ equipe.id }}" data-toggle="modal" data-target="#modaldesinscrire"  data-idequipe="{{ equipe .id }}" title="Desinscrire" type="button" class="btn btn-warning"  type="button" class="btn btn-warning">
                     </div>
                 </div>
                 {% endif %}
@@ -141,7 +145,7 @@
                {%  if (role=='ROLE_PROF')%} 
                 {% if i!=4%}
                   
-                  {% if (app.session.get('concours')=='interacademique') %}
+                  {% if (app.session.get('concours')=='interacadémique') %}
                        {% if i!=5 %} 
                      {% if  (date()<= app.session.get('edition').datelimcia)%}
                         <th scope="col"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></th>
@@ -297,7 +301,7 @@
           </tr>
          {% for prof in liste_prof %}
               <tr><td>
-             {%  if prof.autorisationphotos == null %}
+             {%  if prof.autorisationphotos == null or  prof.autorisationphotos.edition!=edition%}
              </td><td>        
                  <font color="red" >  <b>{{ prof.nom }} {{ prof.prenom }}</font> </b></a>
              </td><td></td>
@@ -379,6 +383,31 @@
           </div>
       </div>      
     </div>
+    <div class="modal fade" id="modaldesinscrire"  tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="ModaldesinscrireLabel">Confirmation de la désinscription de l'équipe {{ equipe.numero }}</h4> 
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" >
+                    
+                   <div class="alert hidden" role="alert" id="modalAlert"></div>
+                   <form name="confirm_form" id="confirm_form"    action="{{ path('desinscrire_equipe',{idequipe: equipe.id} ) }}" >
+                         <input type="hidden" id="myModalID" name="myModalID" value="recipient-name" />
+                        <button type="submit" id="submit_form" class="btn btn-primary">Désinscrire</button>
+                       <p>Voulez-vous désinscrire cette équipe ?<h6 id="modal_body"></h6> </p>
+                   </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                </div>
+          
+          </div>
+      </div>      
+    </div>                     
    {# ################################################################################## #}
  
     {% block javascripts %}
@@ -400,7 +429,24 @@
                 modal.find('.modal-body input').val(recipient)
             });
         </script>    
-  
+  <script type="text/javascript">
+            $('#modaldesincrire').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                var recipient = button.data('idequipe');
+                console.log(recipient)// Extract info from data-* attributes
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                var modal = $(this)
+                modal.find('.modal-title').text('Attention')
+                modal.find('.modal-body input').val(recipient)
+            });
+        </script>    
+        
+        
+        
+        
+        
+        
        
     {% endblock %}  
 {% endblock %}

@@ -3,8 +3,15 @@
 Inscrire une équipe
 {% endblock %}
 {% block titre3 %} 
- Inscrire une équipe
-   
+    <center>
+ {% if modif ==false %}   
+         Inscrire une équipe
+         {% endif %}
+  {% if modif == true %}
+       
+               Modifier l'équipe n° {{ equipe.numero }} - "{{ equipe.titreProjet }}"
+       {% endif  %}
+    </center>
 {% endblock %}
 {% block body %}
     
@@ -192,9 +199,21 @@ Inscrire une équipe
                
         </div>     
          <div class="row">
-                <div class="col px-md-4">
+                <div class="col px-md-4 text-center">
                     {{ form_widget(form.save,{'label':'Enregistrer '} )}}
                 </div>
+                <div class="col text-center">
+        {% if modif==true %} 
+            <a href="{{ path('fichiers_afficher_liste_fichiers_prof',{infos:equipe.id~'-'~concours~'-'~choix})}}" type="button" class="btn btn-primary">Annuler</a>
+         {% endif %}
+                    
+                    
+                </div>
+         <div class="col">
+             
+              {{ form_widget(form.inscrite,{'inscrite':'Equipeincrite '} )}}
+             
+           </div>
           </div>
         
         

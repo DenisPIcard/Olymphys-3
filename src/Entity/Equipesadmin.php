@@ -17,7 +17,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\HasLifecycleCallbacks()
  */
 class Equipesadmin
-{
+{ 
+    
+    
     /**
      * @var int
      *
@@ -181,6 +183,11 @@ class Equipesadmin
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $inscrite = 1;
 
    
 
@@ -741,6 +748,18 @@ class Equipesadmin
    public function setDescription(?string $description): self
    {
        $this->description = $description;
+
+       return $this;
+   }
+
+   public function getInscrite(): ?bool
+   {
+       return $this->inscrite;
+   }
+
+   public function setInscrite(bool $inscrite): self
+   {
+       $this->inscrite = $inscrite;
 
        return $this;
    }

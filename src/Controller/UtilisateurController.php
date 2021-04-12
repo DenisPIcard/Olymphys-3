@@ -10,6 +10,7 @@ use App\Service\Mailer;
 use App\Form\UserType;
 use App\Form\UserRegistrationFormType;
 use App\Form\InscrireEquipeType;
+use App\Form\ModifEquipeType;
 use App\Form\ResettingType;
 use App\Form\ProfileType;
 
@@ -278,24 +279,50 @@ class UtilisateurController extends AbstractController
      /**
      * 
      *
-     *  @Security("is_granted('ROLE_PROF')")
-     * @Route("/Utilisateur/inscrire_equipe", name="inscrire_equipe")
+     *  
+     * @Route("/Utilisateur/inscrire_equipe,{idequipe}", name="inscrire_equipe")
      */
-    public function inscrire_equipe (Request $request,Mailer $mailer)
-    {    
+    public function inscrire_equipe (Request $request,Mailer $mailer,$idequipe)
+    {   $date = new \datetime('now');
+    
+   
+    
+        if($date<$this->session->get('edition')->getDateouverturesite()){
+        
+           $request->getSession()
+                                                     ->getFlashBag()
+                                                     ->add('info', 'Les inscriptions sont closes, Inscriptions entre le '.$this->session->get('edition')->getDateouverturesite()->format('d-m-Y').' et le '.$this->session->get('edition')->getDatelimcia()->format('d-m-Y').' 22 heures(heure de Paris)') ;
+            
+            
+            return $this->redirectToRoute('core_home');
+        
+    
+        }
         $em=$this->getDoctrine()->getManager();
-      
+         $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
+         $repositoryEleves=$em->getRepository('App:Elevesinter');
         if( null!=$this->getUser()){
+            
+         if ($this->getUser()->getRoles()[0]=='ROLE_PROF'){
          $edition=$this->session->get('edition');
          $edition=$em->merge($edition);
+         if ($idequipe=='x'){
          $equipe = new Equipesadmin(); 
-       
-         $form1=$this->createForm(InscrireEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne()]);
+          $form1=$this->createForm(InscrireEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne()]);
+         $modif=false;
+         }
+         else{
+           $equipe=   $repositoryEquipesadmin->findOneById(['id'=>intval($idequipe)]);
+           $eleves= $repositoryEleves->findByEquipe(['equipe'=>$equipe]);
+           $form1=$this->createForm(ModifEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne(),'eleves'=>$eleves]); 
+           $modif=true;
+         }
+         
          $form1->handleRequest($request); 
           if ($form1->isSubmitted() && $form1->isValid()){
-              $repositoryEleves=$em->getRepository('App:Elevesinter');
+              
               $repositoryRne=$em->getRepository('App:Rne');
-               $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
+               
               $lastEquipe=$repositoryEquipesadmin->createQueryBuilder('e')
                                                                             ->select('e, MAX(e.numero) AS max_numero')
                                                                             ->andWhere('e.edition = :edition')
@@ -342,22 +369,23 @@ class UtilisateurController extends AbstractController
                }
              
              
-             $mailer->sendConfirmeInscriptionEquipe($equipe);
+             $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser());
                
                
                
                
-              return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView()));
+              return $this->redirectToRoute('fichiers_choix_equipe', array('choix' =>'liste_prof'));
               
           
           }
-         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView()));
+         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView(),'equipe'=>$equipe,'concours'=>$this->session->get('concours'),'choix'=>'liste_prof', 'modif'=>$modif));
              
-                  
+         }
+         else{  return $this->redirectToRoute('core_home');}
         }
         
         else{
-            
+      
             return $this->redirectToRoute('login');
            
         }
@@ -365,7 +393,23 @@ class UtilisateurController extends AbstractController
         
         
     }
-    
+     /**
+     * 
+     *
+     *  
+     * @Route("/Utilisateur/desinscrire_equipe,{idequipe}", name="desinscrire_equipe")
+     */
+    public function desinscrire_equipe (Request $request,Mailer $mailer,$idequipe){
+         $em=$this->getDoctrine()->getManager();
+         $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
+         
+         $equipe= $repositoryEquipesadmin->find(['id'=>$idequipe]);
+         $equipe->setInscrite(false);
+         $em->persist($equipe);
+         $em->flush;
+        
+        
+    }
     
     
     

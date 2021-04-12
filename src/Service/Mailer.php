@@ -9,16 +9,18 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
-
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class Mailer
-{
+{   private $session;
     private $mailer;
     private $twig;
 
-    public function __construct(MailerInterface $mailer, Environment $twig)
-    {
+    public function __construct(MailerInterface $mailer, Environment $twig, SessionInterface $session)
+    { 
+        
         $this->mailer = $mailer;
         $this->twig = $twig;
+        $this->session =$session;
     }
     
         public function sendWelcomeMessage(User $user)
@@ -45,13 +47,13 @@ class Mailer
         return $email;
     
     }
-     public function sendConfirmeInscriptionEquipe(Equipesadmin $equipe ){
+     public function sendConfirmeInscriptionEquipe(Equipesadmin $equipe,User $user ){
      $email=(new Email())
                     ->from('info@olymphys.fr')
                     ->to('9452279e33-11d237@inbox.mailtrap.io') //'webmestre2@olymphys.fr', 'Denis'
-                    ->subject('Inscription de l\'équipe n° '.$equipe->getNumero().' par '.$equipe->getIdProf1()->getPrenomNom())
+                    ->subject('Inscription de l\'équipe n° '.$equipe->getNumero().' par '.$user->getPrenomNom())
                     ->html('Bonjour<br>
-                            Nous confirmons que '.$equipe->getIdProf1()->getPrenomNom().'(<a href="'.$equipe->getIdProf1()->getEmail().'">'.$equipe->getIdProf1()->getEmail().
+                            Nous confirmons que '.$equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().
                             '</a>) a inscrit une nouvelle équipe denommée : '.$equipe->getTitreProjet().
                             '<br> <br>Le comité national des Olympiades de Physique');
                    

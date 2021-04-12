@@ -253,10 +253,12 @@
           </tr>
          {% for prof in liste_prof %}
               <tr><td>
-             {%  if prof.autorisationphotos == null %}
+                      prof.autorisationphotos.edition.ed
+             {%  if prof.autorisationphotos == null  or  prof.autorisationphotos.edition!=edition%}
                            
                  <font color="red" >  <b>{{ prof.nom }} {{ prof.prenom }}</font> </b></a>
              </td><td></td>
+                                
                         {% else %}
                                
                             
