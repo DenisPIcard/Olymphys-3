@@ -51,6 +51,7 @@ class InscrireEquipeType extends AbstractType
                              ] )
           ->add('idProf2', EntityType::class, [
                             'class'=>'App:User',
+                           'required'=>false,
                             'query_builder'=>function (EntityRepository $er) use($rne) {
                                                         return $er->createQueryBuilder('u')
                                                                 ->andWhere('u.rne =:rne')
@@ -59,24 +60,24 @@ class InscrireEquipeType extends AbstractType
                             } ,
                            'choice_value' =>'getId',
                            'choice_label' =>'getPrenomNom',
-                            'empty_data' => ' ' ,
+                         
                            'mapped'=>true,
-                           'required'=>false,
+                          
                              ] );
         for($i=1; $i<7;$i++) {        
          
          $builder->add('prenomeleve'.$i, TextType::class,[
                               'mapped' => false,
-                              'required'=>true,
+                              'required'=>$required[$i-1],
                              ]) 
                         ->add('nomeleve'.$i, TextType::class,[
                                              'mapped' => false,
-                                            'required'=>$required[$i],
+                                            'required'=>$required[$i-1],
                                             ])
 
                         ->add('maileleve'.$i, EmailType::class,[
                                              'mapped' =>false,
-                                               'required'=>$required[$i],
+                                               'required'=>$required[$i-1],
                                             ])
                         ->add('classeeleve'.$i, ChoiceType::class,[
                               'choices'=>['2nde'=>'2nde',
@@ -84,11 +85,11 @@ class InscrireEquipeType extends AbstractType
                                                  'Term'=>'Term',
                                            ],
                                              'mapped' =>false,
-                                               'required'=>$required[$i],
+                                               'required'=>$required[$i-1],
                                             ])
                         ->add('genreeleve'.$i, ChoiceType::class,[
                                              'mapped' =>false,
-                                             'required'=>$required[$i],
+                                             'required'=>$required[$i-1],
                                            'choices'=>['F'=>'F',
                                                               'M'=>'M']]);    
                    }

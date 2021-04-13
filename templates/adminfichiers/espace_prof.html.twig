@@ -106,13 +106,14 @@
               
           
             
-      <tr>
+      <tr><td></td>
       {% set  attrib=0 %}
       {%  if liste_fichiers!=null %}  
      
           {% for fichier in liste_fichiers %}
-            {% if fichier.typefichier==i %}
               
+            {% if fichier.typefichier==i %}
+                
                 <th scope="row"><font color="#33FF33">{{ type_fichier_lit[i]}}</font> </th>
             <td>
        
@@ -212,22 +213,22 @@
           <div class="table-responsive">
              <table class="table">
                  <tr>
-                     <td></td><td></td>
+                     <td> </td><td> </td>
                      <td>{% if (role=='ROLE_PROF' ) %}
                          <a href="{{ path('videos_liens_videos',{infos: equipe.id~'-'~concours~'-'~'nouvelle-'} )}}" "> <button type="button" title="Nouvelle vidéo">  <i class="fa fa-plus"></i></button></a></td>
                     {% endif %}
-                     <td></td>
+                     <td> </td>
                  </tr>
               {%  for video in listevideos%}
               
-              <tr> 
-                    <th scope="col">   {{ video.nom}}</th>
-                    <th scope="col">   <a href ="{{video.lien}}" target="blank">{{ video.lien}}</a></th>  
-                    <th scope="col">
+                  <tr> <td>      </td>
+                    <td >   {{ video.nom}}</td>
+                    <td >   <a href ="{{video.lien}}" target="blank">{{ video.lien}}</a></td>  
+                    <td>
                     {% if (role=='ROLE_PROF' ) %}
                       <a href="{{ path('videos_liens_videos',{infos: equipe.id~'-'~concours~'-'~'modifier-'~video.id} )}}" "> <button type="button" title="Modifier">  <i class="fa fa-edit"></i></button></a>
                      {% endif %}
-                   <button type="button" id="{{ video.id }}" data-toggle="modal" data-target="#modalconfirm"  data-idvideo="{{ video.id }}" title="Supprimer">  <i class="fa fa-trash"></i></button></th>
+                   <button type="button" id="{{ video.id }}" data-toggle="modal" data-target="#modalconfirm"  data-idvideo="{{ video.id }}" title="Supprimer">  <i class="fa fa-trash"></i></button></td>
            
                     </tr>
              {%  endfor %}
@@ -295,7 +296,7 @@
              <tr><td></td>
               <td>
          Des professeurs :
-              </td> <td> </td><td></td><td></td>
+              </td> <td> </td><td></td>
           </tr>
          {% for prof in liste_prof %}
               <tr><td>
@@ -328,7 +329,9 @@
          
              </table>
            </div>
+              {% if (role=='ROLE_COMITE' )  or (role=='ROLE_ORGACIA')%}
              <button type="submit" class="btn btn-primary" id ="button">Télécharger</button>
+             {% endif %}
          </div>
       </form>
              {% endif %}

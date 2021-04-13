@@ -3,6 +3,7 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
+   
     <h1> Connexion </h1>
     
     <form class="form-signin" method="post"> 
@@ -28,6 +29,9 @@
        
     
     </form>
+        <div class="row"> <div class="col text-center">
+            <a href="{{path('forgotten_password')}}" >Mot de passe oublié</a>
+            </div></div>
         <a href="{{path('register')}}" class="btn btn-primary" type="submit">
             Je n'ai pas de compte
         </a>

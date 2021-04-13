@@ -591,7 +591,7 @@ class User implements UserInterface, \Serializable
      */
     public function setUpdatedAt($updatedAt)
     {
-        $this->updatedAt = $passwordRequestedAt;
+        $this->updatedAt =$updatedAt;
         return $this;
     }
     

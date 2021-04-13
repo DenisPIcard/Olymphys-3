@@ -10,7 +10,8 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-class Mailer
+
+class Mailer 
 {   private $session;
     private $mailer;
     private $twig;
@@ -23,23 +24,43 @@ class Mailer
         $this->session =$session;
     }
     
-        public function sendWelcomeMessage(User $user)
+        public function sendMessage(User $user)
     {
         $email = (new TemplatedEmail())
-            ->from(new Address('alienmailcarrier@example.com', 'The Space Bar'))
-            ->to(new Address($user->getEmail(), $user->getNom()))
-            ->subject('Welcome to the Space Bar!')
-            ->htmlTemplate('email/welcome.html.twig')
+            ->from(new Address('info@olymphys.fr'))
+            ->to('olymphys-11d237@inbox.mailtrap.io')
+            ->subject('Inscritpion d\'un nouvel utilisateur')
+            ->htmlTemplate('email/nouvel_utilisateur.html.twig')
             ->context([
               'user' => $user,
             ]);
         $this->mailer->send($email);
         return $email;
     }
+    public function SendVerifEmail(User $user)
+    {   $email = (new TemplatedEmail())
+    ->from('info@olymphys.fr')
+    ->to('olymphys-11d237@inbox.mailtrap.io')//new Address($user->getEmail())
+    ->subject('Olymphys-Confirmation de votre inscription')
+
+    // path of the Twig template to render
+    ->htmlTemplate('email/bienvenue.html.twig')
+
+    // pass variables (name => value) to the template
+    ->context([
+        'expiration_date' => new \DateTime('+24 hours'),
+        'user' =>$user
+    ]);
+      $this->mailer->send($email);
+          return $email;
+    }
+    
+    
+    
     public function sendConfirmFile(Equipesadmin $equipe, $type_fichier ){
      $email=(new Email())
-                    ->from('alain.jouve@wanadoo.fr')
-                    ->to('webmestre3@olymphys.fr') //'webmestre2@olymphys.fr', 'Denis'
+                    ->from('info@olymphys.fr')
+                    ->to('olymphys-11d237@inbox.mailtrap.io') //'webmestre2@olymphys.fr', 'Denis'
                     ->subject('Depot du '.$type_fichier.'de l\'équipe '.$equipe->getInfoequipe())
                     ->text('L\'equipe '. $equipe->getInfoequipe().' a déposé un fichier : '.$type_fichier);
                    
@@ -50,7 +71,7 @@ class Mailer
      public function sendConfirmeInscriptionEquipe(Equipesadmin $equipe,User $user ){
      $email=(new Email())
                     ->from('info@olymphys.fr')
-                    ->to('9452279e33-11d237@inbox.mailtrap.io') //'webmestre2@olymphys.fr', 'Denis'
+                    ->to('olymphys-11d237@inbox.mailtrap.io') //'webmestre2@olymphys.fr', 'Denis'
                     ->subject('Inscription de l\'équipe n° '.$equipe->getNumero().' par '.$user->getPrenomNom())
                     ->html('Bonjour<br>
                             Nous confirmons que '.$equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().

@@ -56,6 +56,7 @@ class ModifEquipeType extends AbstractType
                              ] )
           ->add('idProf2', EntityType::class, [
                             'class'=>'App:User',
+                            'required'=>false,
                             'query_builder'=>function (EntityRepository $er) use($rne) {
                                                         return $er->createQueryBuilder('u')
                                                                 ->andWhere('u.rne =:rne')
@@ -64,9 +65,9 @@ class ModifEquipeType extends AbstractType
                             } ,
                            'choice_value' =>'getId',
                            'choice_label' =>'getPrenomNom',
-                            'empty_data' => ' ' ,
+                          
                            'mapped'=>true,
-                           'required'=>false,
+                          
                              ] );
                             $i=1;
         foreach($eleves as $eleve) {        

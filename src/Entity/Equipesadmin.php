@@ -170,7 +170,7 @@ class Equipesadmin
   
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
     private $idProf1;
 
@@ -188,6 +188,8 @@ class Equipesadmin
      * @ORM\Column(type="boolean")
      */
     protected $inscrite = 1;
+
+   
 
    
 

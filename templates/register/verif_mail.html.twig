@@ -8,7 +8,7 @@
 <body>
     <p>
         Bonjour, <br>
-        Cliquez sur ce lien pour finaliser votre inscription.
+        Cliquez sur ce lien pour finaliser votre inscription avant le {{  expiration_date|date('d-m-Y H:i:s')}}
         {# pour que le lien fonctionne, il est indispensable que le lien soit absolu. #}
         <a href="{{absolute_url(path('verif_mail', {'id': user.id, 'token': user.token}))}}">Finaliser l'inscription</a>
     </p>
