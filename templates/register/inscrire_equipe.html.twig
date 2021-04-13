@@ -210,10 +210,14 @@ Inscrire une équipe
                     
                 </div>
          <div class="col">
-             
-              {{ form_widget(form.inscrite,{'inscrite':'Equipeincrite '} )}}
-             
+             {%if equipe.inscrite== false %}
+              {{ form_widget(form.inscrite,{'label':'Equipe non  inscrite ',  'label_attr': {'class': 'inscritered'}})}}
+              {% endif %}
+              {%if equipe.inscrite== true %}
+              {{ form_widget(form.inscrite,{'label':'Equipe inscrite ',  'label_attr': {'class': 'inscritegreen'}} )}}
+               {% endif %}
            </div>
+            
           </div>
         
         
@@ -222,6 +226,18 @@ Inscrire une équipe
     </div>
     
     </div>
+                  
+   
+    
+    
+  {% block javascripts %}  
+  
+ 
+ 
+ {% endblock %}   
+    
+    
     
   
 {% endblock %}    
+

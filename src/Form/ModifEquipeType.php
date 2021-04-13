@@ -91,9 +91,9 @@ class ModifEquipeType extends AbstractType
                                            'required'=>$required[$i-1],
                                             ])
                         ->add('classeeleve'.$i, ChoiceType::class,[
-                                            'choices'=>['seconde'=>'2nde',
-                                                 'première'=>'1ere',
-                                                 'terminale'=>'Term',
+                                            'choices'=>['2nde'=>'2nde',
+                                                 '1ère'=>'1ere',
+                                                 'Term'=>'Term',
                                                  ],
                                              'mapped' =>false,
                                               'data'=>$eleves[$i-1]->getClasse(),
@@ -180,8 +180,7 @@ class ModifEquipeType extends AbstractType
                              'value'=>1,
                              'required'=>true,
                              'mapped' => true,
-                             'disabled'=>true
-                        
+                          
                     ]);
           
        

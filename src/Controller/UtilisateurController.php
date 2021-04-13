@@ -400,24 +400,6 @@ class UtilisateurController extends AbstractController
         
         
     }
-     /**
-     * 
-     *
-     *  
-     * @Route("/Utilisateur/desinscrire_equipe,{idequipe}", name="desinscrire_equipe")
-     */
-    public function desinscrire_equipe (Request $request,Mailer $mailer,$idequipe){
-         $em=$this->getDoctrine()->getManager();
-         $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
-         
-         $equipe= $repositoryEquipesadmin->find(['id'=>$idequipe]);
-         $equipe->setInscrite(false);
-         $em->persist($equipe);
-         $em->flush;
-        
-        
-    }
-    
-    
+   
     
 }

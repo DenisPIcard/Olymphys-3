@@ -27,7 +27,7 @@ class InscrireEquipeType extends AbstractType
     {    
        
       $rne= $options['rne']   ;          
-    
+      $required=[true,true,false,false,false,false];
         $builder ->add('titreProjet', TextType::class, [
                                 'label' => 'Titre du projet',
                                 'mapped'=>true
@@ -64,19 +64,19 @@ class InscrireEquipeType extends AbstractType
                            'required'=>false,
                              ] );
         for($i=1; $i<7;$i++) {        
-          if($i<=2){   
+         
          $builder->add('prenomeleve'.$i, TextType::class,[
                               'mapped' => false,
                               'required'=>true,
                              ]) 
                         ->add('nomeleve'.$i, TextType::class,[
                                              'mapped' => false,
-                                            'required'=>true,
+                                            'required'=>$required[$i],
                                             ])
 
                         ->add('maileleve'.$i, EmailType::class,[
                                              'mapped' =>false,
-                                               'required'=>true,
+                                               'required'=>$required[$i],
                                             ])
                         ->add('classeeleve'.$i, ChoiceType::class,[
                               'choices'=>['2nde'=>'2nde',
@@ -84,41 +84,16 @@ class InscrireEquipeType extends AbstractType
                                                  'Term'=>'Term',
                                            ],
                                              'mapped' =>false,
-                                               'required'=>true,
+                                               'required'=>$required[$i],
                                             ])
                         ->add('genreeleve'.$i, ChoiceType::class,[
                                              'mapped' =>false,
-                                             'required'=>true,
+                                             'required'=>$required[$i],
                                            'choices'=>['F'=>'F',
                                                               'M'=>'M']]);    
                    }
-        if($i>2){$builder->add('prenomeleve'.$i, TextType::class,[
-                              'mapped' =>false,
-                              'required'=>false,
-                             ]) 
-                                  ->add('nomeleve'.$i, TextType::class,[
-                              'mapped' => false,
-                               'required'=>false,
-                             ])
-                               ->add('maileleve'.$i, EmailType::class,[
-                              'mapped' => false,
-                              'required'=>false,
-                             ]) 
-                               ->add('classeeleve'.$i, ChoiceType::class,[
-                              'choices'=>['2de'=>'2de',
-                                                 '1ère'=>'1ère',
-                                                 'Term'=>'Term',
-                              ],
-                                             'mapped' =>false,
-                                              'required'=>false,
-                                            ])
-                                ->add('genreeleve'.$i, ChoiceType::class,[
-                              'mapped' =>false,
-                              'required'=>false,
-                            'choices'=>['F'=>'F',
-                                               'M'=>'M']]);            
-                         }
-             }                                                      
+       
+                                                                   
                                                             
           $builder->add('partenaire',TextType::class,[
                               'mapped' =>true,
@@ -154,8 +129,7 @@ class InscrireEquipeType extends AbstractType
                              'value'=>1,
                              'required'=>true,
                              'mapped' => true,
-                        
-                        
+                       
                     ]);
        
             

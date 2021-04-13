@@ -76,7 +76,11 @@
                         <div class="col">
                             <b>{{ equipe.numero }}</b> - {{ equipe.titreProjet }} 
                              {% if role != 'ROLE_PROF' %} <h8><i>  (Lycee {{equipe.rneId.nom}}, {{equipe.rneId.commune}})</i> </h8>
-                                 {% endif %}
+                                 {% endif %} 
+                            {%  if equipe.inscrite== false %}
+                                 <font color ='red'><i>(Equipe non inscrite)</i></font>
+                            {% endif %}
+                            <hr>
                              {% set infos =  equipe.id ~ '-'~phase~'-'~choix %}
                         </div>   
                         
@@ -100,7 +104,7 @@
                             {% if   equipe.lettre!=null%} <b> {{ equipe.lettre }}</b>  {% else %}  <b>{%set phase='academique'%}{{ equipe.numero }}</b>{% endif %}  - {{ equipe.titreProjet }}
                             {% if role != 'ROLE_PROF' %} <h8><i>  (Lycee {{equipe.rneId.nom}}, {{equipe.rneId.commune}})</i> </h8>
                                 {% endif %}
-                            <hr>
+                           
                         </div>
                        
                             <div class="col">
