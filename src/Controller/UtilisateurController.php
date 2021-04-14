@@ -182,9 +182,9 @@ class UtilisateurController extends AbstractController
                   }
                }
              
+            
+             $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
              
-             $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser());
-               
                
                
                

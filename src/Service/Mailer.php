@@ -68,16 +68,32 @@ class Mailer
         return $email;
     
     }
-     public function sendConfirmeInscriptionEquipe(Equipesadmin $equipe,User $user ){
-     $email=(new Email())
+     public function sendConfirmeInscriptionEquipe(Equipesadmin $equipe,User $user, $modif ){
+     if($modif==false){
+         $email=(new Email())
                     ->from('info@olymphys.fr')
                     ->to('olymphys-11d237@inbox.mailtrap.io') //'webmestre2@olymphys.fr', 'Denis'
-                    ->subject('Inscription de l\'équipe n° '.$equipe->getNumero().' par '.$user->getPrenomNom())
+                    ->subject('Inscription de l\'équipe  '.$equipe->getNumero().' par '.$user->getPrenomNom())
                     ->html('Bonjour<br>
                             Nous confirmons que '.$equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().
                             '</a>) a inscrit une nouvelle équipe denommée : '.$equipe->getTitreProjet().
                             '<br> <br>Le comité national des Olympiades de Physique');
-                   
+     }     
+      if($modif==true){
+         $email=(new Email())
+                    ->from('info@olymphys.fr')
+                    ->to('olymphys-11d237@inbox.mailtrap.io') //'webmestre2@olymphys.fr', 'Denis'
+                    ->subject('Modification de l\'équipe '.$equipe->getTitreProjet().' par '.$user->getPrenomNom())
+                    ->html('Bonjour<br>'.
+                           $equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().
+                            '</a>) a modifier l\'équipe denommée : '.$equipe->getTitreProjet().
+                            '<br> <br>Le comité national des Olympiades de Physique');
+     }     
+     
+     
+     
+     
+     
        $this->mailer->send($email);
         return $email;
     
