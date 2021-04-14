@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
-{% form_theme editProfileForm _self %}
-
+{% form_theme form _self %}
 {% block form_row %}
     {%- set widget_attr = {} -%}
     {%- if help is not empty -%}
@@ -28,37 +27,68 @@
         <div class="col-md-8">
             <h1 class="h3 mb-3 font-weight-normal">Profil de l'utilisateur {{ user.username }}</h1>
             Vous souhaitez changer votre mot de passe <a href="{{path('forgotten_password') }}">Cliquez ici</a> <br/><br />
-            {{ form_start(editProfileForm, {
+            {{ form_start(form, {
                 'attr': {'class': 'form-signin'} 
             }) }}
-                {{ form_row(editProfileForm.nom, {
-                    attr: { placeholder: 'Nom' }
-                }) }}
-                {{ form_row(editProfileForm.prenom, {
-                    attr: { placeholder: 'Prénom' }
-                }) }}
-                {{ form_row(editProfileForm.adresse, {
-                    attr: { placeholder: 'Votre adresse:numéro + rue + lieu-dit'}
-                }) }}
-                {{ form_row(editProfileForm.ville, {
-                    attr: { placeholder: 'Votre ville' }
-                }) }}                
-                {{ form_row(editProfileForm.code, {
-                    attr: { placeholder: 'Votre code postal' }
-                }) }}
-                {{ form_row(editProfileForm.phone, {
-                    attr: { placeholder: 'Votre téléphone, portable de préférence' }
-                }) }}
-                {{ form_row(editProfileForm.rne, {
-                    attr: { placeholder: 'Le RNE de votre établissement, si vous inscrivez une équipe' }
-                }) }}
+            <div class="row">
+                <div class="col">
+                        {{ form_widget(form.nom, {
+                            attr: { placeholder: 'Nom' }
+                        }) }}
+                </div>
+            </div>
+                <div class="row">
+                   <div class="col">
+                    {{ form_widget(form.prenom, {
+                        attr: { placeholder: 'Prénom' }
+                    }) }}
+                     </div>
+              </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_widget(form.adresse, {
+                            attr: { placeholder: 'Votre adresse:numéro + rue + lieu-dit'}
+                        }) }}
+                         </div>
+               </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_widget(form.ville, {
+                            attr: { placeholder: 'Votre ville' }
+                        }) }}      
+                         </div>
+                 </div>
+                <div class="row">
+                    <div class="col">
+                            {{ form_widget(form.code, {
+                                attr: { placeholder: 'Votre code postal' }
+                            }) }}
+                             </div>
+              </div> 
+                <div class="row">
+                        <div class="col">
+                            {{ form_widget(form.phone, {
+                                attr: { placeholder: 'Votre téléphone, portable de préférence' }
+                            }) }}
+                        </div>
+            </div>
+                <div class="row">
+                      <div class="col">
+                            {{ form_widget(form.rne, {
+                                attr: { placeholder: 'Le RNE de votre établissement, si vous inscrivez une équipe' }
+                            }) }}
+                      </div>
+               </div>
  
-                
-                {{ form_widget(editProfileForm) }}
-                <button name="register" class="btn btn-lg btn-primary btn-block" type="submit">
-                    Valider les modifications
-                </button>
-            {{ form_end(editProfileForm) }}
+                <div class="row">
+                        <div class="col">
+                                    {{ form_widget(form) }}
+                                    <button name="register" class="btn btn-lg btn-primary btn-block" type="submit">
+                                        Valider les modifications
+                                    </button>
+                        </div>
+            </div>
+                    {{ form_end(form) }}
     </div>
 </div>
 

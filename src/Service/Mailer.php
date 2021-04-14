@@ -29,7 +29,7 @@ class Mailer
         $email = (new TemplatedEmail())
             ->from(new Address('info@olymphys.fr'))
             ->to('olymphys-11d237@inbox.mailtrap.io')
-            ->subject('Inscritpion d\'un nouvel utilisateur')
+            ->subject('Inscription d\'un nouvel utilisateur')
             ->htmlTemplate('email/nouvel_utilisateur.html.twig')
             ->context([
               'user' => $user,

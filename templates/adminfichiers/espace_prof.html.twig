@@ -26,6 +26,17 @@
 
     {% endblock %}
 {% block body %} 
+    {% for message in app.session.flashbag.get('info') %}
+    <div class="alert alert-info"> {{ message }}</div>
+  {% endfor %}
+   {% for message in app.session.flashbag.get('alert') %}
+    <div class="alert alert-danger"> {{ message }}</div>
+  {% endfor %}
+  {% for message in app.session.flashbag.get('success') %}
+    <div class="alert alert-info"> {{ message }}</div>
+  {% endfor %}
+    
+    
     <blockquote class="blockquote text-center">
                 <p class="mb-0">
                   
@@ -384,8 +395,7 @@
           </div>
       </div>      
     </div>
-    <div class="modal fade" id="modaldesinscrire"  tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+  
 
            
    {# ################################################################################## #}

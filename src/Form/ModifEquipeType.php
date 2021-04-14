@@ -109,10 +109,11 @@ class ModifEquipeType extends AbstractType
                                              'required'=>$required[$i-1],
                                             'choices'=>['F'=>'F',
                                                               'M'=>'M']])
-                       ->add('id'.$i,HiddenType::class,[
-                             'data'=> $eleve->getId(),
-                              'mapped'=>false
-                       ]);    
+                     ->add('id'.$i, HiddenType::class,[
+                         'mapped'=>false,
+                         'data'=>$eleves[$i-1]->getId()
+                     ]) ;    
+       
          $i++;
                    }
                    

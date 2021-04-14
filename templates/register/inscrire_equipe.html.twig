@@ -14,7 +14,7 @@ Inscrire une équipe
     </center>
 {% endblock %}
 {% block body %}
-    
+  
 
     <div class="container-fluid ">
         <div class="formulaire">
@@ -35,6 +35,8 @@ Inscrire une équipe
                         {{ form_widget(form.idProf2,{'label':' '}) }}
                    </div>
         </div>  
+                
+                   
         <div class="row">
                     <div class="col px-md-4">
                         Nom de l'élève 1 : 
@@ -52,12 +54,32 @@ Inscrire une équipe
                        Genre : 
                       {{ form_widget(form.genreeleve1,{'label':'*'}) }}
                    </div>
-                   <div class="col-1 px-md-4">
-                       Classe : 
-                      {{ form_widget(form.classeeleve1,{'label':'*'}) }}
-                   </div>
-           </div>     
-       
+                   {% if modif==true and eleves[0] is defined%}
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve1,{'label':'*'}) }}
+                                 {{ form_widget(form.id1)}}
+                            </div>
+
+                            <div class="col-1 px-md-4">
+                                  Désinscrire </br>
+                                      <button type="button" id="{{eleves[1].id}}" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="{{ eleves[1].id }}" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                   {% elseif modif==false or eleves[0] is not defined%}
+                   
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve1~loop.index,{'label':'*'}) }}
+                            </div>
+                           <div class="col-1 px-md-4">
+                                      </br>
+                                      <button type="button" id="" data-toggle="modal" data-target="#"  data-ideleve="" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                    {% endif %}
+           </div>
+      
        
         <div class="row">
                     <div class="col px-md-4">
@@ -76,10 +98,30 @@ Inscrire une équipe
                        Genre : 
                       {{ form_widget(form.genreeleve2,{'label':'*'}) }}
                    </div>
-                   <div class="col-1 px-md-4">
-                       Classe : 
-                      {{ form_widget(form.classeeleve2,{'label':' '}) }}
-                   </div>
+                    {% if modif==true and eleves[1] is defined%}
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve2,{'label':'*'}) }}
+                                 {{ form_widget(form.id2)}}
+                            </div>
+
+                            <div class="col-1 px-md-4">
+                            Désinscrire   </br>
+                                      <button type="button" id="{{eleves[1].id}}" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="{{eleves[1].id}}" title="Supprimer">  <i class="fa fa-trash fa-2x"></i></button>
+                                   
+                            </div>
+                    {% elseif modif==false or  eleves[1] is not defined%}
+                   
+                            <div class="col-1 ">
+                                Classe : 
+                               {{ form_widget(form.classeeleve2,{'label':'*'}) }}
+                            </div>
+                            <div class="col-1 px-md-4">
+                                    </br>
+                                      <button type="button" id="" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                   {% endif %}
            </div>       
           <div class="row">
                 <div class="col px-md-4">
@@ -98,10 +140,32 @@ Inscrire une équipe
                        Genre : 
                       {{ form_widget(form.genreeleve3,{'label':' '}) }}
                    </div>
-                   <div class="col-1 px-md-4">
-                       Classe : 
-                      {{ form_widget(form.classeeleve3,{'label':' '}) }}
-                   </div>
+                  {% if modif==true and eleves[2] is defined%}
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve3,{'label':'*'}) }}
+                                 {{ form_widget(form.id3)}}
+                            </div>
+
+                            <div class="col-1 px-md-4">
+                                   Désinscrire </br>
+                                      <button type="button" id="{{eleves[2].id}}" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="{{ eleves[2].id}}" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                    {% elseif  modif==false or  eleves[2] is not defined%}
+                  
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve3,{'label':'*'}) }}
+                            </div>
+                            <div class="col-1 px-md-4">
+                                  </br>
+                                      <button type="button" id="" data-toggle="modal" data-target="#"  data-ideleve="" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                            
+                            
+                     {% endif %}
         </div>     
           <div class="row">
                 <div class="col px-md-4">
@@ -120,10 +184,31 @@ Inscrire une équipe
                        Genre : 
                       {{ form_widget(form.genreeleve4,{'label':' '}) }}
                    </div>
-                   <div class="col-1 px-md-4">
-                       Classe : 
-                      {{ form_widget(form.classeeleve4,{'label':' '}) }}
-                   </div>
+                   {% if modif==true and eleves[3] is defined%}
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve4,{'label':'*'}) }}
+                                 {{ form_widget(form.id4)}}
+                            </div>
+
+                            <div class="col-1 px-md-4">
+                                   Désinscrire  </br>
+                                      <button type="button" id="{{eleves[3].id}}" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="{{ eleves[3].id }}" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                  
+                            </div>
+                    {%elseif modif == false or  eleves[3] is not defined%}
+                  
+                            <div class="col-1 ">
+                                Classe : 
+                               {{ form_widget(form.classeeleve4,{'label':'*'}) }}
+                            </div>
+                           <div class="col-1 px-md-4">
+                                   </br>
+                                   <button type="button" id="" data-toggle="modal" data-target="#"  data-ideleve="" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                          </div>
+                            
+                    {% endif %}
                </div>
            
           <div class="row">
@@ -144,10 +229,31 @@ Inscrire une équipe
                       {{ form_widget(form.genreeleve5,{'label':' '}) }}
                  
                </div>
-                      <div class="col-1 px-md-4">
-                       Classe : 
-                      {{ form_widget(form.classeeleve5,{'label':' '}) }}
-                   </div>
+                    {% if modif==true and  eleves[4] is defined%}
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve5,{'label':'*'}) }} 
+                               {{ form_widget(form.id5)}}
+                            </div>
+
+                            <div class="col-1 px-md-4">
+                                   Désinscrire </br>
+                                      <button type="button" id="{{eleves[4].id}}" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="{{ eleves[4].id }}" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                      
+                            </div>
+                    {% elseif  modif==false or  eleves[4] is not defined%}
+                   
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve5,{'label':'*'}) }}
+                              
+                            </div>
+                            <div class="col-1 px-md-4">
+                                 </br>
+                                      <button type="button" id="" data-toggle="modal" data-target="#m"  data-ideleve="" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                     {% endif %}
           </div>
           
          <div class="row">
@@ -167,11 +273,31 @@ Inscrire une équipe
                        Genre : 
                       {{ form_widget(form.genreeleve6,{'label':' '}) }}
                    </div>
-                   <div class="col-1 px-md-4">
-                       Classe : 
-                      {{ form_widget(form.classeeleve6,{'label':' '}) }}
-                   </div>
-         </div>
+                  {% if modif==true and eleves[5] is defined%}
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve6,{'label':'*'}) }}
+                                {{ form_widget(form.id6)}}
+                            </div>
+
+                            <div class="col-1 px-md-4">
+                                Désinscrire </br>
+                                      <button type="button" id=" {{eleves[5].id}}" data-toggle="modal" data-target="#modalconfirm"  data-ideleve="{{ eleves[5].id }}" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                              
+                            </div>
+                    {% elseif modif==false or  eleves[5] is not defined%}
+                   
+                            <div class="col-1">
+                                Classe : 
+                               {{ form_widget(form.classeeleve6,{'label':'*'}) }}
+                            </div>
+                            <div class="col-1 px-md-4">
+                                </br>
+                                      <button type="button" id="" data-toggle="modal" data-target="#"  data-ideleve="" title="Supprimer">  <i class="fa fa-trash  fa-2x"></i></button>
+                                 
+                            </div>
+                     {% endif %}
+                        </div>
           
         <div class="row">
                 <div class="col px-md-4">
@@ -182,7 +308,7 @@ Inscrire une équipe
                     Courte description :
                     {{ form_widget(form.description,{'label':'*'}) }}
                </div>
-                 <div class="col px-md-4">
+                <div class="col px-md-4">
                      Partenaire : 
                     {{ form_widget(form.partenaire,{'label':' '}) }}
                </div>
@@ -224,14 +350,58 @@ Inscrire une équipe
        
        {{ form_end(form) }}
     </div>
-    
     </div>
-                  
+
+ {# #############################MODAL###################################### #}
+ <div class="modal fade" id="modalconfirm"  tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="ModalconfirmLabel">Confirmation de la suppression de cet élève </h4> 
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" >
+                    
+                   <div class="alert hidden" role="alert" id="modalAlert"></div>
+                   <form name="confirm_form" id="confirm_form"    action="{{ path('supr_eleve' ) }}" >
+                         <input type="hidden" id="myModalID" name="myModalID" value="recipient-name" />
+                        <button type="submit" id="submit_form" class="btn btn-primary">Effacer</button>
+                       <p>Voulez-vous effacer cet élève ?<h6 id="modal_body"></h6> </p>
+                   </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                </div>
+          
+          </div>
+      </div>      
+    </div>                 
    
     
     
   {% block javascripts %}  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+         <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   
+   <script type="text/javascript">
+       
+            $('#modalconfirm').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                 var id = button.data('ideleve');
+                
+                console.log(id)// Extract info from data-* attributes
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                var modal = $(this)
+                modal.find('.modal-title').text('Attention')
+                modal.find('.modal-body input').val(id)
+            });
+       
+                        </script>     
  
  
  {% endblock %}   

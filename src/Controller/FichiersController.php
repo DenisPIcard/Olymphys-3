@@ -553,27 +553,27 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                        if ($id_equipe!='prof'){
                         
                              $citoyen=$repositoryEleves->find(['id'=>$id_user]);
-                             $Equipe_choisie=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
-                             $lettre_equipe= $Equipe_choisie->getLettre();//on charge la lettre de l'équipe 
+                             $equipe=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
+                             $lettre_equipe= $equipe->getLettre();//on charge la lettre de l'équipe 
                                 if(!$lettre_equipe){                                     // si la lettre n'est pas attribuée on est en phase interac
                                                                  //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
-                                    $numero_equipe=$Equipe_choisie->getNumero();
-                                    $TitreProjet = $Equipe_choisie->getTitreProjet();
+                                    $numero_equipe=$equipe->getNumero();
+                                    $TitreProjet = $equipe->getTitreProjet();
                                     }                  
                              
                          }
                        else{
                            $citoyen=$repositoryUser->find(['id'=>$id_user]);
-                           $Equipe_choisie='prof';
+                           $equipe='prof';
                        }
      }
      else
-     {$Equipe_choisie=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
-                             $lettre_equipe= $Equipe_choisie->getLettre();//on charge la lettre de l'équipe 
+     {$equipe=$repositoryEquipesadmin->find(['id'=>$id_equipe]);
+                             $lettre_equipe= $equipe->getLettre();//on charge la lettre de l'équipe 
                                 if(!$lettre_equipe){                                     // si la lettre n'est pas attribuée on est en phase interac
                                                                  //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
-                                    $numero_equipe=$Equipe_choisie->getNumero();
-                                    $TitreProjet = $Equipe_choisie->getTitreProjet();
+                                    $numero_equipe=$equipe->getNumero();
+                                    $TitreProjet = $equipe->getTitreProjet();
                                     }                  
          
          
@@ -588,7 +588,7 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
         if(isset($lettre_equipe)){                                     // si la lettre est attribuée on est en phase  concours nationale
            
                                   //On cherche un mémoire et son annexe déjà déposés pour cette équipe                            }
-            $TitreProjet = $Equipe_choisie->getTitreProjet();
+            $TitreProjet = $equipe->getTitreProjet();
             }    
                                                     //Si une fiche est déjà déposée on demande si on veut écraser le précédent
             $form3 = $this->createForm(ConfirmType::class);  
@@ -642,12 +642,12 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
                           $type_fichier=$this->getParameter('type_fichier')[$num_type_fichier];
                      
                             
-                      return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));
+                      return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));
                     }
                 if ($form3->get('NON')->isClicked())
                     {
                     $filesystem->remove($this->getParameter('app.path.tempdirectory').'/'.$nom_fichier);    
-                    return $this->redirectToRoute('affichier_liste_fichier_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));
+                    return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));
                     }
                 }
             $request->getSession()
@@ -656,7 +656,7 @@ public function  confirme_charge_fichier(Request $request, $file_equipe,MailerIn
             $content = $this
                             ->renderView('adminfichiers\confirm_charge_fichier.html.twig', array(
                                                     'form'=>$form3->createView(), 
-                                                    'equipe'=>$Equipe_choisie, 
+                                                    'equipe'=>$equipe, 
                                                     
                                                     'typefichier'=>$num_type_fichier
                                                      )
@@ -1012,11 +1012,14 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                          }
                        if ($num_type_fichier == 6){
                             $fichier= new Fichiersequipes();
-                          
+                            
                        }   
                       }
-                      
-                              
+                        
+                      if($this->session->get('concours')=='interacadémique' ){    
+                             $fichier= new Fichiersequipes();
+                             $message='';
+                      }      
                                $fichier->setTypefichier($num_type_fichier);
                               $fichier->setEdition($edition);
                               if (isset($equipe)){
@@ -1074,7 +1077,7 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                 }
                $this->MailConfirmation($mailer,$type_fichier,$info_equipe);
                 
-                return $this->redirectToRoute('core_home');     
+                return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_prof'));     
                 }        
     }
     

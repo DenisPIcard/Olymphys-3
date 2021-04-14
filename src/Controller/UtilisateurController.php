@@ -115,14 +115,14 @@ class UtilisateurController extends AbstractController
          $equipe = new Equipesadmin(); 
           $form1=$this->createForm(InscrireEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne()]);
          $modif=false;
-         }
+         $eleves=[];         }
          else{
            $equipe=   $repositoryEquipesadmin->findOneById(['id'=>intval($idequipe)]);
            $eleves= $repositoryEleves->findByEquipe(['equipe'=>$equipe]);
            $form1=$this->createForm(ModifEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne(),'eleves'=>$eleves]); 
            $modif=true;
          }
-         
+        
          $form1->handleRequest($request); 
           if ($form1->isSubmitted() && $form1->isValid()){
               
@@ -192,7 +192,7 @@ class UtilisateurController extends AbstractController
               
           
           }
-         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView(),'equipe'=>$equipe,'concours'=>$this->session->get('concours'),'choix'=>'liste_prof', 'modif'=>$modif));
+         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView(),'equipe'=>$equipe,'concours'=>$this->session->get('concours'),'choix'=>'liste_prof', 'modif'=>$modif, 'eleves'=>$eleves));
              
          }
          else{  return $this->redirectToRoute('core_home');}
@@ -207,6 +207,37 @@ class UtilisateurController extends AbstractController
         
         
     }
-   
+   /**
+     * 
+     *  @Security("is_granted('ROLE_PROF')")
+     *  
+     * @Route("/Utilisateur/supr_eleve", name="supr_eleve")
+     */ 
+        
+   public function supr_eleve(Request $request){
+       
+       $em=$this->getDoctrine()->getManager();
+       $repositoryEleves=$em->getRepository('App:Elevesinter');
+       $repositoryFichiers=$em->getRepository('App:Fichiersequipes');
+      
+       $ideleve=$request->get('myModalID');
+       $eleve= $repositoryEleves->findOneById(['id'=>intval($ideleve)]); 
+       $equipe=$eleve->getEquipe();
+       if ($eleve->getAutorisationphotos() !=null){
+           $autorisation = $eleve->getAutorisationphotos();
+           $file= $autorisation->getFichier();
+           copy('fichiers/autorisations/'.$file, 'fichiers/autorisations/archives/'.$file);// dans le cas où l'élève d'ésinscrit a participé aux cia avec une autroisation photo mais ne participe plus au cn 
+           
+           $eleve->setAutorisationphotos(null);
+           $em->remove($autorisation);
+           $em->flusch();
+           
+       }
+    $em->remove($eleve);
+    $em->flush();
+   return  $this->redirectToRoute('inscrire_equipe', array('idequipe'=>$equipe->getId()));
+       
+       
+   }
     
 }
