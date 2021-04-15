@@ -255,5 +255,31 @@ class UtilisateurController extends AbstractController
        
        
    }
-    
+   
+   
+   /**
+     * 
+     *  @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *  
+     * @Route("/Utilisateur/setlastvisit", name="setlastvisit")
+     */ 
+    public function setlastvisite(Request $request ){//fonction provisoire à supprimer après le mise au point du site
+        
+        $em=$this->getDoctrine()->getManager();
+        $repositoryUser=$em->getRepository('App:User');
+        $users=$repositoryUser->findAll();
+        foreach($users as $user){
+            
+            $user->setLastVisit( new \datetime('now'));
+            $em->persist($user);
+            $em->flush();
+            
+            
+        }
+        
+        return $this->redirectToRoute('core_home');
+        
+        
+        
+    }
 }
