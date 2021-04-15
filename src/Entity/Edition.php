@@ -70,6 +70,11 @@ class Edition
         */    
         protected $concourscn;
 
+        /**
+         * @ORM\Column(type="datetime")
+         */
+        private $dateclotureinscription;
+
        
         
   
@@ -185,6 +190,18 @@ class Edition
     public function setEncours(?bool $encours): self
     {
         $this->encours = $encours;
+
+        return $this;
+    }
+
+    public function getDateclotureinscription(): ?\DateTimeInterface
+    {
+        return $this->dateclotureinscription;
+    }
+
+    public function setDateclotureinscription(\DateTimeInterface $dateclotureinscription): self
+    {
+        $this->dateclotureinscription = $dateclotureinscription;
 
         return $this;
     }

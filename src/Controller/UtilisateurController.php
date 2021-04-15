@@ -218,11 +218,17 @@ class UtilisateurController extends AbstractController
        
        $em=$this->getDoctrine()->getManager();
        $repositoryEleves=$em->getRepository('App:Elevesinter');
-       $repositoryFichiers=$em->getRepository('App:Fichiersequipes');
+     
       
        $ideleve=$request->get('myModalID');
        $eleve= $repositoryEleves->findOneById(['id'=>intval($ideleve)]); 
        $equipe=$eleve->getEquipe();
+       $eleves= $repositoryEleves->createQueryBuilder('e')
+                                                   ->where('e.equipe =:equipe')
+                                                   ->setParameter('equipe',$equipe)
+                                                   ->getQuery()->getResult();
+       if (count($eleves)>2){
+       
        if ($eleve->getAutorisationphotos() !=null){
            $autorisation = $eleve->getAutorisationphotos();
            $file= $autorisation->getFichier();
@@ -234,7 +240,17 @@ class UtilisateurController extends AbstractController
            
        }
     $em->remove($eleve);
-    $em->flush();
+       $em->flush();}
+      if  (count($eleves)==2) {
+          
+          $request->getSession()
+                            ->getFlashBag()
+                            ->add('alert','Désinscription impossible. Une équipe ne peut avoir moins de deux élèves !');
+          
+          
+      }
+       
+       
    return  $this->redirectToRoute('inscrire_equipe', array('idequipe'=>$equipe->getId()));
        
        

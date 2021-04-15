@@ -86,8 +86,15 @@ class CoreController extends AbstractController
      //$session->set('user', $user);
      
     }
-    
-    return $this->render('core/index.html.twig');
+   //dd($this->session->get('resetpwd'));
+    if($this->session->get('resetpwd')==true){
+        return $this->redirectToRoute('forgotten_password');
+        
+    }
+     if(($this->session->get('resetpwd')==false) or ($this->session->get('resetpwd')==null))
+     {
+             return $this->render('core/index.html.twig');
+    }
   }
     
 

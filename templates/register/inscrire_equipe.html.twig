@@ -14,7 +14,15 @@ Inscrire une équipe
     </center>
 {% endblock %}
 {% block body %}
-  
+   {% for message in app.session.flashbag.get('info') %}
+                            <div class="alert alert-info"> {{ message }}</div>
+                          {% endfor %}
+                           {% for message in app.session.flashbag.get('alert') %}
+                            <div class="alert alert-danger"> {{ message }}</div>
+                          {% endfor %}
+                          {% for message in app.session.flashbag.get('success') %}
+                            <div class="alert alert-info"> {{ message }}</div>
+                          {% endfor %}
 
     <div class="container-fluid ">
         <div class="formulaire">

@@ -605,7 +605,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set lastVisit
      */
-    public function setLastVisit()
+    public function setLastVisit($lastVisit)
     {
         $this->lastVisit = $lastVisit;
         return $this;

@@ -24,10 +24,21 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Service\Mailer;
 
 class SecurityController extends AbstractController
-{  
+{   private $session;
+   public function __construct(SessionInterface $session)
+    {
+      
+        $this->session=$session;
+    }
+    
+    
+    
+    
+    
     /**
      * @Route("/login", name="login")
      */
@@ -217,7 +228,7 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/password_request.html.twig', [
-            'passwordRequestForm' => $form->createView()
+            'passwordRequestForm' => $form->createView(),'resetpwd'=>$this->session->get('resetpwd')
         ]);
     }
     
@@ -255,7 +266,7 @@ class SecurityController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
+           $this->session->set('resetpwd',null);
             $request->getSession()->getFlashBag()->add('success', "Votre mot de passe a été renouvelé.");
 
             return $this->redirectToRoute('login');

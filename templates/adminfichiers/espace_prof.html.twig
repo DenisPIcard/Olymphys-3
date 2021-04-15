@@ -83,7 +83,13 @@
                        
                         <a href="{{ path('inscrire_equipe', {'idequipe': equipe.id} )  }}" type="button" class="btn btn-primary">Modifier </a>
                     </div>
-                     
+                     <div class="row">
+                          {% if role=='ROLE_PROF' %}   
+            
+            <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></center>
+           
+        {% endif %}
+                     </div>
                 </div>
                 {% endif %}
     </div>
