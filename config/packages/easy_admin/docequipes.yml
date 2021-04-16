@@ -19,7 +19,7 @@ easy_admin :
                     - {property : 'type', label: 'Type'}
                     - {property : 'titre', label: 'Titre'}
                     - {property: 'description', label : 'Description'}
-                    - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoiresinter.html.twig', base_path: '%app.path.docequipes.localhost%/docequipes',propertyFile: 'fichierFile'}
+                    - {property : 'fichier', label : 'Fichier', template : 'Admin\customizations\vich_uploader_memoiresinter.html.twig', base_path: '%app.path.docequipes.localhost%/',propertyFile: 'fichierFile'}
                     - {property: 'updatedat', type: 'datetime',label : 'Mis à jour  le '}
                  
              new :
@@ -30,9 +30,9 @@ easy_admin :
                       - {property: 'description', label : 'Description'}
                       - { property : 'fichierFile', label: 'Choisir le fichier',  type : 'vich_file',  type_options : {'allow_delete' : false}}
              edit :
-                  title : 'Nouveau document'
+                  title : 'Editer le document'
                   fields: 
-                      - { property : 'type', label : 'Type de document' ,type: 'choice' , type_options :{'choices' : [pdf, zip] }}
+                      - { property : 'type', label : 'Type de document' ,type: 'choice' , type_options  :{'choices' : '%status%'  }}
                       - { property : 'titre',label : 'Titre du document', type: 'text' }
                       - {property: 'description', label : 'Description'}
                       - { property : 'fichierFile', label: 'Choisir le fichier',  type : 'vich_file',  type_options : {'allow_delete' : false}}       

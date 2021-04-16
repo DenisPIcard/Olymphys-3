@@ -32,6 +32,8 @@ class UserRepository extends ServiceEntityRepository
                   ->Where('u.autorisationphotos is null')
                  ->andWhere($qb->expr()->like('u.roles',':roles'))
                   ->setParameter('roles','a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}')
+                  ->orWhere($qb->expr()->like('u.roles',':roles'))
+                  ->setParameter('roles','%i:0;s:9:"ROLE_PROF";i:2;s:9:"ROLE_USER";%')
                   ->addOrderBy('u.nom','ASC');
       
           return $qb1;
@@ -43,6 +45,8 @@ class UserRepository extends ServiceEntityRepository
           $qb1 =$er->createQueryBuilder('u')
                   ->andWhere($qb->expr()->like('u.roles',':roles'))
                   ->setParameter('roles','%i:0;s:9:"ROLE_PROF";i:2;s:9:"ROLE_USER";%')
+                  ->orWhere($qb->expr()->like('u.roles',':role'))
+                  ->setParameter('role','%a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}%')
                   ->addOrderBy('u.nom','ASC');
        //dd($qb1);
           return $qb1;

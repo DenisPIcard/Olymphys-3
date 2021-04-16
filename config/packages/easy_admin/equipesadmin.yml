@@ -59,10 +59,11 @@ easy_admin :
                   - 'titreProjet'
                   - {property : 'centre', type: 'entity' , type_options : { class : 'App\Entity\Centrescia',query_builder : 'App\Repository\CentresciaRepository::getCentres', 'choice_label' : 'getCentre'}}
                   - { property : 'selectionnee' , type : 'checkbox'}
-                  - { property : 'idProf1'} #,label : 'Professeur1' ,type_options : { class : 'App\Entity\User',query_builder : 'App\Repository\UserRepository::getProfesseur', 'choice_label' : 'getNomPrenom'}} 
+                  - { property : 'idProf1',label : 'Professeur1' ,type_options : { class : 'App\Entity\User',query_builder : 'App\Repository\UserRepository::getProfesseur', 'choice_label' : 'getNomPrenom'}} 
                   - 'nomProf1'
                   - 'prenomProf1'
-                  - { property : 'idProf2'}
+                  - { property : 'idProf2',label : 'Professeur2' ,type_options : { class : 'App\Entity\User',query_builder : 'App\Repository\UserRepository::getProfesseur', 'choice_label' : 'getNomPrenom'}} 
+    
                   
                   - 'nomProf2'
                   - 'prenomProf2'                  

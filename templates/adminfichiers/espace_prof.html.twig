@@ -281,7 +281,7 @@
                    <hr>
                </div>
            </div>
-    {% if (role != 'ROLE_JURYCIA' ) or  (role != 'ROLE_JURY') %}  
+    {% if (role != 'ROLE_JURYCIA' ) and  (role != 'ROLE_JURY') %}  
          
                <div class="row text-center">
                    <div class="col"> 
@@ -344,7 +344,7 @@
                   {% endif %}
                   
                        <div class="col-1"> 
-                         {% if (role!='ROLE_JURY') or (role!='ROLE_JURYCIA') %}
+                         {% if (role=='ROLE_PROF')%}
                                  <a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~ '-'~concours~'-6-'~eleve.id~'-'} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a>
                       
                          {%  endif %} 
@@ -355,7 +355,7 @@
           
             <div class="row text-center">
                           <div class="col"> 
-                                     Des professeurs :
+                                     Des professeurs
                           </div>
              </div>
        
@@ -389,7 +389,7 @@
                                                       <a href="{{ asset('/fichiers/autorisations/'~prof.autorisationphotos.fichier)}}">{{prof.autorisationphotos.fichier}}</a>
                                              </div>
                                    {%  endif %} 
-                                   {% if (role!='ROLE_JURY' ) or (role!='ROLE_JURYCIA') %}
+                                   {% if role=='ROLE_PROF' %}
                                           <div class="col-1"> 
                                                 <a href="{{ path('fichiers_charge_fichiers',{infos : 'prof'~ '-'~concours~'-6-'~prof.id~'-'~equipe.id} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a> 
                                           </div>

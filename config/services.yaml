@@ -14,8 +14,8 @@ parameters:
     app.path.docequipes.site : /../public/docequipes
     app.path.docequipes.localhost : /docequipes
     status:
-        Zip: 1
-        Pdf: 0
+        Zip: zip
+        Pdf: pdf
     
     env(DATABASE_URL): "mysql://root:@127.0.0.1:3306/olymphys_odpf"
     
