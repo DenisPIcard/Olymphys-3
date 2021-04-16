@@ -27,7 +27,14 @@ vich_uploader:
                 service: vich_uploader.namer_property
                 options: { property: 'personalNamer'}
         
-        
+        docequipes:
+            uri_prefix: '%app.path.docequipes%'
+            upload_destination: '%app.path.docequipes%'
+            inject_on_load: true
+            delete_on_update: true
+            delete_on_remove: true
+           
+               
         
         
                 

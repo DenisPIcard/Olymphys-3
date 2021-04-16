@@ -18,7 +18,7 @@ easy_admin :
                 actions : 
                     - { name : 'new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
                     - { name: 'edit', icon: 'pencil', label: false }
-                    - { name: 'delete', icon: 'trash-alt', label: false }
+                    - { name: 'delete', icon: 'trash-alt', label: false, permission : 'ROLE_SUPER_ADMIN', ask_confirm : true }
                 batch_actions: [ {name : 'extractionprofsequipescn', 'label' : 'Extraire_les professeurs_cn'}]
                 max_results: 50
                 
@@ -34,6 +34,7 @@ easy_admin :
                   - { property : 'selectionnee' , type : 'toggle'}
                   - { property : 'Prof1', label : 'Professeur1'}
                   - { property : 'Prof2', label : 'Professeur2'}
+                  - { property : 'inscrite', label : 'Inscrite'}
                      
             new :
                 title : 'Ajouter une équipe'

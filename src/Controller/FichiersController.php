@@ -184,8 +184,11 @@ public function choix_equipe(Request $request,$choix) {
      $repositoryEleves=$this->getDoctrine()
 		->getManager()
 		->getRepository('App:Elevesinter');
+      $repositoryDocequipes= $this->getDoctrine()
+                                 ->getManager()
+                                 ->getRepository('App:Docequipes');
     $edition=$this->session->get('edition');
-   
+    $docequipes=$repositoryDocequipes->findAll();
     $centres=$repositoryCentres->findAll();
     $datelimcia = $edition->getDatelimcia();
     $datelimnat=$edition->getDatelimnat(); 
@@ -361,7 +364,7 @@ if (($choix=='liste_prof')){
 
                                          $content = $this
                                                   ->renderView('adminfichiers\choix_equipe.html.twig', array(
-                                                      'liste_equipes'=>$liste_equipes,  'phase'=>$phase, 'user'=>$user,'choix'=>$choix,'role'=>$role
+                                                      'liste_equipes'=>$liste_equipes,  'phase'=>$phase, 'user'=>$user,'choix'=>$choix,'role'=>$role, 'doc_equipes'=>$docequipes
                                                      ) );
                                           return new Response($content);  
 
@@ -1237,6 +1240,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
       $repositoryElevesinter= $this->getDoctrine()
                                  ->getManager()
                                  ->getRepository('App:Elevesinter');
+     
     $Infos=explode('-',$infos);
 
     $id_equipe=$Infos[0];
@@ -1256,6 +1260,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
        
     $equipe_choisie= $repositoryEquipesadmin->find(['id'=>$id_equipe]);
      $centre=$equipe_choisie->getCentre();
+    
     
     $qb1 =$repositoryFichiersequipes->createQueryBuilder('t')//Les fichiers sans les autorisations photos 
                              ->LeftJoin('t.equipe', 'e')

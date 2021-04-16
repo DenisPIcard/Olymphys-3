@@ -42,12 +42,12 @@ class LoginSubscriber   implements EventSubscriberInterface
       }
        if ($lastVisit != null){
         $this->session->set('resetpwd', null);
-          
-      }
-      $user->setLastVisit(new \Datetime());
+        $user->setLastVisit(new \Datetime());
+     
+      
       
       $this->em->persist($user);
-      $this->em->flush();
+       $this->em->flush();}
     }
   }
 }

@@ -80,13 +80,9 @@ class CoreController extends AbstractController
      $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
      $this->session->set('datelimdiaporama', $datelimdiaporama);
      
-     //dd($this->session);
-     //$session->set('edition',$edition);  
-     //  dd($user);
-     //$session->set('user', $user);
-     
+  
     }
-   //dd($this->session->get('resetpwd'));
+   
     if($this->session->get('resetpwd')==true){
         return $this->redirectToRoute('forgotten_password');
         

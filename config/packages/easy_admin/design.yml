@@ -12,6 +12,7 @@ easy_admin :
                     - { entity: 'Adminsite' , permission: 'ROLE_SUPER_ADMIN', icon : 'cogs'}
                     - { entity: 'User', label : 'Utilisateurs', permission: 'ROLE_SUPER_ADMIN', icon : 'user' }
                     - { entity: 'Jures' , permission: 'ROLE_SUPER_ADMIN', icon : 'graduation-cap'}
+                    - { entity: 'Docequipes', label : 'Documents à télécharger',  icon : 'book' }
                     - label : 'Concours interacadémique'
                       icon : 
                       css_class: 'text-bold'

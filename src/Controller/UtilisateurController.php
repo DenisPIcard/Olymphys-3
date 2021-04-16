@@ -186,11 +186,14 @@ class UtilisateurController extends AbstractController
              $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
              
                
+             if($modif==false){
                
-               
-              return $this->redirectToRoute('fichiers_choix_equipe', array('choix' =>'liste_prof'));
-              
-          
+              return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof ', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_equipe'));
+              }
+            if ($modif ==true){
+                
+                return $this->redirectToRoute('inscrire_equipe', array('idequipe'=>$equipe->getId()));  
+            }
           }
          return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView(),'equipe'=>$equipe,'concours'=>$this->session->get('concours'),'choix'=>'liste_prof', 'modif'=>$modif, 'eleves'=>$eleves));
              

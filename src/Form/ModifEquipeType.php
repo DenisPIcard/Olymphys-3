@@ -180,7 +180,7 @@ class ModifEquipeType extends AbstractType
                     ->add('save',      SubmitType::class)
                     ->add('inscrite',     CheckboxType::class,[
                              'value'=>1,
-                             'required'=>true,
+                             'required'=>false,
                              'mapped' => true,
                           
                     ]);

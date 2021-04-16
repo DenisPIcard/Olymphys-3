@@ -6,66 +6,48 @@
 {% block titre3 %}
     <center> Concours {{phase}}<br>
         {% if role=='ROLE_JURY' %}
-          {{jure.prenomJure}}   {{jure.nomJure}}
-          <br> membre du jury 
+              {{jure.prenomJure}}   {{jure.nomJure}}
+              <br> membre du jury 
          {% else %}
-         {{user.prenom}} {{user.nom}}
+             {{user.prenom}} {{user.nom}}
         {% endif %}
         {% if role =='ROLE_ORGACIA' or role =='ROLE_JURYCIA'    or role =='ROLE_COMITE'%}
             {% if role=='ROLE_COMITE' %}
                 <br>Membre du comité national
-                {% endif %}
+            {% endif %}
             {% if phase=='interacadémique' %}
-            {%if (choix=='deposer') or (choix=='presentation') %}
-                
-        <br>Dépot du fichier  d'une équipe 
-        {% if role!= 'ROLE_COMITE' %}
-        du centre {{centre}} 
-        {% endif %}
-        {%endif %}
-         {%if choix=='liste_prof' %}
-        <br>Voir les fichiers d'une équipe du centre {{centre}} 
-        {%endif %}
-        {% endif %}
+                 {%if (choix=='deposer') or (choix=='presentation') %}
+                          <br>Dépot du fichier  d'une équipe 
+                      {% if role!= 'ROLE_COMITE' %}
+                             du centre {{centre}} 
+                      {% endif %}
+                 {%endif %}
+                 {%if choix=='liste_prof' %}
+                          <br>Voir les fichiers d'une équipe du centre {{centre}} 
+                 {%endif %}
+             {% endif %}
         {% endif %}
          {% if phase=='national' %}
             {%if (choix=='deposer') or (choix=='presentation') %}
-        <br>Dépot du fichier  d'une équipe
-        {%endif %}
-         {%if choix=='liste_prof' %}
-        <br>Voir les fichiers d'une équipe
-        {%endif %}
+                    <br>Dépot du fichier  d'une équipe
+             {%endif %}
+             {%if choix=='liste_prof' %}
+                        <br>Voir les fichiers d'une équipe
+               {%endif %}
         {% endif %}
         
-        
-        
-        
         {% if role=='ROLE_PROF' %}
-           
-         {%if choix=='liste_prof' %}
-        <br>Choisir l'équipe
-        {%endif %}
-        
-        {%endif %}
-        
-        
-        
-        
-          
-          
-          
-          
-          
+           {%if choix=='liste_prof' %}
+                        <br>Choisir l'équipe
+            {%endif %}
+         {%endif %}
+            
      </center> 
-          
-          
-          
-          
+           
 {% endblock %}
 
-
 {% block body %}
-    <div class="well">
+    <div class="container">
         {% for message in app.session.flashbag.get('info') %}
             <div class="alert alert-info"> {{ message }}</div>
         {% endfor %}       
@@ -121,11 +103,39 @@
             </table>
         {% endif %} 
     </div> 
-      
+      {% if is_granted('ROLE_PROF') %}
+          {% if doc_equipes!=null %}  
+              <div class="container">
+                  <h3><center>Documents à télécharger </center></h3>
+                 <table class="table table-responsive table-bordered text-center"">
+                                        <thead class="thead-dark">
+                                          <tr>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Titre du document</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Télécharger</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for fichier in doc_equipes %}
+                                          <tr>
+                                            <td >{% if fichier.type=='pdf' %} <img src="{{ asset('images/pdf_icon.png')}}">     {% endif %}
+                                                    {% if fichier.type=='zip' %} <img src="{{ asset('images/icon_zip.png')}}">       {% endif %}
+                                            
+                                            </td>
+                                            <td>{{ fichier.titre }}</td>
+                                            <td>{{ fichier.description }}</td>
+                                            <td> <a href="{{ asset('docequipes/'~fichier.fichier)}}"> <button type="button" title="Téléchargerr">  <i class="fas fa-download"></i></i></i></button></a></td>
+                                          </tr>
+                                          {% endfor %}
+                                        </tbody>
+                 </table>
+              </div>
+              
+              
             
-            
-           
-       
+           {% endif %}
+      {% endif %} 
         {% if centre is defined %}   
          {% if (role=='ROLE_ORGACIA') or (role=='ROLE_JURYCIA') %}
             <center><a href="{{ path('core_home') }}" >Retour l'accueil</a></center>
