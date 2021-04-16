@@ -127,9 +127,13 @@
            <div class="col-8">
                Fichier
            </div>
+        
            <div class="col-1">
-               Déposer
-           </div>
+                {% if role=='ROLE_COMITE' or role=='ROLE_ORGACIA' or role=='ROLE_PROF'%}
+                   Déposer
+                {% endif %}
+          </div>
+           
         </div>
    
        {%  for i in liste %}
@@ -179,7 +183,7 @@
                                              {% endif %} 
                                       {% endif %}
                                     {% endif %}
-                            {% elseif (role!='ROLE_PROF') %}
+                            {% elseif role=='ROLE_COMITE' or role=='ROLE_ORGACIA'%}
                                     <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></div>    
                             {% endif %}   
                             {% if( i==4 or i==3 or i == 5 ) and (role=='ROLE_PROF')%}  
@@ -233,7 +237,7 @@
                  <div class="row ">
                      <div class="col-3 text-center">
                          {% if role=='ROLE_PROF' %}
-                               <a href="{{ path('videos_liens_videos',{infos: equipe.id~'-'~concours~'-'~'nouvelle-'} )}}" "> <button type="button" title="Nouvelle vidéo">  <i class="fa fa-plus"></i></button></a></td>
+                              Nouvelle vidéo :  <a href="{{ path('videos_liens_videos',{infos: equipe.id~'-'~concours~'-'~'nouvelle-'} )}}" "> <button type="button" title="Nouvelle vidéo">  <i class="fa fa-plus"></i></button></a></td>
                          {% endif %}
                          </div>
                     <div class="col-7"></div>

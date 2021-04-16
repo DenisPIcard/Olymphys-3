@@ -340,7 +340,9 @@ Inscrire une équipe
         {% if modif==true %} 
             <a href="{{ path('fichiers_afficher_liste_fichiers_prof',{infos:equipe.id~'-'~concours~'-'~choix})}}" type="button" class="btn btn-primary">Retour à la page de l'équipe</a>
          {% endif %}
-                    
+          {% if modif==false %} 
+            <a href="{{ path('core_home')}}" type="button" class="btn btn-primary">Annuler</a>
+         {% endif %}          
                     
                 </div>
          <div class="col">
