@@ -79,7 +79,7 @@ class CoreController extends AbstractController
      $this->session->set('datelimlivredor', $datelimlivredor);
      $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
      $this->session->set('datelimdiaporama', $datelimdiaporama);
-     
+      $this->session->set('dateclotureinscription', new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d H:i:s')));
   
     }
    

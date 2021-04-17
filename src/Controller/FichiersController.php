@@ -871,14 +871,14 @@ public function  charge_fichiers(Request $request, $infos ,MailerInterface $mail
                                                       }
                 
             }
-            if($num_type_fichier==4){
+            if(($num_type_fichier==4) or ($num_type_fichier==7)){
                      $violations = $validator->validate( $file,[        new NotBlank(),
                                                                                         new File([
                 'maxSize'=> '1024k',
                 'mimeTypes' =>['application/pdf', 'application/x-pdf',  "application/msword",
                         'application/octet-stream',
                            'application/vnd.oasis.opendocument.text',
-                          ' image/jpeg'],
+                          'image/jpeg'],
                 'mimeTypesMessage'=>'Veuillez télécharger un fichier du bon format'
                                                                                   ])
                              ]

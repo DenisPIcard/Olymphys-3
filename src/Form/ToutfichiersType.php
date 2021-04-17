@@ -50,7 +50,9 @@ class ToutfichiersType extends AbstractType
               case '6':       $choice=  [ 'Autorisations photos (pdf,1M max )'=>6,];
               
                   break;   
+               case '7':       $choice=  [ 'Questionnaire équipe(1M max, doc, docx, pdf, jpg, odt)'=>7];
               
+                  break;   
         }
                
         

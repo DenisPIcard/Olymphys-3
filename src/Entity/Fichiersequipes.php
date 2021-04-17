@@ -263,6 +263,11 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
             
             $fileName=$edition.'-eq-'.$libel_equipe.'-autorisation photos-'.$nom.'-'.uniqid();
             }
+             if ($this->getTypefichier()==7){
+                           
+            
+            $fileName=$edition.'-eq-'.$libel_equipe.'-questionnaire equipe-'.$nom_equipe.'-'.uniqid();
+            }
            return $fileName;
  }
     
@@ -359,6 +364,9 @@ public function personalNamer()    //permet à easyadmin de renonnmer le fichier
          }
           if ($this->getTypefichier()==6){
              $path= '/autorisations/';
+         }
+          if ($this->getTypefichier()==7){
+             $path= '/questionnaires/';
          }
           return $path;
          

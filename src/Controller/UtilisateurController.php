@@ -92,11 +92,11 @@ class UtilisateurController extends AbstractController
     
    
     
-        if($date<$this->session->get('edition')->getDateouverturesite()){
+        if($date<$this->session->get('edition')->getDateouverturesite() or ($date>$this->session->get('edition')->getDateclotureinscription())){
         
            $request->getSession()
                                                      ->getFlashBag()
-                                                     ->add('info', 'Les inscriptions sont closes, Inscriptions entre le '.$this->session->get('edition')->getDateouverturesite()->format('d-m-Y').' et le '.$this->session->get('edition')->getDatelimcia()->format('d-m-Y').' 22 heures(heure de Paris)') ;
+                                                     ->add('info', 'Les inscriptions sont closes. Inscriptions entre le '.$this->session->get('edition')->getDateouverturesite()->format('d-m-Y').' et le '.$this->session->get('edition')->getDatelimcia()->format('d-m-Y').' 22 heures(heure de Paris)') ;
             
             
             return $this->redirectToRoute('core_home');
