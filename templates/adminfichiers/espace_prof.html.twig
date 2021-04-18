@@ -142,12 +142,16 @@
                   {%  if liste_fichiers!=null %}  
            
                             {% for fichier in liste_fichiers %}
-                                        {% if fichier.typefichier==i %}
-                                            <div class="col-3"> <font color="green">{{ type_fichier_lit[i]}}</font>({{ fichier.updatedAt|date('d-m-Y H:i:s') }})</div>
-                                                    
+                                        {% if fichier.typefichier==i %} {# problème d'affichage  pour i = 5 et 7 inexpliquable en mode prod, pas de prb en mode dev #}
+                                               <div class="col-3"><font color="green">
+                                            {{ type_fichier_lit[i]}}{% if i== 5 %} Diaporama{% endif %}
+                                                                            {% if i==7  %} Questionnaire{% endif %}
+                                                                            <div class="majdate">({{ fichier.updatedAt|date('d-m-Y H:i:s') }})</div>
+                                            </font>      
+                                            </div>
                                                       <div class="col-8">     
                                                             {% if type_fichier[i]!='annexes' %}
-                                                                     <a href="{{ asset('fichiers/'~type_fichier[i]~'/'~fichier.fichier) }}" target="_blank">{{ fichier.fichier}}</a>
+                                                                    <a href="{{ asset('fichiers/'~type_fichier[i]~'/'~fichier.fichier) }}" target="_blank">{{ fichier.fichier}}</a>
                                                             {% endif  %}
                                                             {% if type_fichier[i]=='annexes' %}
                                                                      <a href="{{ asset('fichiers/memoires/'~fichier.fichier) }}" target="_blank">{{ fichier.fichier}}</a>
@@ -160,8 +164,12 @@
                   {% endif %}   
                   {%  if attrib==0 %} 
                      
-                      <div class="col-3 "><font color="red">{{ type_fichier_lit[i]}}</font> </div>
-                      
+                  <div class="col-3 "><font color="red">
+                       {{ type_fichier_lit[i]}}{% if i== 5 %} Diaporama{% endif %}
+                                                         {% if i==7  %} Questionnaire{% endif %}
+                      </font> 
+                  </div>
+                     
                       <div class="col-8">  Non encore déposé</div> 
                  {% endif %}
                  {% if role!='ROLE_JURY'%}
@@ -255,7 +263,7 @@
                     {%  for video in listevideos%}
                         <div class="row text-center">
                            <div class="col-3">
-                               {{ video.nom}}
+                               {{ video.nom}} <div class="majdate">({{ video.updatedAt|date('d-m-Y H:i:s') }})</div>
                             </div>
                        
                             <div class="col-7">

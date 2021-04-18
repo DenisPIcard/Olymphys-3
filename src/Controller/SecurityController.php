@@ -26,6 +26,10 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Service\Mailer;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 
 class SecurityController extends AbstractController
 {   private $session;
@@ -102,7 +106,7 @@ class SecurityController extends AbstractController
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
             $user->setCreatedAt(new \Datetime());
-           
+            $user->setLastVisit(new \Datetime());
             
             // Enregistre le membre en base
             $em = $this->getDoctrine()->getManager();
@@ -141,22 +145,25 @@ class SecurityController extends AbstractController
         $response = $interval > $daySeconds ? false : $reponse = true;
         return $response;
     }
-    
+    //@Entity("user", expr="repository.find(id)")
     /**
+     * 
      * @Route("/verif_mail/{id}/{token}", name="verif_mail")
+     * @ParamConverter("id", class="App:User")
      */
     public function verifMail(User $user, Request $request, Mailer $mailer, string $token)
     {
- 
+
        // interdit l'accès à la page si:
         // le token associé au membre est null
         // le token enregistré en base et le token présent dans l'url ne sont pas égaux
         // le token date de plus de 24h
+      
         if ($user->getToken() === null || $token !== $user->getToken() || !$this->isRequestInTime($user->getPasswordRequestedAt()))
         {
-            throw new AccessDeniedHttpException();
+            $this->redirectToRoute('login');
         }
-
+        
             // réinitialisation du token à null pour qu'il ne soit plus réutilisable
             $user->setToken(null);
             $user->setPasswordRequestedAt(null);

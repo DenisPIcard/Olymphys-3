@@ -19,12 +19,13 @@ class CoreController extends AbstractController
         {
             $this->session = $session;
         }
-    
+        
+   
     
     /**
      * @Route("/", name="core_home")
      */
-  public function index(SessionInterface $session)
+  public function index()
   {  
      
      $user=$this->getUser();
