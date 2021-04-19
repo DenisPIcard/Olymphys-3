@@ -38,18 +38,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     public function processException(ExceptionEvent $event)
     {    
-        if ($event->getRequest()->get('_route')=='verif_mail'){
-            $id=$event->getRequest()->get('id');
-            $token=$event->getRequest()->get('token');
-            $response = $this->forward('verif_mail');
-                          return $response;
                     
         }
     }
 
     public function logException(ExceptionEvent $event)
     {     
-       return new RedirectResponse($this->urlGenerator->generate('core_home'));
+       
     }
 
     public function notifyException(ExceptionEvent $event)

@@ -29,8 +29,8 @@ class CoreController extends AbstractController
   {  
      
      $user=$this->getUser();
-      $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-   // dump($user);
+     $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
+   
   /*   if(($user==null) or  ($user->getRoles()[0]!='ROLE_SUPER_ADMIN')){
   
                   $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
@@ -50,9 +50,9 @@ class CoreController extends AbstractController
     {    
     $datelimcia = $edition->getDatelimcia();
     $datelimnat= $edition->getDatelimnat(); 
-     $datecia= $edition->getConcourscia();
+    $datecia= $edition->getConcourscia();
     $datecn= $edition->getConcourscn();
-   $dateouverturesite= $edition->getDateouverturesite();
+    $dateouverturesite= $edition->getDateouverturesite();
     $dateconnect= new \datetime('now');
       if ($dateconnect>$datecia) {
         $concours='national';
@@ -72,7 +72,7 @@ class CoreController extends AbstractController
      date_date_set($datelimphotoscn,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')+30);
      date_date_set($datelivredor,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')-1 );
      date_date_set($datelimdiaporama,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')-7 );
-      date_date_set($datelimlivredor,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')+8 );
+     date_date_set($datelimlivredor,$edition->getconcourscn()->format('Y'),$edition->getconcourscn()->format('m'),$edition->getconcourscn()->format('d')+8 );
      $this->session->set('concours', $concours);   
      $this->session->set('datelimphotoscia', $datelimphotoscia);
      $this->session->set('datelimphotoscn', $datelimphotoscn);
@@ -80,7 +80,7 @@ class CoreController extends AbstractController
      $this->session->set('datelimlivredor', $datelimlivredor);
      $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
      $this->session->set('datelimdiaporama', $datelimdiaporama);
-      $this->session->set('dateclotureinscription', new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d H:i:s')));
+     $this->session->set('dateclotureinscription', new \DateTime( $this->session->get('edition')->getConcourscn()->format('Y-m-d H:i:s')));
   
     }
    

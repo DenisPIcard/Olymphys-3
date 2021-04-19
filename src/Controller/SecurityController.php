@@ -145,11 +145,12 @@ class SecurityController extends AbstractController
         $response = $interval > $daySeconds ? false : $reponse = true;
         return $response;
     }
-    //@Entity("user", expr="repository.find(id)")
+    
+   
     /**
      * 
      * @Route("/verif_mail/{id}/{token}", name="verif_mail")
-     * @ParamConverter("id", class="App:User")
+     * 
      */
     public function verifMail(User $user, Request $request, Mailer $mailer, string $token)
     {
