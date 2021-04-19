@@ -39,7 +39,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function processException(ExceptionEvent $event)
     {    
                     
-        }
+        
     }
 
     public function logException(ExceptionEvent $event)
