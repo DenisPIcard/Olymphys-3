@@ -97,6 +97,7 @@ class SecurityController extends AbstractController
              return   $this->redirectToRoute('register');
             }    
             // Encode le mot de passe
+
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
             
@@ -154,8 +155,9 @@ class SecurityController extends AbstractController
      */
     public function verifMail(User $user, Request $request, Mailer $mailer, string $token)
     {
+        $rneRepository=$this->getDoctrine()->getManager()->getRepository('App:Rne');
 
-       // interdit l'accès à la page si:
+        // interdit l'accès à la page si:
         // le token associé au membre est null
         // le token enregistré en base et le token présent dans l'url ne sont pas égaux
         // le token date de plus de 24h
@@ -174,9 +176,10 @@ class SecurityController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
+            $rne=$user->getRne();
+            $rne_obj=$rneRepository->findOneByRne(['rne'=>$rne]);
                      //htmlTemplate('emails/signup.html.twig')('register/mail_nouvel_user.html.twig', ['user' => $user]);
-          $mailer->sendMessage($user);
+            $mailer->sendMessage($user,$rne_obj);
            //$mailer->sendMessage('info@olymphys.fr','info@olymphys.fr', 'Inscription d\'un nouvel utilisateur', $bodyMail);
             $request->getSession()->getFlashBag()->add('success', "Votre inscription est terminée, vous pouvez vous connecter.");
 
