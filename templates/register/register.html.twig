@@ -6,7 +6,7 @@
    {% for message in app.session.flashbag.get('alert') %}
     <div class="alert alert-danger"> {{ message }}</div>
   {% endfor %}   
-         <h1 class="h3 mb-3 font-weight-normal">Création d'un compte(réservé aux professeurs)</h1>
+         <h1 class="h3 mb-3 font-weight-normal">Création d'un compte(réservé aux membres de l'équipe enseignante)</h1>
  <div class="container">
 {{ form_start(form) }}
     {{ form_row(form.username) }}
