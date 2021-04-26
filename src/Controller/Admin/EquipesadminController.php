@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller\Admin;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -26,7 +27,7 @@ use PhpOffice\PhpSpreadsheet\Writer as Writer;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
 class EquipesadminController extends EasyAdminController
-{   
+{   private $session;
     public function __construct(SessionInterface $session)
         {
             $this->session = $session;
@@ -162,20 +163,23 @@ class EquipesadminController extends EasyAdminController
         return parent::deleteAction(); 
     }
   
-    function extractionprofsequipescnBatchAction(){
+    function listeEquipesBatchAction(){
          $edition=$this->session->get('edition');
+
          $class = $this->entity['class'];
         $repositoryProf = $this->getDoctrine()->getRepository('App:User');
+        $repositoryEleve = $this->getDoctrine()->getRepository('App:Elevesinter');
+
         $repository = $this->getDoctrine()->getRepository($class);
         $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $em->createQueryBuilder()
                 ->select('entity')
                 -> from($this->entity['class'], 'entity')
-                ->andWhere('entity.selectionnee = TRUE')
+                ->andWhere('entity.selectionnee = FALSE')
                 ->andWhere('entity.edition =:edition')
                 ->setParameter('edition',$edition)
-                ->orderBy('entity.lettre','ASC');
+                ->orderBy('entity.numero','ASC');
                 
         $liste_equipes = $queryBuilder->getQuery()->getResult();
              
@@ -198,42 +202,62 @@ class EquipesadminController extends EasyAdminController
        
                 $ligne=1;
 
-                $sheet->setCellValue('A'.$ligne, 'Lettre')
-                    ->setCellValue('B'.$ligne, 'Projet')
-                    ->setCellValue('C'.$ligne, 'Prof 1')
-                     ->setCellValue('D'.$ligne, 'tel prof1')  
-                    ->setCellValue('E'.$ligne, 'mail prof1')
-                   ->setCellValue('F'.$ligne, 'Prof2')
-                    ->setCellValue('G'.$ligne, 'tel prof2')  
-                    ->setCellValue('H'.$ligne, 'mail prof2')
-                     ->setCellValue('G'.$ligne, 'lien_principal')
-                       ->setCellValue('H'.$ligne, 'code_principal')
-                         ->setCellValue('I'.$ligne, 'lien_secours')
-                       ->setCellValue('J'.$ligne, 'code_secours')  
+                $sheet
+                    ->setCellValue('A'.$ligne, 'Idequipe')
+                    ->setCellValue('B'.$ligne, 'Date de création')
+                    ->setCellValue('C'.$ligne, 'nom équipe')
+                    ->setCellValue('D'.$ligne, 'Numéro')
+                    ->setCellValue('E'.$ligne, 'Lettre')
+                    ->setCellValue('F'.$ligne, 'inscrite')
+                    ->setCellValue('G'.$ligne, 'sélectionnée')
+                    ->setCellValue('H'.$ligne, 'Nom du lycée')
+                    ->setCellValue('I'.$ligne, 'Commune')
+                    ->setCellValue('J'.$ligne, 'Académie')
+                    ->setCellValue('K'.$ligne, 'rne')
+                    ->setCellValue('L'.$ligne, 'Description')
+                    ->setCellValue('M'.$ligne, 'Origine du projet')
+                    ->setCellValue('N'.$ligne, 'Contribution financière à ')
+                    ->setCellValue('O'.$ligne, 'Année')
+                    ->setCellValue('P'.$ligne, 'Prof 1')
+                    ->setCellValue('Q'.$ligne, 'mail prof1')
+                    ->setCellValue('R'.$ligne, 'Prof2')
+                    ->setCellValue('S'.$ligne, 'mail prof2')
+                    ->setCellValue('T'.$ligne, 'Nombre d\'élèves')
+
                              ;
                 
                 $ligne +=1; 
 
         	foreach ($liste_equipes as $equipe) 
-                {
+                {   $nbEleves=count($repositoryEleve->findByEquipe(['equipe'=>$equipe]));
                     $idprof1=$equipe->getIdProf1();
                     $idprof2=$equipe->getIdProf2();
-                   $prof1=$repositoryProf->findOneById(['id'=>$idprof1]);
-                   $prof2=$repositoryProf->findOneById(['id'=>$idprof2]);
-                    $sheet->setCellValue('A'.$ligne,$equipe->getLettre() )
-                        ->setCellValue('B'.$ligne, $equipe->getTitreProjet())
-                        ->setCellValue('C'.$ligne, $prof1->getNomPrenom())
-                        ->setCellValue('D'.$ligne, $prof1->getPhone())
-                        ->setCellValue('E'.$ligne,$prof1->getEmail());
+                    $prof1=$repositoryProf->findOneById(['id'=>$idprof1]);
+                    $prof2=$repositoryProf->findOneById(['id'=>$idprof2]);
+                    $rne=$equipe->getRneId();
+
+                    $sheet->setCellValue('A'.$ligne,$equipe->getId() )
+                        ->setCellValue('B'.$ligne, $equipe->getCreatedAt())
+                        ->setCellValue('C'.$ligne, $equipe->getTitreprojet())
+                        ->setCellValue('D'.$ligne, $equipe->getNumero())
+                        ->setCellValue('E'.$ligne, $equipe->getLettre())
+                        ->setCellValue('F'.$ligne, $equipe->getInscrite())
+                        ->setCellValue('G'.$ligne, $equipe->getSelectionnee())
+                        ->setCellValue('H'.$ligne, $rne->getNom())
+                        ->setCellValue('I'.$ligne, $rne->getCommune())
+                        ->setCellValue('J'.$ligne, $rne->getAcademie())
+                        ->setCellValue('K'.$ligne, $rne->getRne())
+                        ->setCellValue('L'.$ligne, $equipe->getDescription())
+                        ->setCellValue('M'.$ligne, $equipe->getOrigineprojet())
+                        ->setCellValue('N'.$ligne, $equipe->getContribfinance())
+                        ->setCellValue('O'.$ligne, $edition->getAnnee())
+                        ->setCellValue('P'.$ligne, $prof1->getNomPrenom())
+                        ->setCellValue('Q'.$ligne,$prof1->getEmail());
                             if($prof2!=null){
-                         $sheet->setCellValue('F'.$ligne, $prof2->getNomPrenom())
-                        ->setCellValue('G'.$ligne, $prof2->getPhone())
-                        ->setCellValue('H'.$ligne,$prof2->getEmail());
-                         
-                         
-                         
-                         
-                            }
+                         $sheet->setCellValue('R'.$ligne, $prof2->getNomPrenom())
+                               ->setCellValue('S'.$ligne,$prof2->getEmail());
+                                                    }
+                    $sheet->setCellValue('T'.$ligne, $nbEleves);
                       $ligne +=1;
                 }
                     
@@ -246,7 +270,7 @@ class EquipesadminController extends EasyAdminController
                 $writer = new Xlsx($spreadsheet);
                 //$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
                 $writer->save('php://output');
-                $writer->save('professeurs.xls');
+
         
     }
     

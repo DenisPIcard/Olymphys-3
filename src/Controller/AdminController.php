@@ -275,7 +275,7 @@ class AdminController extends EasyAdminController
         {
          
            $repositoryElevesinter = $this->getDoctrine()->getRepository('App:Elevesinter');
-           
+            $repositoryEquipesadmin = $this->getDoctrine()->getRepository('App:Equipesadmin');
            $id = $this->request->query->get('id');
           $equipe = $repositoryEquipesadmin->find($id);
           $equipe->setCentre(null);

@@ -88,7 +88,7 @@ class Mailer
                     ->subject('Modification de l\'équipe '.$equipe->getTitreProjet().' par '.$user->getPrenomNom())
                     ->html('Bonjour<br>'.
                            $equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().
-                            '</a>)  du lycée '.$equipe->getNomLycee().' de '.$equipe->getLyceeLocalite().'a modifié l\'équipe denommée : '.$equipe->getTitreProjet()''
+                            '</a>)  du lycée '.$equipe->getNomLycee().' de '.$equipe->getLyceeLocalite().'a modifié l\'équipe denommée : '.$equipe->getTitreProjet().
                             '<br> <br>Le comité national des Olympiades de Physique');
      }     
      

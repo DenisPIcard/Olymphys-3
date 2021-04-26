@@ -15,11 +15,13 @@ easy_admin :
                       
                 dql_filter : " entity.numero < 100  "  
                 #les équipes de n° >100 sont les photos du cn hors équipes
-                actions : 
+                actions :
+
                     - { name : 'new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
                     - { name: 'edit', icon: 'pencil', label: false }
                     - { name: '-delete', icon: 'trash-alt', label: false, permission : 'ROLE_SUPER_ADMIN', ask_confirm : true }
-                batch_actions: [ {name : 'extractionprofsequipescn', 'label' : 'Extraire_les professeurs_cn'}]
+                batch_actions :
+                     [{ name : 'listeEquipes' , label  : 'Extraction de toutes les équipes'}]
                 max_results: 50
                 
                 template : 'Admin\customizations\list.html.twig'

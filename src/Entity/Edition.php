@@ -75,6 +75,11 @@ class Edition
          */
         private $dateclotureinscription;
 
+        /**
+         * @ORM\Column(type="string", length=255)
+         */
+        private $annee;
+
        
         
   
@@ -202,6 +207,18 @@ class Edition
     public function setDateclotureinscription(\DateTimeInterface $dateclotureinscription): self
     {
         $this->dateclotureinscription = $dateclotureinscription;
+
+        return $this;
+    }
+
+    public function getAnnee(): ?string
+    {
+        return $this->annee;
+    }
+
+    public function setAnnee(string $annee): self
+    {
+        $this->annee = $annee;
 
         return $this;
     }
