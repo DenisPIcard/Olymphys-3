@@ -176,13 +176,13 @@ class EquipesadminController extends EasyAdminController
         $queryBuilder = $em->createQueryBuilder()
                 ->select('entity')
                 -> from($this->entity['class'], 'entity')
-                ->andWhere('entity.selectionnee = FALSE')
                 ->andWhere('entity.edition =:edition')
+                ->andWhere('entity.inscrite = TRUE')
                 ->setParameter('edition',$edition)
                 ->orderBy('entity.numero','ASC');
                 
         $liste_equipes = $queryBuilder->getQuery()->getResult();
-             
+
         //dump($liste_equipes);
         //dd($edition);
         $spreadsheet = new Spreadsheet();

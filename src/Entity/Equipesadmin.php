@@ -189,6 +189,11 @@ class Equipesadmin
      */
     protected $inscrite = 1;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbeleves;
+
    
 
    
@@ -614,7 +619,7 @@ class Equipesadmin
     
    public function getLycee()
    {
-       return $this->getDenominationLycee().' '.$this->getNomLycee().' de  '.$this->getLyceeLocalite();
+       return $this->getNomLycee().' de  '.$this->getLyceeLocalite();
    } 
    public function getProf1()
    {
@@ -762,6 +767,18 @@ class Equipesadmin
    public function setInscrite(bool $inscrite): self
    {
        $this->inscrite = $inscrite;
+
+       return $this;
+   }
+
+   public function getNbeleves(): ?int
+   {
+       return $this->nbeleves;
+   }
+
+   public function setNbeleves(int $nbeleves): self
+   {
+       $this->nbeleves = $nbeleves;
 
        return $this;
    }

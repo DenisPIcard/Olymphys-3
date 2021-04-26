@@ -96,7 +96,7 @@ class UtilisateurController extends AbstractController
         
            $request->getSession()
                                                      ->getFlashBag()
-                                                     ->add('info', 'Les inscriptions sont closes. Inscriptions entre le '.$this->session->get('edition')->getDateouverturesite()->format('d-m-Y').' et le '.$this->session->get('edition')->getDatelimcia()->format('d-m-Y').' 22 heures(heure de Paris)') ;
+                                                     ->add('info', 'Les inscriptions sont closes. Inscriptions entre le '.$this->session->get('edition')->getDateouverturesite()->format('d-m-Y').' et le '.$this->session->get('edition')->getDateclotureinscription()->format('d-m-Y').' 22 heures(heure de Paris)') ;
             
             
             return $this->redirectToRoute('core_home');
@@ -147,8 +147,8 @@ class UtilisateurController extends AbstractController
              $equipe->setPrenomprof1($form1->get('idProf1')->getData()->getPrenom());
              $equipe->setNomprof1($form1->get('idProf1')->getData()->getNom());
              if ($form1->get('idProf2')->getData() != null){
-             $equipe->setPrenomprof2($form1->get('idProf2')->getData()->getPrenom());
-             $equipe->setNomprof2($form1->get('idProf2')->getData()->getNom());
+                 $equipe->setPrenomprof2($form1->get('idProf2')->getData()->getPrenom());
+                 $equipe->setNomprof2($form1->get('idProf2')->getData()->getNom());
              }
              $equipe->setEdition($edition);
              $equipe->setRne($this->getUser()->getRne());
@@ -158,9 +158,9 @@ class UtilisateurController extends AbstractController
              $equipe->setLyceeAcademie($rne_objet->getAcademie());
              $equipe->setLyceeLocalite($rne_objet->getAcheminement()); 
              
-             $em->persist($equipe);
-             $em->flush();
-             
+
+
+             $nbeleves=$equipe->getNbeleves();
                for($i=1;$i<7;$i++){
                   if ($form1->get('prenomeleve'.$i)->getData()!=null){
                      try {
@@ -168,27 +168,30 @@ class UtilisateurController extends AbstractController
                         $id= $form1->get('id'.$i)->getData();
                         $eleve[$i]=$repositoryEleves->find(['id'=>$form1->get('id'.$i)->getData()]);
                      } catch (\Exception $ex) {
-                              $eleve[$i]=new Elevesinter(); 
+                              $eleve[$i]=new Elevesinter();
+                              $nbeleves =$nbeleves+1;
                      }
-                     
+
                       $eleve[$i]->setPrenom($form1->get('prenomeleve'.$i)->getData());
                       $eleve[$i]->setNom($form1->get('nomeleve'.$i)->getData());
                       $eleve[$i]->setCourriel($form1->get('maileleve'.$i)->getData());
                       $eleve[$i]->setGenre($form1->get('genreeleve'.$i)->getData());
                       $eleve[$i]->setClasse($form1->get('classeeleve'.$i)->getData());
                       $eleve[$i]->setEquipe($equipe);
+
                       $em->persist($eleve[$i]);
-                      $em->flush();
+
                   }
                }
-             
-            
+              $equipe->setNbEleves($nbeleves);
+              $em->persist($equipe);
+              $em->flush();
              $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
              
                
              if($modif==false){
                
-              return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof ', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_equipe'));
+              return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_equipe'));
               }
             if ($modif ==true){
                 
