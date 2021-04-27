@@ -309,28 +309,7 @@ public function choix_equipe(Request $request,$choix) {
                          }
     }
     
-  /* if ($choix=='presentation'){//pour le dépôt des présentations
-          if ($dateconnect>$this->session->get('datelimdiaporama') )  {
-                                          $qb3->andWhere('t.selectionnee=:selectionnee')
-                                                              ->setParameter('selectionnee', TRUE);
-                                        $liste_equipes=$qb3->getQuery()->getResult();    
-                                      }
-                                         if($liste_equipes!=null) {
 
-                                         $content = $this
-                                                  ->renderView('adminfichiers\choix_equipe.html.twig', array(
-                                                      'liste_equipes'=>$liste_equipes, 'phase'=>$phase, 'user'=>$user,'choix'=>$choix,'role'=>$role
-                                                     ) );
-
-                                         return new Response($content); 
-                                                  }
-                                          else{ 
-                                         $request->getSession()
-                                                 ->getFlashBag()
-                                                 ->add('info', 'Le site n\'est pas encore prêt pour une saisie des diaporamas ou vous n\'avez pas d\'équipe inscrite pour le concours national de la '.$edition->getEd().'e edition') ;
-                                         return $this->redirectToRoute('core_home');
-                                          }
-                                       }*/
 if (($choix=='liste_prof')){
                                       
                                           if (($phase=='interacadémique') or ($role=='ROLE_ORGACIA'))     {
@@ -360,7 +339,7 @@ if (($choix=='liste_prof')){
                                          }
                                    }
 
-                                         if($liste_equipes!=null) {
+                                         //if($liste_equipes!=null) {
 
                                          $content = $this
                                                   ->renderView('adminfichiers\choix_equipe.html.twig', array(
@@ -368,14 +347,14 @@ if (($choix=='liste_prof')){
                                                      ) );
                                           return new Response($content);  
 
-                                                  }
+                                                 /* }
                                           else{ 
                                          $request->getSession()
                                                  ->getFlashBag()
                                                  ->add('info', 'Le site n\'est pas encore prêt pour une saisie des mémoires ou vous n\'avez pas d\'équipe inscrite pour le concours '. $phase.' de la '.$edition->getEd().'e edition') ;
                                          
                                          return $this->redirectToRoute('core_home');    
-                                             }
+                                             }*/
    }
    
   if (($choix=='deposer')) {//pour le dépôt des fichiers autres que les présentations
@@ -1363,47 +1342,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
      }
     $user = $this->getUser();
     
-    /*$i=0;
-    
-    if (isset($liste_fichiers)){
-    foreach($liste_fichiers as $fichier){
-        $id=$fichier->getId();
-      
-        $formBuilder[$i]=$this->get('form.factory')->createNamedBuilder('Form'.$i, FormType::class,$fichier);  
-        $formBuilder[$i] ->add('id',  HiddenType::class, ['disabled'=>true, 'label'=>false])
-                         ->add('fichier', TextType::class,['disabled'=>true,  'label'=>false])
-                         ->add('save', submitType::class);
-        $Form[$i]=$formBuilder[$i]->getForm();
-        $formtab[$i]=$Form[$i]->createView();
-                
-        if ($request->isMethod('POST') ) 
-            {
-            if ($request->request->has('Form'.$i)) {
-                $id=$Form[$i]->get('id')->getData();
-                $fichier=$repositoryFichiersequipes->find(['id'=>$id]);
-                $fichierName=$this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[$fichier->getTypefichier()].'/'.$fichier->getFichier();
-              if($fichier->getTypefichier()==1){
-                  $fichierName=$this->getParameter('app.path.fichiers').'/'.$this->getParameter('type_fichier')[0].'/'.$fichier->getFichier();
-              }
-                if(null !==$fichierName)
-                    {
-                    $file=new UploadedFile($fichierName,$fichier->getFichier() ,null,null,true);
-                    
-                    $response = new BinaryFileResponse($fichierName);
-                    $disposition = HeaderUtils::makeDisposition(
-                                                    HeaderUtils::DISPOSITION_ATTACHMENT,
-                                                    $fichier->getFichier()
-                                                    );
-                   $response->headers->set('Content-Type', $file->guessExtension());  
-                    $response->headers->set('Content-Disposition', $disposition);
-                    return $response; 
-                    }        
-                }
-            }
-        $i=$i+1;
-        
-    }
-    }*/      
+
      $qb = $repositoryVideosequipes->createQueryBuilder('v')
                              ->LeftJoin('v.equipe', 'e')
                              ->Where('e.id=:id_equipe')
@@ -1469,46 +1408,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
              $liste_fichiers=[];
          }
        
-      /*  if(($liste_fichiers==null) and ($listevideos==null) and ($autorisations==null)){
-         
-                if ($role=='ROLE_PROF'){
-                    $num_equipe='n° '.$equipe_choisie->getNumero();
-                    if ($concours=='national'){
-                         $num_equipe=$equipe_choisie->getLettre();
-                    }
-                    $request->getSession()
-                    ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$num_equipe.'pour le concours'.$concours) ;
-                     return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'liste_prof'));   }
-                
-                 if ($role=='ROLE_COMITE' || $role=='ROLE_SUPER_ADMIN' || $role=='ROLE_JURY'){
-                     if ($concours=='interacadémique'){
-                     $request->getSession()
-                    ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe'.$equipe_choisie->getNumero().'pour le concours'.$concours) ;   
-                     return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>$centre)); 
-                     }
-                     if ($concours=='national'){
-                      $request->getSession()
-                    ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe '.$equipe_choisie->getLettre().'pour le concours'.$concours) ;
-                         
-                         
-                     return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'liste_cn_comite')); 
-                 }
-                 
-                 
-                 
-                 
-                 
-                     }
-                     if ($role=='ROLE_ORGACIA' || $role=='ROLE_JURYCIA'){
-                         $request->getSession()
-                    ->getFlashBag()
-                    ->add('info', 'Il n\'y a pas encore de fichier déposé pour l\'equipe n°'.$equipe_choisie->getNumero().'pour le concours'.$concours) ;
-                     return $this->redirectToRoute('fichiers_choix_equipe', array('choix'=>'centre')  );
-                             }
-            }*/
+
             
              $content = $this
                           ->renderView('adminfichiers\espace_prof.html.twig', array('form'=>$Form, 'listevideos'=>$listevideos,'liste_autorisations'=>$autorisations,

@@ -38,7 +38,7 @@
         
         {% if role=='ROLE_PROF' %}
            {%if choix=='liste_prof' %}
-                        <br>Choisir l'équipe
+                        <br>Mes  équipes
             {%endif %}
          {%endif %}
             
@@ -51,7 +51,11 @@
         {% for message in app.session.flashbag.get('info') %}
             <div class="alert alert-info"> {{ message }}</div>
         {% endfor %}       
-        {% if   phase =='interacadémique' %}  
+        {% if   phase =='interacadémique' %}
+            {% if liste_equipes == null %}
+                <p> Pas d'équipe inscrite</p>
+
+            {% endif%}
             <table> 
                 {% for equipe in liste_equipes %}
                     <div class="row">
@@ -104,6 +108,8 @@
         {% endif %} 
     </div> 
       {% if role==('ROLE_PROF') %}
+          <a type="button" class="btn btn-primary" href="{{ path('inscrire_equipe',{idequipe : 'x'}) }}">Nouvelle équipe</a>
+          
           {% if doc_equipes!=null %}  
               <div class="container">
                   <h3><center>Documents à télécharger </center></h3>

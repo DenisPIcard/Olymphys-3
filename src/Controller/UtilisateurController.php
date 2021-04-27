@@ -173,7 +173,7 @@ class UtilisateurController extends AbstractController
                      }
 
                       $eleve[$i]->setPrenom($form1->get('prenomeleve'.$i)->getData());
-                      $eleve[$i]->setNom($form1->get('nomeleve'.$i)->getData());
+                      $eleve[$i]->setNom(strtoupper($form1->get('nomeleve'.$i)->getData()));
                       $eleve[$i]->setCourriel($form1->get('maileleve'.$i)->getData());
                       $eleve[$i]->setGenre($form1->get('genreeleve'.$i)->getData());
                       $eleve[$i]->setClasse($form1->get('classeeleve'.$i)->getData());
