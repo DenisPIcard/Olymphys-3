@@ -162,24 +162,24 @@ class EquipesadminController extends EasyAdminController
         
         return parent::deleteAction(); 
     }
-  
-    function listeEquipesBatchAction(){
+    /**
+     * @Route("/Equipesadmin/listeEquipes", name="liste_equipes")
+     */
+    function listeEquipesAction(){
          $edition=$this->session->get('edition');
 
-         $class = $this->entity['class'];
+
         $repositoryProf = $this->getDoctrine()->getRepository('App:User');
         $repositoryEleve = $this->getDoctrine()->getRepository('App:Elevesinter');
+        $repositoryEquipes = $this->getDoctrine()->getRepository('App:Equipesadmin');
 
-        $repository = $this->getDoctrine()->getRepository($class);
-        $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
-        /* @var DoctrineQueryBuilder */
-        $queryBuilder = $em->createQueryBuilder()
-                ->select('entity')
-                -> from($this->entity['class'], 'entity')
-                ->andWhere('entity.edition =:edition')
-                ->andWhere('entity.inscrite = TRUE')
+        $em = $this->getDoctrine()->getManager();
+
+        $queryBuilder = $repositoryEquipes->createQueryBuilder('e')
+                ->andWhere('e.edition =:edition')
+                ->andWhere('e.inscrite = TRUE')
                 ->setParameter('edition',$edition)
-                ->orderBy('entity.numero','ASC');
+                ->orderBy('e.numero','ASC');
                 
         $liste_equipes = $queryBuilder->getQuery()->getResult();
 
@@ -189,17 +189,14 @@ class EquipesadminController extends EasyAdminController
          $spreadsheet->getProperties()
                         ->setCreator("Olymphys")
                         ->setLastModifiedBy("Olymphys")
-                        ->setTitle("CN  ".$edition->getEd()."ème édition -Tableau destiné au jury")
-                        ->setSubject("Tableau destiné au jury")
-                        ->setDescription("Office 2007 XLSX Document pour mailing  ")
+                        ->setTitle("CN  ".$edition->getEd()."ème édition -Tableau destiné au comité")
+                        ->setSubject("Tableau destiné au comité")
+                        ->setDescription("Office 2007 XLSX liste des équipes")
                         ->setKeywords("Office 2007 XLSX")
                         ->setCategory("Test result file");
  
                 $sheet = $spreadsheet->getActiveSheet();
- 
-               
-           
-       
+
                 $ligne=1;
 
                 $sheet
@@ -228,7 +225,7 @@ class EquipesadminController extends EasyAdminController
                 
                 $ligne +=1; 
 
-        	foreach ($liste_equipes as $equipe) 
+        	foreach ($liste_equipes as $equipe)
                 {   $nbEleves=count($repositoryEleve->findByEquipe(['equipe'=>$equipe]));
                     $idprof1=$equipe->getIdProf1();
                     $idprof2=$equipe->getIdProf2();
@@ -260,15 +257,16 @@ class EquipesadminController extends EasyAdminController
                     $sheet->setCellValue('T'.$ligne, $nbEleves);
                       $ligne +=1;
                 }
-                    
- 
-               
- 
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment;filename="professeurs_CN.xls"');
-                header('Cache-Control: max-age=0');
-                $writer = new Xlsx($spreadsheet);
-                //$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="equipes.xls"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+                //$writer= PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        //$writer =  \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+        // $writer =IOFactory::createWriter($spreadsheet, 'Xlsx');
+                ob_end_clean();
                 $writer->save('php://output');
 
         

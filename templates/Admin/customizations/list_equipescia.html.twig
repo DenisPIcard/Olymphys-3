@@ -7,4 +7,11 @@
     </tittle>
 {%  endblock %} 
 
+{% block global_actions %}
 
+<div class="button-action">
+<a type="button" class="btn btn-primary"  href="{{ path('liste_equipes') }}">Extraction tableau excel </a>
+</div>
+
+    {{ parent() }}
+{% endblock %}
