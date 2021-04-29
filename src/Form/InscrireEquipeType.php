@@ -120,13 +120,13 @@ class InscrireEquipeType extends AbstractType
                               'mapped' =>true,
                               'required'=>true,
                              ])  
-                  ->add('description',TextType::class,[
+                      ->add('description',TextType::class,[
                             
                                'required'=>true,
                               'mapped' => true,
                              
                              ])  
-                      ->add('save',      SubmitType::class)
+                       ->add('save',      SubmitType::class)
                        ->add('inscrite',     CheckboxType::class,[
                              'value'=>1,
                              'required'=>true,

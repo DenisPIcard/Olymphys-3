@@ -106,6 +106,7 @@ class UtilisateurController extends AbstractController
         $em=$this->getDoctrine()->getManager();
          $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
          $repositoryEleves=$em->getRepository('App:Elevesinter');
+          $repositoryRne=$em->getRepository('App:Rne');
         if( null!=$this->getUser()){
             
          if ($this->getUser()->getRoles()[0]=='ROLE_PROF'){
@@ -122,7 +123,7 @@ class UtilisateurController extends AbstractController
            $form1=$this->createForm(ModifEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne(),'eleves'=>$eleves]); 
            $modif=true;
          }
-        
+         $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
          $form1->handleRequest($request); 
           if ($form1->isSubmitted() && $form1->isValid()){
               
@@ -143,7 +144,7 @@ class UtilisateurController extends AbstractController
                   $equipe->setNumero($numero);
               }
               
-             $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
+
              $equipe->setPrenomprof1($form1->get('idProf1')->getData()->getPrenom());
              $equipe->setNomprof1($form1->get('idProf1')->getData()->getNom());
              if ($form1->get('idProf2')->getData() != null){
@@ -198,7 +199,7 @@ class UtilisateurController extends AbstractController
                 return $this->redirectToRoute('inscrire_equipe', array('idequipe'=>$equipe->getId()));  
             }
           }
-         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView(),'equipe'=>$equipe,'concours'=>$this->session->get('concours'),'choix'=>'liste_prof', 'modif'=>$modif, 'eleves'=>$eleves));
+         return $this->render('register/inscrire_equipe.html.twig',array('form'=>$form1->createView(),'equipe'=>$equipe,'concours'=>$this->session->get('concours'),'choix'=>'liste_prof', 'modif'=>$modif, 'eleves'=>$eleves, 'rneObj'=>$rne_objet));
              
          }
          else{  return $this->redirectToRoute('core_home');}

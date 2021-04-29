@@ -4,12 +4,13 @@
 
 
 {% block titre3 %}
-    <center> Concours {{phase}}<br>
+    <div class="text-center">Concours {{phase}}<br>
         {% if role=='ROLE_JURY' %}
               {{jure.prenomJure}}   {{jure.nomJure}}
               <br> membre du jury 
-         {% else %}
-             {{user.prenom}} {{user.nom}}
+         {% elseif role=='ROLE_PROF' %}
+             {{user.prenom}} {{user.nom}}<br>
+             Lycée {{ rneObj.nom }} de {{ rneObj.commune}}
         {% endif %}
         {% if role =='ROLE_ORGACIA' or role =='ROLE_JURYCIA'    or role =='ROLE_COMITE'%}
             {% if role=='ROLE_COMITE' %}
@@ -42,7 +43,7 @@
             {%endif %}
          {%endif %}
             
-     </center> 
+     </div>
            
 {% endblock %}
 

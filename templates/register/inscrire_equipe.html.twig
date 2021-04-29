@@ -3,15 +3,17 @@
 Inscrire une équipe
 {% endblock %}
 {% block titre3 %} 
-    <center>
+
  {% if modif ==false %}   
-         Inscrire une équipe
+   <div class="text-center">      Inscrire une équipe
          {% endif %}
   {% if modif == true %}
        
                Modifier l'équipe n° {{ equipe.numero }} - "{{ equipe.titreProjet }}"
        {% endif  %}
-    </center>
+
+    Du lycée {{ rneObj.nom  }} de {{ rneObj.commune  }}
+    </div>
 {% endblock %}
 {% block body %}
    {% for message in app.session.flashbag.get('info') %}

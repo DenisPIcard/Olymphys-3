@@ -310,32 +310,36 @@ public function choix_equipe(Request $request,$choix) {
     }
     
 
-if (($choix=='liste_prof')){
+if (($choix=='liste_prof'))
+{
                                       
-                                          if (($phase=='interacadémique') or ($role=='ROLE_ORGACIA'))     {
-                                           if ($role=='ROLE_PROF') {  
-                                         $liste_equipes=$qb3->getQuery()->getResult();    
-                                        
-                                           }
-                                           if ($role=='ROLE_ORGACIA'){
-                                             $centre=$this->getUser()->getCentrecia();
-                                           
-                                           $liste_equipes=$repositoryEquipesadmin->createQueryBuilder('t')
-                                                  ->where('t.centre =:centre')
-                                                  ->setParameter('centre', $centre)
-                                                  ->andWhere('t.edition =:edition')
-                                                  ->setParameter('edition', $edition)
-                                                  ->orderBy('t.numero', 'ASC')->getQuery()->getResult();       
-                                           }
-                                           
-                                          }
-                                   if ( ($role!='ROLE_ORGACIA')){
+                               if (($phase=='interacadémique') or ($role=='ROLE_ORGACIA')) {
+                                   if ($role == 'ROLE_PROF') {
+                                       $liste_equipes = $qb3->getQuery()->getResult();
+                                       $rne_objet = $this->getDoctrine()->getManager()->getRepository('App:Rne')->findOneByRne(['rne' => $user->getRne()]);
+
+
+                                       if ($role == 'ROLE_ORGACIA') {
+                                           $centre = $this->getUser()->getCentrecia();
+
+                                           $liste_equipes = $repositoryEquipesadmin->createQueryBuilder('t')
+                                               ->where('t.centre =:centre')
+                                               ->setParameter('centre', $centre)
+                                               ->andWhere('t.edition =:edition')
+                                               ->setParameter('edition', $edition)
+                                               ->orderBy('t.numero', 'ASC')->getQuery()->getResult();
+                                           $rne_objet = null;
+                                       }
+
+                                   }
+                               }
+                               if ( ($role!='ROLE_ORGACIA') and ($role!='ROLE_PROF')){
                                          if ($dateconnect>$datecia) {
                                              /*$qb3->andWhere('t.selectionnee=:selectionnee')
                                                      ->setParameter('selectionnee', TRUE)
                                                      ->orderBy('t.lettre', 'ASC');    */                                                
-                                            $liste_equipes=$qb3->getQuery()->getResult();     
-                                            
+                                            $liste_equipes=$qb3->getQuery()->getResult();
+                                             $rne_objet=null;
                                          }
                                    }
 
@@ -343,7 +347,7 @@ if (($choix=='liste_prof')){
 
                                          $content = $this
                                                   ->renderView('adminfichiers\choix_equipe.html.twig', array(
-                                                      'liste_equipes'=>$liste_equipes,  'phase'=>$phase, 'user'=>$user,'choix'=>$choix,'role'=>$role, 'doc_equipes'=>$docequipes
+                                                      'liste_equipes'=>$liste_equipes,  'phase'=>$phase, 'user'=>$user,'choix'=>$choix,'role'=>$role, 'doc_equipes'=>$docequipes,'rneObj'=>$rne_objet
                                                      ) );
                                           return new Response($content);  
 
@@ -355,7 +359,7 @@ if (($choix=='liste_prof')){
                                          
                                          return $this->redirectToRoute('core_home');    
                                              }*/
-   }
+                                }
    
   if (($choix=='deposer')) {//pour le dépôt des fichiers autres que les présentations
       
