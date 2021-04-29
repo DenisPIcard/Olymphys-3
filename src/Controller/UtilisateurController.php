@@ -104,13 +104,14 @@ class UtilisateurController extends AbstractController
     
         }
         $em=$this->getDoctrine()->getManager();
-         $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
-         $repositoryEleves=$em->getRepository('App:Elevesinter');
-          $repositoryRne=$em->getRepository('App:Rne');
+        $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
+        $repositoryEleves=$em->getRepository('App:Elevesinter');
+        $repositoryRne=$em->getRepository('App:Rne');
         if( null!=$this->getUser()){
-            
+         $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
          if ($this->getUser()->getRoles()[0]=='ROLE_PROF'){
          $edition=$this->session->get('edition');
+
          $edition=$em->merge($edition);
          if ($idequipe=='x'){
          $equipe = new Equipesadmin(); 
@@ -119,11 +120,12 @@ class UtilisateurController extends AbstractController
          $eleves=[];         }
          else{
            $equipe=   $repositoryEquipesadmin->findOneById(['id'=>intval($idequipe)]);
+
            $eleves= $repositoryEleves->findByEquipe(['equipe'=>$equipe]);
            $form1=$this->createForm(ModifEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne(),'eleves'=>$eleves]); 
            $modif=true;
          }
-         $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
+        
          $form1->handleRequest($request); 
           if ($form1->isSubmitted() && $form1->isValid()){
               
@@ -144,7 +146,7 @@ class UtilisateurController extends AbstractController
                   $equipe->setNumero($numero);
               }
               
-
+             $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
              $equipe->setPrenomprof1($form1->get('idProf1')->getData()->getPrenom());
              $equipe->setNomprof1($form1->get('idProf1')->getData()->getNom());
              if ($form1->get('idProf2')->getData() != null){

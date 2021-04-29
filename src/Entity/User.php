@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Rne;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+
 
 
 /**
@@ -173,13 +176,13 @@ class User implements UserInterface, \Serializable
      
      
      
-    
+
     public function __construct()
     {
         $this->isActive = true;
         $this->roles = ['ROLE_USER'];
-       
-       
+
+
         
     }
      /*public function __toString()
@@ -663,4 +666,9 @@ class User implements UserInterface, \Serializable
 
         return $this;
     }
+
+
+
+
+
 }

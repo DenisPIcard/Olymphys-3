@@ -6,13 +6,13 @@ Inscrire une équipe
 
  {% if modif ==false %}   
    <div class="text-center">      Inscrire une équipe
-         {% endif %}
+ {% endif %}
   {% if modif == true %}
        
                Modifier l'équipe n° {{ equipe.numero }} - "{{ equipe.titreProjet }}"
-       {% endif  %}
+  {% endif  %}
 
-    Du lycée {{ rneObj.nom  }} de {{ rneObj.commune  }}
+    du lycée {{ rneObj.nom  }} de {{ rneObj.commune  }}
     </div>
 {% endblock %}
 {% block body %}

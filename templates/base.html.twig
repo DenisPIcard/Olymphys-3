@@ -31,7 +31,7 @@ Layout de départ du site #}
   <div class="container_fluid">
     <div class="page-header">
         <img src="{{ asset('images/Phicomplet.png')}}" alt="logo des OdpF"  width="300"/> 
-        <h1 align="right"> 
+
     </div>
     <div class ="row">
 
@@ -39,23 +39,24 @@ Layout de départ du site #}
             <ul class="nav flex-column nav-pills ml-3">
                 <a href="{{ path('core_home') }}">Accueil du site</a>
                 <p> </p>
-                {% block navigation %} <ul class="nav flex-column nav-pills">
- 
-        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-            <li>Utilisateur :  {{ app.user.username }}</li>
-            <li><a href="{{ path('profile_show') }}">Voir le profil</a></li>
-            <li><a href="{{ path('logout') }}">Déconnexion</a></li>
-        {% else %}
-        <li><a href="{{ path('login') }}">Connectez vous</a> si vous avez un compte,</li>
-        <li>Ou <a href="{{ path('register') }}">créez un compte</a> si vous en souhaitez un</li>
-        <li>Sinon, entrez dans le menu</li>
-   
-        {% endif %}
+                {% block navigation %}
+                    <ul class="nav flex-column nav-pills">
 
- </ul>
-                {% endblock %}
+                        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                            <li>Utilisateur :  {{ app.user.username }}</li>
+                            <li><a href="{{ path('profile_show') }}">Voir le profil</a></li>
+                            <li><a href="{{ path('logout') }}">Déconnexion</a></li>
+                        {% else %}
+                        <li><a href="{{ path('login') }}">Connectez vous</a> si vous avez un compte,</li>
+                        <li>Ou <a href="{{ path('register') }}">créez un compte</a> si vous en souhaitez un</li>
+                        <li>Sinon, entrez dans le menu</li>
+
+                        {% endif %}
+                    </ul>
+                 {% endblock %}
             </ul>
-        </div>
+         </div>
+      
 
         <div id="content" class="col-md-10">
             <h3> {% block titre3 %}
