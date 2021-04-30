@@ -28,14 +28,14 @@ class InscrireEquipeType extends AbstractType
        
       $rne= $options['rne']   ;          
       $required=[true,true,false,false,false,false];
-        $builder ->add('titreProjet', TextType::class, [
+      $builder ->add('titreProjet', TextType::class, [
                                 'label' => 'Titre du projet',
                                 'mapped'=>true
-              ])
+                  ])
                 
                 
                 
-          ->add('idProf1', EntityType::class, [
+               ->add('idProf1', EntityType::class, [
                             'class'=>'App:User',
                             'query_builder'=>function (EntityRepository $er) use($rne) {
                                                         return $er->createQueryBuilder('u')
@@ -49,7 +49,7 @@ class InscrireEquipeType extends AbstractType
                              'mapped'=>true,
                              'required'=>true,
                              ] )
-          ->add('idProf2', EntityType::class, [
+               ->add('idProf2', EntityType::class, [
                             'class'=>'App:User',
                            'required'=>false,
                             'query_builder'=>function (EntityRepository $er) use($rne) {
@@ -77,20 +77,26 @@ class InscrireEquipeType extends AbstractType
 
                         ->add('maileleve'.$i, EmailType::class,[
                                              'mapped' =>false,
-                                               'required'=>$required[$i-1],
+                                             'required'=>$required[$i-1],
                                             ])
                         ->add('classeeleve'.$i, ChoiceType::class,[
-                              'choices'=>['2nde'=>'2nde',
+                                    'choices'=>[ ' '=>null,
+                                                 '2nde'=>'2nde',
                                                  '1ère'=>'1ere',
                                                  'Term'=>'Term',
                                            ],
-                                             'mapped' =>false,
-                                               'required'=>$required[$i-1],
+                                     'mapped' =>false,
+                                     'required'=>$required[$i-1],
+                                     'empty_data'=>null,
+                                     'placeholder'=>null,
                                             ])
                         ->add('genreeleve'.$i, ChoiceType::class,[
                                              'mapped' =>false,
                                              'required'=>$required[$i-1],
-                                           'choices'=>['F'=>'F',
+                                             'empty_data'=>null,
+                                             'placeholder'=>null,
+                                             'choices'=>[     ' '=>null,
+                                                              'F'=>'F',
                                                               'M'=>'M']]);    
                    }
        
@@ -100,7 +106,7 @@ class InscrireEquipeType extends AbstractType
                               'mapped' =>true,
                               'required'=>false,
                              ])          
-                       ->add('contribfinance',ChoiceType::class,[
+                   ->add('contribfinance',ChoiceType::class,[
                               'mapped' =>true,
                               'required'=>true,
                            'empty_data'=>' ',
@@ -112,22 +118,22 @@ class InscrireEquipeType extends AbstractType
                               ],
                              
                              ])      
-                      ->add('recompense',TextType::class,[
+                  ->add('recompense',TextType::class,[
                               'mapped' => true,
                               'required'=>false,
                              ])
-                      ->add('origineprojet',TextType::class,[
+                  ->add('origineprojet',TextType::class,[
                               'mapped' =>true,
                               'required'=>true,
                              ])  
-                      ->add('description',TextType::class,[
+                  ->add('description',TextType::class,[
                             
                                'required'=>true,
                               'mapped' => true,
                              
                              ])  
-                       ->add('save',      SubmitType::class)
-                       ->add('inscrite',     CheckboxType::class,[
+                  ->add('save',      SubmitType::class)
+                  ->add('inscrite',     CheckboxType::class,[
                              'value'=>1,
                              'required'=>true,
                              'mapped' => true,

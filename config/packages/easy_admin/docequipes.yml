@@ -35,7 +35,7 @@ easy_admin :
                       - { property : 'type', label : 'Type de document' ,type: 'choice' , type_options  :{'choices' : '%status%'  }}
                       - { property : 'titre',label : 'Titre du document', type: 'text' }
                       - {property: 'description', label : 'Description'}
-                      - { property : 'fichierFile', label: 'Choisir le fichier',  type : 'vich_file',  type_options : {'allow_delete' : false}}       
+                      - { property : 'fichierFile', label: 'Choisir le fichier',  type : 'vich_file',  type_options : {'allow_delete' : false, }}
           
             
                        

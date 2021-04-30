@@ -1296,7 +1296,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
     $listeEleves=$repositoryElevesinter->findByEquipe(['equipe'=>$equipe_choisie]);
     $liste_prof[1]= $repositoryUser->find(['id'=>$equipe_choisie->getIdProf1()]) ;
    if (null!=$equipe_choisie->getIdProf2()){
-   $liste_prof[2]=$repositoryUser->find(['id'=>$equipe_choisie->getIdProf2()]) ;
+    $liste_prof[2]=$repositoryUser->find(['id'=>$equipe_choisie->getIdProf2()]) ;
       }
       
      

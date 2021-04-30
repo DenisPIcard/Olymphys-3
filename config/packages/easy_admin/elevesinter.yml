@@ -20,6 +20,7 @@ easy_admin :
                     - {property : 'nom'}
                     - {property : 'prenom '}
                     - {property : 'genre'}
+                    - {property : 'classe'}
                     - {property : 'courriel'}
                     - {property :  'equipe.numero', label : ' Numéro équipe'}
                     - {property : 'equipe.titreProjet', label : 'Projet'}
@@ -31,7 +32,8 @@ easy_admin :
                   fields: 
                        - 'nom'
                        - 'prenom'
-                       - 'genre'
+                       - { property : 'genre', type : 'choice' , type_options : {choices : {'F' : 'F', 'M' : 'M'}}}
                        - 'courriel'
+                       - { property : 'classe', type : 'choice' , type_options : {choices : {'2nd':'2nd', '1ere' : '1ere', 'Term' : 'Term'}}}
                        - { property: 'equipe', type: 'entity' , type_options : { class : 'App\Entity\Equipesadmin',query_builder : 'App\Repository\EquipesadminRepository::getEquipeInter', 'choice_label' : 'getInfoequipe'}}
             

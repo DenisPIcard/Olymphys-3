@@ -16,6 +16,8 @@ Inscrire une équipe
     </div>
 {% endblock %}
 {% block body %}
+    {% block navigation %}
+    {% endblock %}
    {% for message in app.session.flashbag.get('info') %}
                             <div class="alert alert-info"> {{ message }}</div>
                           {% endfor %}
