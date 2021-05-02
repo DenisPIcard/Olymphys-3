@@ -520,28 +520,28 @@ class PhotosController extends  AbstractController
          public function gestion_photos(Request $request, $infos)
          {
              $repositoryEdition= $this->getDoctrine()
-		->getManager()
-		->getRepository('App:Edition');
-              
+                            ->getManager()
+                            ->getRepository('App:Edition');
+
              $repositoryEquipesadmin= $this->getDoctrine()
-		->getManager()
-		->getRepository('App:Equipesadmin');
+                            ->getManager()
+                            ->getRepository('App:Equipesadmin');
              $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
                                    ->getRepository('App:Photos');
              
              
-              $repositoryCentrescia=$this->getDoctrine()
+             $repositoryCentrescia=$this->getDoctrine()
                                    ->getManager()
                                    ->getRepository('App:Centrescia');
             $user = $this->getUser();
             $id_user=$user->getId(); 
-           $roles=$user->getRoles();
-           $role=$roles[0];
-           $concourseditioncentre =explode('-',$infos);
+            $roles=$user->getRoles();
+            $role=$roles[0];
+            $concourseditioncentre =explode('-',$infos);
             $concours=$concourseditioncentre[0];
-            $edition=$repositoryEdition->find(['id' =>$concourseditioncentre[1]]);
-            
+            $idedition=$repositoryEdition->find(['id' =>$concourseditioncentre[1]]);
+            $edition=$repositoryEdition->findOneBy(['id'=>$idedition]);
              If ($concours=='cia'){
                 $qb= $repositoryEquipesadmin->createQueryBuilder('e'); 
                 $centre = $repositoryCentrescia->find(['id'=>$concourseditioncentre[2]]);
@@ -551,11 +551,11 @@ class PhotosController extends  AbstractController
              if ($role!='ROLE_PROF'){
                  $ville=$centre->getCentre();
                         $qb->andWhere('e.centre=:centre')
-                         ->setParameter('centre',$centre);        
+                           ->setParameter('centre',$centre);
              }
                  if ($role=='ROLE_PROF'){
                      $ville='prof';
-                   $qb->andWhere('e.idProf1 =:prof1') 
+                     $qb->andWhere('e.idProf1 =:prof1')
                           ->setParameter('prof1',$id_user)
                           ->orWhere('e.idProf2 =:prof2') 
                           ->setParameter('prof2',$id_user);
@@ -567,7 +567,7 @@ class PhotosController extends  AbstractController
               
                 $qb2=$repositoryPhotos->createQueryBuilder('p')
                                 ->leftJoin('p.equipe','e')
-                                 ->andWhere('p.edition =:edition')
+                                ->andWhere('p.edition =:edition')
                                 ->setParameter('edition',$edition)
                                 ->andWhere('p.national = FALSE')
                                 ->orderBy('e.numero','ASC');;
