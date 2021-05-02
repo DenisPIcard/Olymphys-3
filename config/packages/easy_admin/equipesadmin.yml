@@ -19,7 +19,7 @@ easy_admin :
 
                     - { name : 'new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
                     - { name: 'edit', icon: 'pencil', label: false }
-                    - { name: '-delete', icon: 'trash-alt', label: false, permission : 'ROLE_SUPER_ADMIN', ask_confirm : true }
+                    - { name: 'delete', icon: 'trash-alt', label: false, permission : 'ROLE_SUPER_ADMIN', ask_confirm : true }
 
                 max_results: 50
                 

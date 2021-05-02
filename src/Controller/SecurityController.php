@@ -156,7 +156,7 @@ class SecurityController extends AbstractController
     public function verifMail(User $user, Request $request, Mailer $mailer, string $token)
     {
         $rneRepository=$this->getDoctrine()->getManager()->getRepository('App:Rne');
-
+        $rne=$user->getRne();
         // interdit l'accès à la page si:
         // le token associé au membre est null
         // le token enregistré en base et le token présent dans l'url ne sont pas égaux

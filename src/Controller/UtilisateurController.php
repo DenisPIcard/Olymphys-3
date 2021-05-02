@@ -243,20 +243,24 @@ class UtilisateurController extends AbstractController
                                                    ->where('e.equipe =:equipe')
                                                    ->setParameter('equipe',$equipe)
                                                    ->getQuery()->getResult();
-       if (count($eleves)>2){
+       if (count($eleves)>2)
+       {
        
-       if ($eleve->getAutorisationphotos() !=null){
-           $autorisation = $eleve->getAutorisationphotos();
-           $file= $autorisation->getFichier();
-           copy('fichiers/autorisations/'.$file, 'fichiers/autorisations/archives/'.$file);// dans le cas où l'élève d'ésinscrit a participé aux cia avec une autroisation photo mais ne participe plus au cn 
+           if ($eleve->getAutorisationphotos() !=null){
+               $autorisation = $eleve->getAutorisationphotos();
+               $file= $autorisation->getFichier();
+               copy('fichiers/autorisations/'.$file, 'fichiers/autorisations/trash/'.$file);// dans le cas où l'élève d'ésinscrit a participé aux cia avec une autroisation photo mais ne participe plus au cn
+
+               $eleve->setAutorisationphotos(null);
+               $em->remove($autorisation);
+               $em->flusch();
            
-           $eleve->setAutorisationphotos(null);
-           $em->remove($autorisation);
-           $em->flusch();
-           
-       }
-    $em->remove($eleve);
-       $em->flush();}
+            }
+           $equipe=$eleve->getEquipe();
+           $equipe->setNbeleves($equipe->getNbeleves()-1);
+           $em->persist($equipe);
+           $em->remove($eleve);
+           $em->flush();}
       if  (count($eleves)==2) {
           
           $request->getSession()

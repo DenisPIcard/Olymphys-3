@@ -1358,7 +1358,7 @@ public function     afficher_liste_fichiers_prof(Request $request , $infos ){
             {
             if ($request->request->has('FormAll')) {         
                 $zipFile = new \ZipArchive();
-                $FileName= $equipe_choisie->getCentre()->getCentre().'-Fichiers-eq-'.$equipe_choisie->getNumero().'-'.date('now');
+                $FileName= $edition->getEd().'-Fichiers-eq-'.$equipe_choisie->getNumero().'-'.date('now');
                 if ($zipFile->open($FileName, ZipArchive::CREATE) === TRUE){
                    $fichiers= $repositoryFichiersequipes->findByEquipe(['equipe'=>$equipe_choisie]);
                     

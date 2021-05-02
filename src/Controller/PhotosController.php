@@ -542,75 +542,75 @@ class PhotosController extends  AbstractController
             $concours=$concourseditioncentre[0];
             $idedition=$repositoryEdition->find(['id' =>$concourseditioncentre[1]]);
             $edition=$repositoryEdition->findOneBy(['id'=>$idedition]);
-             If ($concours=='cia'){
-                $qb= $repositoryEquipesadmin->createQueryBuilder('e'); 
-                $centre = $repositoryCentrescia->find(['id'=>$concourseditioncentre[2]]);
-                         $qb->andWhere('e.edition =:edition')
-                         ->setparameter('edition', $edition)
-                         ->addOrderBy('e.numero','ASC');
-             if ($role!='ROLE_PROF'){
-                 $ville=$centre->getCentre();
-                        $qb->andWhere('e.centre=:centre')
-                           ->setParameter('centre',$centre);
+             if ($concours=='cia'){
+                        $qb= $repositoryEquipesadmin->createQueryBuilder('e');
+                        $centre = $repositoryCentrescia->find(['id'=>$concourseditioncentre[2]]);
+                                 $qb->andWhere('e.edition =:edition')
+                                 ->setparameter('edition', $edition)
+                                 ->addOrderBy('e.numero','ASC');
+                     if ($role!='ROLE_PROF'){
+                         $ville=$centre->getCentre();
+                                $qb->andWhere('e.centre=:centre')
+                                   ->setParameter('centre',$centre);
+                          }
+                     if ($role=='ROLE_PROF'){
+                             $ville='prof';
+                             $qb->andWhere('e.idProf1 =:prof1')
+                                  ->setParameter('prof1',$id_user)
+                                  ->orWhere('e.idProf2 =:prof2')
+                                  ->setParameter('prof2',$id_user);
+
+                       }
+
+
+                       $liste_equipes=$qb->getQuery()->getResult();
+
+                       $qb2=$repositoryPhotos->createQueryBuilder('p')
+                                        ->leftJoin('p.equipe','e')
+                                        ->andWhere('p.edition =:edition')
+                                        ->setParameter('edition',$edition)
+                                        ->andWhere('p.national = FALSE')
+                                        ->orderBy('e.numero','ASC');;
+                                        if ($role!='ROLE_PROF'){
+                                         $qb2 ->andWhere('e.centre =:centre')
+                                         ->setParameter('centre', $centre);
+                                }
+
+
+                         if ($role=='ROLE_PROF'){
+                           $qb2->andWhere('e.idProf1 =:prof1')
+                                   ->setParameter('prof1',$id_user)
+                                   ->orWhere('e.idProf2 =:prof2')
+                                   ->setParameter('prof2',$id_user);
+                         }
+                         $liste_photos=$qb2->getQuery()->getResult();
+
+
              }
-                 if ($role=='ROLE_PROF'){
-                     $ville='prof';
-                     $qb->andWhere('e.idProf1 =:prof1')
-                          ->setParameter('prof1',$id_user)
-                          ->orWhere('e.idProf2 =:prof2') 
-                          ->setParameter('prof2',$id_user);
-                   
-               }
-                 
-                 
-                 $liste_equipes=$qb->getQuery()->getResult();
-              
-                $qb2=$repositoryPhotos->createQueryBuilder('p')
-                                ->leftJoin('p.equipe','e')
-                                ->andWhere('p.edition =:edition')
-                                ->setParameter('edition',$edition)
-                                ->andWhere('p.national = FALSE')
-                                ->orderBy('e.numero','ASC');;
-                                if ($role!='ROLE_PROF'){
-                                 $qb2 ->andWhere('e.centre =:centre')
-                                 ->setParameter('centre', $centre);
-                        }
-                      
-                 
-                 if ($role=='ROLE_PROF'){
-                   $qb2->andWhere('e.idProf1 =:prof1') 
-                           ->setParameter('prof1',$id_user)
-                           ->orWhere('e.idProf2 =:prof2')
-                           ->setParameter('prof2',$id_user);
-                 }  
-                 $liste_photos=$qb2->getQuery()->getResult();  
-                 
-                
-                }
              
-             If ($concours=='national'){
+             if ($concours=='national'){
              
              $equipe= $repositoryEquipesadmin->findOneBy(['id'=>$concourseditioncentre[2]]);
             
                  $qb= $repositoryPhotos->createQueryBuilder('p')
-                          ->where('p.equipe =:equipe')
-                          ->andWhere('p.edition =:edition')
-                          ->setParameter('edition',$edition)
-                         ->andWhere('p.national = 1')
-                         ->setParameter('equipe',$equipe);
+                                ->where('p.equipe =:equipe')
+                                ->andWhere('p.edition =:edition')
+                                ->setParameter('edition',$edition)
+                                ->andWhere('p.national = 1')
+                                ->setParameter('equipe',$equipe);
                    if ($role=='ROLE_PROF'){
                     $equipes= $repositoryEquipesadmin->createQueryBuilder('eq')
                                                ->andWhere('eq.selectionnee = TRUE')
-                                                ->andWhere('eq.idProf1 =:prof1') 
+                                               ->andWhere('eq.idProf1 =:prof1')
                                                ->setParameter('prof1',$id_user)
                                                ->orWhere('eq.idProf2 =:prof2')
-                                                ->setParameter('prof2',$id_user)
-                                                ->getQuery()->getResult();
+                                               ->setParameter('prof2',$id_user)
+                                               ->getQuery()->getResult();
                            
                            
                      
                            $qb=$repositoryPhotos->createQueryBuilder('p') 
-                                    ->andWhere('p.national =:valeur')
+                                   ->andWhere('p.national =:valeur')
                                    ->setParameter('valeur','1')
                                    ->andWhere('p.edition =:edition')
                                    ->setParameter('edition',$edition)
@@ -624,18 +624,18 @@ class PhotosController extends  AbstractController
              }
              $i=0;
              foreach ($liste_photos as $photo){
-                 $id= $photo->getId();
+                  $id= $photo->getId();
                   $formBuilder[$i]=$this->get('form.factory')->createNamedBuilder('Form'.$i, FormType::class,$photo);  
                   //if($photo->getComent()==null){$data=$photo->getEquipe()->getTitreProjet();}
                   //else {$data=$photo->getComent();}
-            $formBuilder[$i]->add('id',  HiddenType::class, ['disabled'=>true, 'data' => $id, 'label'=>false])
+                  $formBuilder[$i]->add('id',  HiddenType::class, ['disabled'=>true, 'data' => $id, 'label'=>false])
                                        
                                          ->add('coment', TextType::class,[
                                              
                                              'required'=>false,
                                            // 'data'=>$data
                                              ]);
-            if ($concours=='cia'){
+                   if ($concours=='cia'){
                                       $formBuilder[$i] ->add('equipe',EntityType::class,[
                                          'class' => 'App:Equipesadmin',
                                        'query_builder'=>$qb,

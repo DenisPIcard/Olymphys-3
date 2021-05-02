@@ -102,6 +102,12 @@ class EquipesadminController extends EasyAdminController
             return $queryBuilder;
          
       }
+
+    /**
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
+     */
+
     public function deleteAction(){
          $class = $this->entity['class'];
        $id = $this->request->query->get('id');
@@ -119,10 +125,16 @@ class EquipesadminController extends EasyAdminController
         $liste_fichiers=$qb->getQuery()->getResult();
         
         foreach($liste_fichiers as $fichier){
+            if ($fichier->getTypefichier()==6){
+                $eleve=$fichier->getEleve();
+                $eleve->setAutorisationphotos(null);
+
+            }
             $fichier->setEquipe(null);
             $fichier->setProf(null);
             $fichier->setEleve(null);
-         $em->remove($fichier);
+            $fichier->setEdition(null);
+            $em->remove($fichier);
         }
          $qb2= $repositoryElevesinter->createQueryBuilder('e')
                  ->andWhere('e.equipe =:equipe')
@@ -136,13 +148,14 @@ class EquipesadminController extends EasyAdminController
         $equipe=$repositoryEquipes->createQueryBuilder('e')
                  ->andWhere('e.infoequipe =:equipe')
                  ->setParameter('equipe',$equipe)
-                ->getQuery()->getSingleResult();
-       If ($equipe){
+                ->getQuery()->getOneOrNullResult();
+       if ($equipe){
         $equipe->setInfoequipe(null);
        }
          foreach($liste_elevesinter as $eleve){
             $eleve->setEquipe(null);
             $eleve->setAutorisationphotos(null);
+
              $em->remove($eleve);      
         }
          foreach($liste_eleves as $eleve){

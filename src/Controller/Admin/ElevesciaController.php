@@ -135,6 +135,7 @@ class ElevesciaController extends EasyAdminController
                 header('Cache-Control: max-age=0');
         
                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+                ob_end_clean();
                 $writer->save('php://output');
         
         
@@ -217,6 +218,7 @@ class ElevesciaController extends EasyAdminController
                 header('Cache-Control: max-age=0');
         
                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+                ob_end_clean();
                 $writer->save('php://output');
         
         
