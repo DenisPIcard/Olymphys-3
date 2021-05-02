@@ -363,19 +363,19 @@ class PhotosController extends  AbstractController
          */    
          public function voirphotoscn(Request $request, $edition)
             {    $repositoryEdition= $this->getDoctrine()
-		->getManager()
-		->getRepository('App:Edition');
+                    ->getManager()
+                    ->getRepository('App:Edition');
               
              $repositoryEquipesadmin= $this->getDoctrine()
-		->getManager()
-		->getRepository('App:Equipesadmin');
+                    ->getManager()
+                    ->getRepository('App:Equipesadmin');
             
              
              $repositoryPhotos=$this->getDoctrine()
                                    ->getManager()
                                    ->getRepository('App:Photos');
              $Edition_en_cours=$this->session->get('edition');
-              $Edition=$repositoryEdition->find(['id'=>$edition]);
+             $Edition=$repositoryEdition->find(['id'=>$edition]);
              $user = $this->getUser();
              if ($user){
               $id_user=$user->getId(); 
@@ -398,8 +398,7 @@ class PhotosController extends  AbstractController
                      ->leftJoin('p.equipe', 'e')
                      ->andWhere('e.selectionnee = TRUE')
                      ->orderBy('e.lettre','ASC') 
-                     ->andWhere('p.national =:national')
-                     ->setParameter('national',TRUE)
+                     ->andWhere('p.national = TRUE')
                      ->andWhere('p.edition =:edition')
                      ->setParameter('edition', $Edition);
                     
@@ -407,36 +406,35 @@ class PhotosController extends  AbstractController
              $date=new \datetime('now');
              //dd($liste_photos);
              //$liste_photos=$repositoryPhotosinter->findByEdition(['edition'=>$edition]);
-             if ($liste_photos)
+            if ($liste_photos)
                  if (($role!='ROLE_COMITE') AND ($role!='ROLE_ORGACIA')  AND ($role!='ROLE_SUPER_ADMIN' )){
                           
-                          $publiable = TRUE;
-                          if ($Edition_en_cours==$Edition){ 
-                                                if( ($date<$Edition_en_cours->getConcourscn()) ){ $publiable= FALSE ;}
-                                     }
-                         if($publiable == TRUE){
-                          return $this->render('photos/affiche_photos_cn.html.twig', [
-                'liste_photos' => $liste_photos,'edition'=>$Edition,'liste_equipes'=>$liste_equipes,  'concours'=>'national']);
+                     $publiable = TRUE;
+                     if ($Edition_en_cours==$Edition){
+                         if( ($date<$Edition_en_cours->getConcourscn()) ){ $publiable= FALSE ;
+                         }
+                     }
+                     if($publiable == TRUE){
+                         return $this->render('photos/affiche_photos_cn.html.twig', ['liste_photos' => $liste_photos,'edition'=>$Edition,'liste_equipes'=>$liste_equipes,  'concours'=>'national']);
                              }
-                       else {
-                               $request->getSession()
-                         ->getFlashBag()
-                         ->add('info', 'Pas de photo des épreuves inationales publiée pour l\'édition '.$Edition->getEd().' à ce jour') ;
-             return $this->redirectToRoute('photos_choixedition');
-                                 }
+                     else {
+                         $request->getSession()
+                                ->getFlashBag()
+                                ->add('info', 'Pas de photo des épreuves inationales publiée pour l\'édition '.$Edition->getEd().' à ce jour') ;
+                         return $this->redirectToRoute('photos_choixedition');
+                     }
                  }
-                  
-                else{
-                       return $this->render('photos/affiche_photos_cn.html.twig', [
-                'liste_photos' => $liste_photos,'edition'=>$Edition,'liste_equipes'=>$liste_equipes,  'concours'=>'national']);
-                      }
+                 else{
+                     return $this->render('photos/affiche_photos_cn.html.twig', ['liste_photos' => $liste_photos,'edition'=>$Edition,'liste_equipes'=>$liste_equipes,  'concours'=>'national']);
+                 }
            
-              if (!$liste_photos)
-              {$request->getSession()
+                 if (!$liste_photos)
+                    {
+                        $request->getSession()
                          ->getFlashBag()
                          ->add('info', 'Pas de photo du concours national publiée pour l\'édition '.$Edition->getEd().' à ce jour') ;
-             return $this->redirectToRoute('photos_choixedition');
-              }
+                    return $this->redirectToRoute('photos_choixedition');
+                    }
             }
     
        /**
@@ -445,74 +443,74 @@ class PhotosController extends  AbstractController
          * @Route("/photos/galleryphotos, {infos}", name="photos_galleryphotos")
          * 
          */    
-        public function galleryphotos(Request $request, $infos) {
-             $repositoryEdition= $this->getDoctrine()
-		->getManager()
-		->getRepository('App:Edition');
-              
-             $repositoryEquipesadmin= $this->getDoctrine()
-		->getManager()
-		->getRepository('App:Equipesadmin');
-             $repositoryPhotos=$this->getDoctrine()
-                                   ->getManager()
-                                   ->getRepository('App:Photos');
-             
-            
-              $repositoryCentrescia=$this->getDoctrine()
-                                   ->getManager()
-                                   ->getRepository('App:Centrescia');
-           $concourseditioncentre =explode('-',$infos);
-            $concours=$concourseditioncentre[0];
-            $Edition=$repositoryEdition->find(['id' =>$concourseditioncentre[1]]);
-            
-             If ($concours=='cia'){
-             $centre = $repositoryCentrescia->find(['id'=>$concourseditioncentre[2]]);
-                            
-                 $qb= $repositoryEquipesadmin->createQueryBuilder('e')
-                         ->where('e.centre=:centre')
-                         ->setParameter('centre',$centre);
-                 $liste_equipes=$qb->getQuery()->getResult();
-                
-                $qb2=$repositoryPhotos->createQueryBuilder('p')
-                         ->join('p.equipe','r')
-                        ->andWhere('p.edition =:edition')
-                         ->setParameter('edition', $Edition)
-                         ->andWhere('r.centre =:centre')
-                         ->setParameter('centre', $centre)
-                        ->orderBy('r.numero','ASC')
-                        ->andWhere('p.national = FALSE');
-                  $liste_photos=$qb2->getQuery()->getResult();  
-          
-             }
-             
-             If ($concours=='national'){
-             
-             $equipe= $repositoryEquipesadmin->findOneBy(['id'=>$concourseditioncentre[2]]);
-                 $qb= $repositoryPhotos->createQueryBuilder('p')
-                          ->andWhere('p.equipe =:equipe')
-                         ->setParameter('equipe',$equipe)
-                         ->andWhere('p.edition =:edition')
-                         ->setParameter('edition', $Edition)
-                         ->andWhere('p.national = TRUE')
-                         ;
-                   
-                 $liste_photos=$qb->getQuery()->getResult();                 
-             }
-             
-              if ($concours=='cia'){
+       public function galleryphotos(Request $request, $infos)
+       {
+           $repositoryEdition = $this->getDoctrine()
+               ->getManager()
+               ->getRepository('App:Edition');
+
+           $repositoryEquipesadmin = $this->getDoctrine()
+               ->getManager()
+               ->getRepository('App:Equipesadmin');
+           $repositoryPhotos = $this->getDoctrine()
+               ->getManager()
+               ->getRepository('App:Photos');
+
+
+           $repositoryCentrescia = $this->getDoctrine()
+               ->getManager()
+               ->getRepository('App:Centrescia');
+           $concourseditioncentre = explode('-', $infos);
+           $concours = $concourseditioncentre[0];
+           $Edition = $repositoryEdition->find(['id' => $concourseditioncentre[1]]);
+
+           if ($concours == 'cia') {
+               $centre = $repositoryCentrescia->find(['id' => $concourseditioncentre[2]]);
+
+               $qb = $repositoryEquipesadmin->createQueryBuilder('e')
+                   ->where('e.centre=:centre')
+                   ->setParameter('centre', $centre);
+               $liste_equipes = $qb->getQuery()->getResult();
+
+               $qb2 = $repositoryPhotos->createQueryBuilder('p')
+                   ->join('p.equipe', 'r')
+                   ->andWhere('p.edition =:edition')
+                   ->setParameter('edition', $Edition)
+                   ->andWhere('r.centre =:centre')
+                   ->setParameter('centre', $centre)
+                   ->orderBy('r.numero', 'ASC')
+                   ->andWhere('p.national = FALSE');
+               $liste_photos = $qb2->getQuery()->getResult();
+
+           }
+
+           if ($concours == 'national') {
+
+               $equipe = $repositoryEquipesadmin->findOneBy(['id' => $concourseditioncentre[2]]);
+               $qb = $repositoryPhotos->createQueryBuilder('p')
+                   ->andWhere('p.equipe =:equipe')
+                   ->setParameter('equipe', $equipe)
+                   ->andWhere('p.edition =:edition')
+                   ->setParameter('edition', $Edition)
+                   ->andWhere('p.national = TRUE');
+
+               $liste_photos = $qb->getQuery()->getResult();
+           }
+
+           if ($concours == 'cia') {
                $content = $this
-                          ->renderView('photos/liste_photos_cia_carrousels.html.twig', array('liste_photos'=>$liste_photos,'edition'=>$Edition, 'centre'=>$centre,
-                        'liste_equipes'=> $liste_equipes, 'concours'=>'cia')); 
-            return new Response($content); 
-              }
-              
-               if ($concours=='national'){
+                   ->renderView('photos/liste_photos_cia_carrousels.html.twig', array('liste_photos' => $liste_photos, 'edition' => $Edition, 'centre' => $centre,
+                       'liste_equipes' => $liste_equipes, 'concours' => 'cia'));
+               return new Response($content);
+           }
+
+           if ($concours == 'national') {
                $content = $this
-                          ->renderView('photos/liste_photos_cn_carrousels.html.twig', array('liste_photos'=>$liste_photos,
-                              'edition'=>$Edition,  'equipe'=>$equipe,'concours'=>'national')); 
-            return new Response($content); 
-              }
-        }    
+                   ->renderView('photos/liste_photos_cn_carrousels.html.twig', array('liste_photos' => $liste_photos,
+                       'edition' => $Edition, 'equipe' => $equipe, 'concours' => 'national'));
+               return new Response($content);
+           }
+       }
            /**
          * 
          * @IsGranted("ROLE_PROF")

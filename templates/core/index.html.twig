@@ -130,11 +130,12 @@
    
     {% endif %}
 
-    
-    <li><a href="{{path('photos_choixedition')}}" class="btn btn-primary" role="button" aria-pressed="true">Galeries Photos</a></li>
+    <li><a href="{{path('archives_fichiers_photos')}}" class="btn btn-primary" role="button" aria-pressed="true">Les éditions passées</a></li>
+    {# <li><a href="{{path('photos_choixedition')}}" class="btn btn-primary" role="button" aria-pressed="true">Galeries Photos</a></li>
+
     <li><a href="{{path('fichiers_choixedition',{num_type_fichier : 0})}}" class="btn btn-primary" role="button" aria-pressed="true">Mémoires</a></li>
     <li><a href="{{path('fichiers_choixedition',{num_type_fichier : 3})}}" class="btn btn-primary" role="button" aria-pressed="true">Présentations</a></li>
-    <li><a href="{{path('livredor_choix_edition',{action:'lire'})}}" class="btn btn-primary" role="button" aria-pressed="true">Livres d'or</a></li>
+    <li><a href="{{path('livredor_choix_edition',{action:'lire'})}}" class="btn btn-primary" role="button" aria-pressed="true">Livres d'or</a></li>#}
     <li><a href="{{path('inscrire_equipe',{idequipe:'x'})}}" class="btn btn-primary" role="button" aria-pressed="true">Inscrire une équipe</a></li>
       {% if (date()>app.session.get('edition').concourscn) or (is_granted('ROLE_COMITE')) %}
                 {% if is_granted('ROLE_COMITE')  or  is_granted('ROLE_SUPER_ADMIN')%}    
@@ -158,7 +159,7 @@
           {#
     <i><font color="red">Nous effectuons des travaux sur le site pour le préparer pour le concours national, il se peut que vous rencontriez parfois des dysfonctionnements. Veuillez nous en excuser.</font></i>
     <font color='blue'> Le dépôt des documents n'est pas encore actif.<br></font>#}
-       <img src="{{ asset('images/bandeau.jpg') }}"class="img-fluid" alt="Responsive image">>
+       <img src="{{ asset('images/bandeau.jpg') }}"class="img-fluid" alt="Responsive image">
 </div>
 {% endblock %}
 

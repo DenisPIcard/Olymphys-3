@@ -144,5 +144,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="symfony5-2" />
     <orderEntry type="module" module-name="Olymphys-3_1" />
+    <orderEntry type="module" module-name="comptablite_perso" />
   </component>
 </module>
