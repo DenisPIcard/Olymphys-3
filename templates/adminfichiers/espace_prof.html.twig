@@ -8,7 +8,7 @@
      {% endblock %}
 
 {% block titre3 %}
-    <center>
+    <div class=text-center">
     {{edition.ed}}<sup>e</sup>  édition : 
     {%if concours =='interacadémique'%}
    Concours interacadémique <br>
@@ -21,7 +21,7 @@
         {% endif %}
         <h4> Equipe "{{equipe.titreProjet}}" du lycée {{equipe.rneId.nom}} de {{equipe.rneId.commune}}</h4>
     <br>
-    </center>
+    </div>
   
 
     {% endblock %}
@@ -85,7 +85,7 @@
                      <div class="col">
                           {% if role=='ROLE_PROF' %}   
             
-                                     <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></center>
+                                     <div class="text-center"><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></div>
            
                         {% endif %}
                      </div>
@@ -177,23 +177,23 @@
                                           {% if (app.session.get('concours')=='interacadémique') %}
                                                  {% if i!=5 %} 
                                                         {% if  (date()<= app.session.get('edition').datelimcia)%}
-                                                               <div class="col-1 " ><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></div>
+                                                               <div class="col-1 " ><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></button></a></div>
                                                         {% endif %}
                                                 {% endif %}
                                           {% endif %}
                                       {% if i!=3%}
                                              {% if (app.session.get('concours')=='national') %}
                                                      {% if  (date()<= app.session.get('edition').datelimnat)%}
-                                                               <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></div>
+                                                               <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></button></a></div>
                                                      {% endif %}
                                              {% endif %} 
                                       {% endif %}
                                     {% endif %}
                             {% elseif role=='ROLE_COMITE' or role=='ROLE_ORGACIA'%}
-                                    <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></div>    
+                                    <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></button></a></div>
                             {% endif %}   
                             {% if( i==4 or i==3 or i == 5 ) and (role=='ROLE_PROF')%}  
-                                    <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}" "> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a></div>
+                                    <div class="col-1"><a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~'-'~concours~'-'~i} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></button></a></div>
                             {% endif %} 
                 
                     {% endif %}
@@ -310,7 +310,7 @@
                      Déposer
                  </div>
              </div>    
-          <form  id="autorisations" method="GET"action="{{ path('fichiers_charge_autorisations') }}">{# #}
+          <form  id="autorisations" method="GET" action="{{ path('fichiers_charge_autorisations') }}">{# #}
               
               <div class="row text-center" >  
                   <div class="col-3">
@@ -323,43 +323,43 @@
                  
             {% for eleve in listeEleves %}
                  <div class="row text-center">
-                  {%  if eleve.autorisationphotos == null %}
+                    {%  if eleve.autorisationphotos == null %}
                       
                      
                           <div class="col-1">
                               <div class="form-check">
-                                  <input type="checkbox"name="check-eleve-{{loop.index}}" id="check- eleve-{{loop.index}}" disabled ="true"/> 
+                                  <input type="checkbox" name="check-eleve-{{loop.index}}" id="check- eleve-{{loop.index}}" disabled ="true"/>
                               </div>
                           </div>
                           <div class="col-2">
-                                            <div class="fichiernondepose">  <b>{{ eleve.nom }} {{ eleve.prenom }} </b></class>
+                                            <div class="fichiernondepose">  <b>{{ eleve.nom }} {{ eleve.prenom }} </b></div>
                           </div>
                           <div class="col-8">
                               
                           </div>
                       
-                  {% else %}
+                    {% else %}
                       
                      
                           <div class="col-1"> 
                                     <div class="form-check">
                                        
-                                        <input type="checkbox"name="check-eleve-{{loop.index}}" id="check- eleve-{{loop.index}}" checked ="true"/> 
+                                        <input type="checkbox" name="check-eleve-{{loop.index}}" id="check- eleve-{{loop.index}}" checked/>
                                          <input type="hidden" name="eleve-{{loop.index}}" id="eleve-{{eleve.autorisationphotos.id}}" value="eleve-{{eleve.autorisationphotos.id}}"/> 
                                     </div>
                           </div>
-                          <div class="col-2"> 
-                                       <div class="fichierdepose"> <b>{{ eleve.nom }} {{ eleve.prenom }} </b></div>
-                           </div>
-                           <div class="col-8"> 
-                                         <a href="{{ asset('/fichiers/autorisations/'~eleve.autorisationphotos.fichier)}}">{{eleve.autorisationphotos.fichier}}</a>
+                          <div class="col-2">
+                                               <div class="fichierdepose"> <b>{{ eleve.nom }} {{ eleve.prenom }} </b></div>
+                          </div>
+                          <div class="col-8">
+                                                 <a href="{{ asset('/fichiers/autorisations/'~eleve.autorisationphotos.fichier)}}">{{eleve.autorisationphotos.fichier}}</a>
                            </div>
                      
                   {% endif %}
                   
                        <div class="col-1"> 
                          {% if (role=='ROLE_PROF')%}
-                                 <a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~ '-'~concours~'-6-'~eleve.id~'-'} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a>
+                                 <a href="{{ path('fichiers_charge_fichiers',{infos : equipe.id~ '-'~concours~'-6-'~eleve.id~'-'} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></button></a>
                       
                          {%  endif %} 
                         </div>
@@ -395,7 +395,7 @@
                                   {% else %}
                                             <div class="col-1"> 
                                                 <div class="form-check">
-                                                         <input type="checkbox" name="check-prof-{{loop.index}}" id="check-prof-{{loop.index}}" checked ="true"/> 
+                                                         <input type="checkbox" name="check-prof-{{loop.index}}" id="check-prof-{{loop.index}}" checked/> 
                                                          <input type="hidden" name="prof-{{loop.index}}" id="prof-{{prof.autorisationphotos.id}}" value="prof-{{prof.autorisationphotos.id}}"/> 
                                                 </div>
                                             </div>    
@@ -408,7 +408,7 @@
                                    {%  endif %} 
                                    {% if role=='ROLE_PROF' %}
                                           <div class="col-1"> 
-                                                <a href="{{ path('fichiers_charge_fichiers',{infos : 'prof'~ '-'~concours~'-6-'~prof.id~'-'~equipe.id} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></i></i></button></a> 
+                                                <a href="{{ path('fichiers_charge_fichiers',{infos : 'prof'~ '-'~concours~'-6-'~prof.id~'-'~equipe.id} )}}"> <button type="button" title="Déposer">  <i class="fas fa-upload"></i></button></a>
                                           </div>
                                    {% endif %}
               
@@ -439,15 +439,15 @@
         {% if (role== 'ROLE_JURY') or (role== 'ROLE_COMITE') or (role== 'ROLE_JURYCIA') or (role== 'ROLE_ORGACIA') or (role== 'ROLE_SUPER_ADMIN')%}   
              
             {% if concours=='interacadémique' %}
-                <center><a href="{{ path('fichiers_choix_equipe',{choix: centre.centre}) }}" >Retour à la liste des équipes</a></center>
+                <div class="text-center"><a href="{{ path('fichiers_choix_equipe',{choix: centre.centre}) }}" >Retour à la liste des équipes</a></div>
            {% endif %}
            {% if concours=='national' %}
-                <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_cn_comite'})  }}" >Retour à la liste des équipes</a></center>
+                <div class="text-center"><a href="{{ path('fichiers_choix_equipe',{choix:'liste_cn_comite'})  }}" >Retour à la liste des équipes</a></div>
            {% endif %} 
             {% endif %}
              {% if role=='ROLE_PROF' %}   
             
-            <center><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></center>
+            <div class="text-center"><a href="{{ path('fichiers_choix_equipe',{choix:'liste_prof'})  }}" >Retour à la liste des équipes</a></div>
            
         {% endif %}
  </div>  

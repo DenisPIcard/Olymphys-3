@@ -198,6 +198,8 @@ public function choix_equipe(Request $request,$choix) {
     $dateconnect= new \datetime('now');
     
     $user = $this->getUser();
+
+
     $id_user=$user->getId(); 
     $roles=$user->getRoles();
     $role=$roles[0];
