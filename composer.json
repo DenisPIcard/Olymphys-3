@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "easycorp/easyadmin-bundle": "^2.1",
+        "egulias/email-validator": "^3.1",
         "howtomakeaturn/pdfinfo": "1.*",
         "laminas/laminas-code": "^3.5.1",
         "laminas/laminas-escaper": "^2.7",

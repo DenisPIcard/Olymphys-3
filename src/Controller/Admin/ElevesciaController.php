@@ -107,10 +107,10 @@ class ElevesciaController extends EasyAdminController
                 $sheet->setCellValue('A'.$ligne, 'Nom')
                     ->setCellValue('B'.$ligne, 'Prenom')
                     ->setCellValue('C'.$ligne, 'Numequipe')
-                     ->setCellValue('D'.$ligne, 'Titre')  
+                    ->setCellValue('D'.$ligne, 'Titre')
                     ->setCellValue('E'.$ligne, 'Lycée')
-                   ->setCellValue('F'.$ligne, 'Commune');
-                   
+                    ->setCellValue('F'.$ligne, 'Commune')
+                    ->setCellValue('G'.$ligne, 'Courriel');
                 
                 $ligne +=1; 
 
@@ -123,7 +123,8 @@ class ElevesciaController extends EasyAdminController
                         ->setCellValue('C'.$ligne, $equipe->getNumero())
                         ->setCellValue('D'.$ligne, $equipe->getTitreProjet())
                         ->setCellValue('E'.$ligne,$equipe->getRneId()->getNom())
-                        ->setCellValue('F'.$ligne, $equipe->getRneId()->getCommune());
+                        ->setCellValue('F'.$ligne, $equipe->getRneId()->getCommune())
+                        ->setCellValue('G'.$ligne, $eleve->getCourriel());
                       $ligne +=1;
                 }
                     
