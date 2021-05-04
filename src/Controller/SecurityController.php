@@ -222,6 +222,7 @@ class SecurityController extends AbstractController
             $user->setToken($tokenGenerator->generateToken());
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
+            $em->persist($user);
             $em->flush();
 
             $email=(new TemplatedEmail())

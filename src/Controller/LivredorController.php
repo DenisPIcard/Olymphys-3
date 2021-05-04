@@ -320,15 +320,29 @@ class LivredorController extends AbstractController
                              foreach($equipes as $equipe){ 
                                  
                                
-                                 if (($equipe->getIdProf1() == $prof->getId()) or ($equipe->getIdProf2() == $prof ->getId()) ){
+                                 if ($equipe->getIdProf1()->getId() == $prof->getId()){
                                      
-                                      if (strlen($lettres_equipes_prof[$i])>0){
+                                      if (strlen($lettres_equipes_prof[$i])>0)
+                                      {
                                      $lettres_equipes_prof[$i]= $lettres_equipes_prof[$i].', '.$equipe->getLettre();
+                                       }
+                                      if (strlen($lettres_equipes_prof[$i])==0)
+                                      {
+                                          $lettres_equipes_prof[$i]=$lettres_equipes_prof[$i].$equipe->getLettre();
                                       }
-                                      if (strlen($lettres_equipes_prof[$i])==0) { $lettres_equipes_prof[$i]=$lettres_equipes_prof[$i].$equipe->getLettre();}
                                   
                                  }
-                               
+                                 if ( $equipe->getIdProf2()!= null ){
+                                    if ($equipe->getIdProf2()->getId() == $prof ->getId()) {
+                                         if (strlen($lettres_equipes_prof[$i])>0){
+                                             $lettres_equipes_prof[$i]= $lettres_equipes_prof[$i].', '.$equipe->getLettre();
+                                         }
+                                         if (strlen($lettres_equipes_prof[$i])==0)
+                                         {
+                                             $lettres_equipes_prof[$i]=$lettres_equipes_prof[$i].$equipe->getLettre();
+                                         }
+                                    }
+                                 }
                              }
                              $i=$i+1;
             }

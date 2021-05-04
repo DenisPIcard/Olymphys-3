@@ -11,7 +11,7 @@
          <h1 class="h3 mb-3 font-weight-normal">Création d'un compte(réservé aux membres de l'équipe enseignante)</h1>
  <div class="container">
 {{ form_start(form) }}
-    {{ form_row(form.username) }}
+    {{ form_row(form.username, {'label': 'Identifiant à votre convenance'})}}
     {{ form_row(form.email) }}
     {{ form_row(form.plainPassword.first) }}
     {{ form_row(form.plainPassword.second) }}
