@@ -39,9 +39,14 @@ easy_admin :
                         - { entity : 'Fichiersequipesdiaporamas', 'label' : 'Les diaporamas' , icon : 'book'}
                         - { entity : 'Fichiersequipespresentations', 'label' : 'Les présentations' , icon : 'book'}
                         - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
-                                            #- { entity: 'Eleves' , icon : 'asterisk'}
-                       
                         - { label : 'Les photos', entity: 'Photosequipescn' , icon : 'images'}
+
+                        - label : Les livres d'or
+                        - { entity : 'Livredoreleves', 'label' : Livre d'or des élèves , icon : 'book'}
+                        - { entity : 'Livredorprofs', 'label' : Livre d'or des professeurs , icon : 'book'}
+                        - { entity : 'Livredorjury', 'label' : Livre d'or du jury , icon : 'book'}
+                        - { entity : 'Livredorcomite', 'label' : Livre d'or du comité , icon : 'book'}
+
                         - { label : 'Les recompenses', permission : 'ROLE_SUPER_ADMIN'}
                         - { entity:  'Classement' , icon : 'asterisk',permission : 'ROLE_SUPER_ADMIN'}
                         - { entity:  'Prix' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}

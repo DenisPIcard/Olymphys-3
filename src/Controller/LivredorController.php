@@ -383,7 +383,7 @@ class LivredorController extends AbstractController
         $edition = $repositoryEdition= $this->getDoctrine()
 		->getManager()
 		->getRepository('App:Edition')->findOneById(['id'=>$idedition]);
-        
+
         $phpWord = new  PhpWord();
        
         $section = $phpWord->addSection();
@@ -419,7 +419,7 @@ class LivredorController extends AbstractController
            $equiperepository= $this->getDoctrine()
                                 ->getManager()
                                 ->getRepository('App:Equipesadmin');
-             $section->addText('Livre d\'or des professeurs - Edition '.$this->session->get('edition')->getEd(),  array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240), 'pStyle');
+             $section->addText('Livre d\'or des professeurs - Edition '.$edition->getEd().' année '.$edition->getAnnee(),  array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240), 'pStyle');
               $section->addTextBreak(3);
              if ($livredor!=null){
               foreach($livredor as $texte){ 
@@ -460,7 +460,7 @@ class LivredorController extends AbstractController
                if (($type=='comite')or($type=='jury'))  {
               
              $categorie= $type;;
-             $titrepage ='Livre d\'or du '.$categorie.' - Edition '.$this->session->get('edition')->getEd();
+             $titrepage ='Livre d\'or du '.$categorie.' - Edition '.$edition->getEd().' année '.$edition->getAnnee();
              
              
              $section->addText($titrepage, array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240) , 'pStyle');
@@ -504,7 +504,7 @@ class LivredorController extends AbstractController
                                ->getQuery()->getResult();
                   
           if ($livredor!=null){
-             $section->addText('Livre d\'or des élèves- Edition '.$this->session->get('edition')->getEd(),  array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240), 'pStyle');
+             $section->addText('Livre d\'or des élèves- Edition '.$edition->getEd().' année '.$edition->getAnnee(),  array('bold' => true,  'size'=> 14 ,'spaceAfter' =>240), 'pStyle');
               $section->addTextBreak(3);
          foreach($livredor as $texte){ 
           
@@ -534,7 +534,7 @@ class LivredorController extends AbstractController
              }
             $categorie=$type;
             $filesystem = new Filesystem();
-            $fileName = $this->session->get('edition')->getEd().'livre d\'or '.$categorie.'.docx';  
+            $fileName = $edition->getEd().' annee '.$edition->getAnnee().' livre d\'or '.$categorie.'.docx';
          
              $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord,'Word2007');
              $objWriter ->save($this->getParameter('app.path.tempdirectory').'/'.$fileName);
