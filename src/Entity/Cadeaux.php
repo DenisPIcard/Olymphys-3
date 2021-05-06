@@ -49,6 +49,15 @@ class Cadeaux
      * @ORM\Column(name="attribue", type="boolean")
      */
     private $attribue;
+    
+      /**
+     * @var text
+     *
+     * @ORM\Column(name="raccourci", type="string", length=255, nullable=true)
+     */
+    private $raccourci;
+    
+    
 
 /*    public function attribuercadeau()
     {
@@ -139,6 +148,24 @@ class Cadeaux
     }
 
     /**
+     * Get raccourci
+     *
+     * @return string
+     */
+    public function getRaccourci()
+    {
+        return $this->raccourci;
+    }
+    
+    
+     public function setRaccourci($raccourci)
+    {
+        $this->raccourci = $raccourci;
+
+        return $this;
+    }
+
+    /**
      * Get montant
      *
      * @return string
@@ -147,6 +174,7 @@ class Cadeaux
     {
         return $this->montant;
     }
+    
 
     public function displayCadeau()
     {

@@ -61,3 +61,4 @@ class NotesRepository extends \Doctrine\ORM\EntityRepository
 	}
 
 }
+

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,7 +21,13 @@ class Jures
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
+    
+    
+     /**
+     * @ORM\OneToOne(targetEntity=user::class, cascade={ "remove"})
+     */
+    private $iduser;
+     
     /**
      * @var string
      *
@@ -205,31 +210,15 @@ class Jures
      */
     private $w;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="X", type="smallint", nullable=true)
-     */
-    private $x;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="Y", type="smallint", nullable=true)
-     */
-    private $y;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="Z", type="smallint", nullable=true)
-     */
-    private $z;
-
+   
      /**
      * @ORM\OneToMany(targetEntity="App\Entity\Notes", mappedBy="jure")
      */
-    private $notesj;  
+    private $notesj;
+
+   
+
+    
 
 
  
@@ -862,77 +851,10 @@ class Jures
         return $this->w;
     }
 
-    /**
-     * Set x
-     *
-     * @param integer $x
-     *
-     * @return Jures
-     */
-    public function setX($x)
-    {
-        $this->x = $x;
+  
 
-        return $this;
-    }
 
-    /**
-     * Get x
-     *
-     * @return int
-     */
-    public function getX()
-    {
-        return $this->x;
-    }
-
-    /**
-     * Set y
-     *
-     * @param integer $y
-     *
-     * @return Jures
-     */
-    public function setY($y)
-    {
-        $this->y = $y;
-
-        return $this;
-    }
-
-    /**
-     * Get y
-     *
-     * @return int
-     */
-    public function getY()
-    {
-        return $this->y;
-    }
-
-    /**
-     * Set z
-     *
-     * @param integer $z
-     *
-     * @return Jures
-     */
-    public function setZ($z)
-    {
-        $this->z = $z;
-
-        return $this;
-    }
-
-    /**
-     * Get z
-     *
-     * @return int
-     */
-    public function getZ()
-    {
-        return $this->z;
-    }
+    
     /**
      * Constructor
      */
@@ -1010,4 +932,19 @@ public function getNom()
         return $this->getNomJure().' '.$this->getPrenomJure();
     }
 
+public function getIduser(): ?user
+{
+    return $this->iduser;
 }
+
+public function setIduser(?user $iduser): self
+{
+    $this->iduser = $iduser;
+
+    return $this;
+}
+
+
+
+}
+
