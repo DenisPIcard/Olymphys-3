@@ -1,6 +1,6 @@
 {
-    "name": "vendor_name/phpproject",
-    "description": "description",
+    "name": "vendor/olymphys",
+    "description": "Olympiades de physique. Gestion des équipes, des documents et du jury du concours",
     "type": "project",
     "license": "proprietary",
     "require": {
@@ -98,7 +98,6 @@
             "require": "5.2.*"
         }
     },
-    "name": "vendor/olymphys",
-    "description": "Olympiades de physique. Gestion des équipes, des documents et du jury du concours"
+
 
 }
