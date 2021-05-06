@@ -42,7 +42,7 @@ use App\Entity\Memoiresinter;
 use App\Entity\Fichessecur;
 use App\Entity\Equipesadmin;
 use App\Entity\Rne;
-
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -460,7 +460,7 @@ class SecretariatadminController extends AbstractController
  
                 $em = $this->getDoctrine()->getManager();
                  
-                for ($row = 3; $row <= $highestRow; ++$row) 
+                for ($row = 2; $row <= $highestRow; ++$row)
                    {                       
                    
                    $value = $worksheet->getCellByColumnAndRow(2, $row)->getValue();//on récupère le username
@@ -473,7 +473,7 @@ class SecretariatadminController extends AbstractController
                             } //si l'user n'est pas existant on le crée sinon on écrase les anciennes valeurs pour une mise à jour 
                         $user->setUsername($username) ;
                         $value = $worksheet->getCellByColumnAndRow(3, $row)->getValue();//on récupère le role
-                        ($value);
+
                         $user->setRoles([$value]);
                         $value = $worksheet->getCellByColumnAndRow(4, $row)->getValue();//password
                         $password= $this->passwordEncoder->encodePassword($user, $value);
@@ -483,8 +483,7 @@ class SecretariatadminController extends AbstractController
                         $value = $worksheet->getCellByColumnAndRow(6, $row)->getValue();//email
                         $user->setEmail($value);
                        
-                        $value = $worksheet->getCellByColumnAndRow(7, $row)->getValue(); //password request at
-                        $user->setPasswordRequestedAt($value) ;
+
                         $value = $worksheet->getCellByColumnAndRow(8, $row)->getValue(); //rne
                         $user->setrne($value) ;
                         $value = $worksheet->getCellByColumnAndRow(9, $row)->getValue(); //adresse
@@ -506,11 +505,18 @@ class SecretariatadminController extends AbstractController
                                     $errorsString = (string) $errors;
                                     throw new \Exception($errorsString);
                                 }*/
-                    
-                        $em->persist($user);
+                         try {
+                             $em->persist($user);
 
 
-                         $em->flush();
+                             $em->flush();
+                         }
+                         catch(UniqueConstraintViolationException $e){
+                             $request->getSession()
+                                 ->getFlashBag()
+                                 ->add('info', 'Une erreur '.$e.'est survenue, les users n\'ont pas été mis à jour') ;
+
+                         }
                      }
                    }
                    

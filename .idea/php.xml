@@ -136,6 +136,7 @@
       <path value="$PROJECT_DIR$/vendor/maennchen/zipstream-php" />
       <path value="$PROJECT_DIR$/../symfony5-2/vendor" />
       <path value="$PROJECT_DIR$/vendor" />
+      <path value="$PROJECT_DIR$/vendor/beberlei/doctrineextensions" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />

@@ -4,13 +4,9 @@
 
             <div class="carousel-inner"style="width: 350px; height:250px !important;" >
                 {% set i = 1 %}
-                {% set idprec=0 %}
 
-                {% for photo in photos %}
 
-                    {% if photo.national == 'true' %}
-
-                        {% if photo.equipe.id!=idprec%}
+                {% for photo in photoseqcn %}
                             {% if i==1 %}
 
                                 <div class="carousel-item active" data-interval="5000">
@@ -22,11 +18,11 @@
                                             <h6>{{photo.equipe.titreProjet }}</h6>
 
                                     </div>
-                                    {#<center><div style="background:black;"> <font color="white" size="-2">photo {{i}}/{{n}}</font></div></center>#}
+
                                 </div>
                                 {% set idprec = photo.equipe.id %}
                             {% endif %}
-                            {% if i>1 and i<26%}
+                            {% if i>1 %}
 
                                 <div class="carousel-item" >
 
@@ -39,12 +35,13 @@
 
                                     {#<center><div style="background:black"><font color="white" size="-1">{{photo.equipe.titreProjet}} </font><br> <font color="white" size="-2"> photo {{i}}/{{n}}></font></div></center>#}
                                 </div>
-                                {% set idprec = photo.equipe.id %}
+                            {# {% set idprec = photo.equipe.id %} #}
                             {% endif %}
                             {% set i= i+1 %}
-                        {% endif%}
-                    {% endif %}
+
+
                 {% endfor %}
+
             </div>
 
 

@@ -107,7 +107,10 @@ class SecurityController extends AbstractController
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
             $user->setCreatedAt(new \Datetime());
-            $user->setLastVisit(new \Datetime());
+            if ($this->session->get('resetpwd')==true){
+                $user->setLastVisit(new \datetime('now'));
+                $this->session->set('resetpwd',null);
+            }
             
             // Enregistre le membre en base
             $em = $this->getDoctrine()->getManager();
@@ -275,6 +278,7 @@ class SecurityController extends AbstractController
             $user->setToken(null);
             $user->setPasswordRequestedAt(null);
             $user->setUpdatedAt(new \datetime('now'));
+            $user->setLastVisit(new \datetime('now'));
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
