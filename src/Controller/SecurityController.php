@@ -32,8 +32,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConve
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 
 class SecurityController extends AbstractController
-{   private $session;
-   public function __construct(SessionInterface $session)
+{
+    private $session;
+    public function __construct(SessionInterface $session)
     {
       
         $this->session=$session;

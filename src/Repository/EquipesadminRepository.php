@@ -2,13 +2,11 @@
 namespace App\Repository;
 
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
-use App\Entity\Memoiresinter;
 use App\Entity\User;
 
 
