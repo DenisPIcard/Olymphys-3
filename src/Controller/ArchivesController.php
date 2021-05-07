@@ -69,6 +69,7 @@ class ArchivesController extends AbstractController
                                           ->where('f.edition =:edition')
                                           ->andWhere('f.rneId IS NOT NULL')
                                           ->setParameter('edition',$edition)
+                                          ->addOrderBy('f.lettre','ASC')
                                           ->addOrderBy('f.numero','ASC')
                                           ->getQuery()->getResult();
 
@@ -79,7 +80,7 @@ class ArchivesController extends AbstractController
                                     ->orderBy('e.ed','DESC')
                                     ->getQuery()->getResult();
 
-        $em=$this->getDoctrine()->getManager();
+
         $i=0;
         foreach($equipes as $equipe){
 
@@ -93,7 +94,7 @@ class ArchivesController extends AbstractController
             if ($qb1->getQuery()->getResult()!=null){
                 $photos= $qb1->getQuery()->getResult();
                 shuffle($photos);
-                $photoseqcia[$i]=$photos[0];
+                $photoseqcia[$i]=$photos[array_rand([0..(count($photos)-1)])];
             }
 
               if ($equipe->getSelectionnee()== true) {
@@ -109,7 +110,7 @@ class ArchivesController extends AbstractController
                $photos= $qb2->getQuery()->getResult();
                if ($photos!=null){
                shuffle($photos);
-               $photoseqcn[$i]=$photos[0];}
+               $photoseqcn[$i]=$photos[array_rand([0..(count($photos)-1)])];}
            }
                  $i++;
         }
