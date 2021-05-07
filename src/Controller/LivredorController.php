@@ -425,7 +425,7 @@ class LivredorController extends AbstractController
               foreach($livredor as $texte){ 
                   $prof=$texte->getUser();
                   
-                  $equipes=$equiperepository->getEquipes_prof_cn($prof);
+                  $equipes=$equiperepository->getEquipes_prof_cn($prof, $edition);
                   if (count($equipes)>1){
                   $titreprof =$prof->getNomPrenom().'( équipes ';}
                   else{ $titreprof =$prof->getNomPrenom().'( équipe ';}

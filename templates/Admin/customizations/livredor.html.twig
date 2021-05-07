@@ -44,7 +44,7 @@
     {% if app.request.query.get('filters') != null%}
         {% set edition= app.request.query.get('filters').edition%}
     {% else %}
-    {% set edition=app.session.get('edition').id %}
+        {% set edition=app.session.get('edition').id %}
     {% endif %}
 
 
