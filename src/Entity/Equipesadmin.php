@@ -12,7 +12,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 /**
  * Equipesadmin
  * @Vich\Uploadable
- * @ORM\Table(name="Equipesadmin")
+ * @ORM\Table(name="equipesadmin")
  * @ORM\Entity(repositoryClass="App\Repository\EquipesadminRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -41,8 +41,7 @@ class Equipesadmin
      *
      * @ORM\Column(name="numero", type="smallint", nullable=true)
      */
-   ////
-    private $numero; 
+    private $numero;
           
  
     
