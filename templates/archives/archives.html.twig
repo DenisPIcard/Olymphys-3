@@ -6,15 +6,12 @@
  {% block navigation %}
 
     <div class="d-flex justify-content-center flex-column" style="height: 800px;">
-     <img src="{{ asset('images/affiches/'~'affiche'~edition_affichee.ed~'.jpg') }}" class="img-thumbnail img-fluid rounded" alt="affiche{{ edition_affichee.ed }}">
+     <img src="{{ asset('images/affiches/'~'affiche'~edition_affichee.ed~'.jpg') }}" class="img-thumbnail img-fluid rounded embed-responsive" alt="affiche{{ edition_affichee.ed }}">
     </div>
  {% endblock%}
 {% block titre3 %}
 
     <div class="text-left rougeodpf">Revivez les éditions passées </div>
-{% endblock %}
-
-{% block body %}
     <div class="container-fluid">
         <div class="row graylight">
 
@@ -23,7 +20,7 @@
 
 
                     <select class="form-control" id="sel" name="sel">
-                            <option value="" selected>Choisir l'année</option>
+                        <option value="" selected>Choisir l'année</option>
                         {% for edition in editions %}
                             <option value="{{ edition.id}}">{{ edition.ed }} - {{ edition.annee}}</option>
                         {% endfor %}
@@ -34,13 +31,20 @@
             </div>
 
             <div class="col text-center"><div class="rougeodpf">
-                <h4>{{ edition_affichee.ed }}<sup>e</sup> édition - Année {{ edition_affichee.annee }}</h4>
+                    <h4>{{ edition_affichee.ed }}<sup>e</sup> édition - Année {{ edition_affichee.annee }}</h4>
 
-            </div> </div>
+                </div> </div>
             <div class="col-2"></div>
         </div>
     </div>
-<hr>
+
+
+
+{% endblock %}
+
+{% block body %}
+
+
     <div class="main" id="section1">
     <div class="containerfluid">
 
@@ -51,6 +55,7 @@
             <div class="row">
                 <div class="col-8">
                     <div class="text-center"><h5>Les documents des équipes sélectionnées<p></p></h5></div>
+                    <ul>
                     {% for equipe in equipes %}
                         {% if equipe.selectionnee == true %}
                             {% set memoire=null %}{% set annexe=null %} {% set  resume= null %}{% set  presentation= null %}
@@ -70,35 +75,34 @@
                                         {%endif %}
                                     {% endif %}
                                 {% endfor %}
-                            <div class="smallsize">
-                            {% if memoire is not null %}
-                                {{memoire.equipe.lettre}} - <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
-                            {% endif %}
+                            <li class="smallsize">
+                                {% if memoire is not null %}
+                                            {{memoire.equipe.lettre}} - <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
+                                        {% endif %}
 
-                            <i>Lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}} </i>
+                                        <i>Lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}} </i>
 
-                            {% if memoire is null %}
-                                {% if resume is not null %}
-                                    <i>Lycée {{resume.equipe.rneId.nom}}, {{resume.equipe.rneId.commune}} </i>
-                                {% endif %}
-                            {% endif %}
-                            (
-                            {% if annexe is not null %}
-                                <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>
-                            {% endif %}
-                            {% if resume is not null %}
-                                <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>
-                            {% endif %}
-                            )
-                            {% if presentation is not null %}
-                                <a href="{{asset('/fichiers/presentation/'~presentation.fichier)}}">présentation orale</a>
-                            {% endif %}
-                            </div>
-                            <br>
+                                        {% if memoire is null %}
+                                            {% if resume is not null %}
+                                                <i>Lycée {{resume.equipe.rneId.nom}}, {{resume.equipe.rneId.commune}} </i>
+                                            {% endif %}
+                                        {% endif %}
+                                        (
+                                        {% if annexe is not null %}
+                                            <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>
+                                        {% endif %}
+                                        {% if resume is not null %}
+                                            <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>
+                                        {% endif %}
+                                        )
+                                        {% if presentation is not null %}
+                                            <a href="{{asset('/fichiers/presentation/'~presentation.fichier)}}">présentation orale</a>
+                                        {% endif %}
+                            </li>
                         {% endif %}
 
                     {% endfor %}
-
+                </ul>
                 </div>
                 <div class="col">{# block latéral droit #}
                     <p></p>
@@ -107,6 +111,7 @@
                         <div class="d-flex justify-content-center">
                             <div class="graylight text-center">
                                   {%  set photoscarousel = photoseqcn %}
+                                  {% set concours='cn' %}
                                   {%  include '/archives/carouselarchives.html.twig' %}
 
                                 <a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a>
@@ -143,6 +148,7 @@
             <div class="row">
                 <div class="col-8">
                     <div class="text-center"><h5>Les documents des équipes non sélectionnées</h5><p></p></div>
+                     <ul>
                         {% for equipe in equipes %}
                             {% if equipe.selectionnee == false %}
                                 {% set memoire=null %}{% set annexe=null %} {% set  resume= null %}{% set  presentation= null %}
@@ -159,31 +165,30 @@
                                         {%endif %}
                                     {% endif %}
                                 {% endfor %}
-                               <div class="smallsize">
-                                {% if memoire is not null %}
-                                    <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
-                                {% endif %}
+                               <li class="smallsize">
+                                            {% if memoire is not null %}
+                                                <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
+                                            {% endif %}
 
-                                <i>Lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}} </i>
+                                            <i>Lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}} </i>
 
-                                {% if memoire is null %}
-                                    {% if resume is not null %}
-                                        <i>Lycée {{resume.equipe.rneId.nom}}, {{resume.equipe.rneId.commune}} </i>
-                                    {% endif %}
-                                {% endif %}
-                                (
-                                {% if annexe is not null %}
-                                    <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>
-                                {% endif %}
-                                {% if resume is not null %}
-                                    <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>
-                                {% endif %}
-                                )
-                                </div>
-                                <br>
+                                            {% if memoire is null %}
+                                                {% if resume is not null %}
+                                                    <i>Lycée {{resume.equipe.rneId.nom}}, {{resume.equipe.rneId.commune}} </i>
+                                                {% endif %}
+                                            {% endif %}
+                                            (
+                                            {% if annexe is not null %}
+                                                <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>
+                                            {% endif %}
+                                            {% if resume is not null %}
+                                                <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>
+                                            {% endif %}
+                                            )
+                               </li>
                             {% endif %}
-
                         {% endfor %}
+                     </ul>
                 </div>
                 <div class="col">{# block latéral droit #}
                     <p></p>
@@ -192,6 +197,7 @@
                         <div class="d-flex justify-content-center">
                             <div class="graylight text-center">
                                 {%  set photoscarousel = photoseqcia %}
+                                {% set concours = 'cia' %}
                                 {%  include '/archives/carouselarchives.html.twig' %}
 
                                 <a href="{{ path('photos_voirphotoscia',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a>
