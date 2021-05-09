@@ -5,7 +5,7 @@
 {% endblock %}
  {% block navigation %}
 
-    <div class="d-flex justify-content-center flex-column" style="height: 800px;">
+    <div class="d-flex justify-content-center flex-column" style="height: auto;">
      <img src="{{ asset('images/affiches/'~'affiche'~edition_affichee.ed~'.jpg') }}" class="img-thumbnail img-fluid rounded embed-responsive" alt="affiche{{ edition_affichee.ed }}">
     </div>
  {% endblock%}
@@ -75,7 +75,7 @@
                                         {%endif %}
                                     {% endif %}
                                 {% endfor %}
-                            <li class="smallsize">
+                            <li>
                                 {% if memoire is not null %}
                                             {{memoire.equipe.lettre}} - <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
                                         {% endif %}
@@ -165,7 +165,7 @@
                                         {%endif %}
                                     {% endif %}
                                 {% endfor %}
-                               <li class="smallsize">
+                               <li>
                                             {% if memoire is not null %}
                                                 <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
                                             {% endif %}

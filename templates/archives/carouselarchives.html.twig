@@ -1,5 +1,5 @@
 <div class = "container-fluid ">
-    <div class="d-flex justify-content-center flex-column" style="height: 300px;">
+    <div class="d-flex justify-content-center flex-column" style="height: auto;">
         <div id="carousel{{concours }}{{edition_affichee.id}}" class="carousel slide" data-ride="carousel" >
             <div class="carousel-inner"style="width:350px; height:250px !important;" bkgcolor="black">
                 {% set i = 1 %}
@@ -19,7 +19,7 @@
 
                                 </div>
                         {% endif %}
-                        {% if i>1 and i<26%}
+                        {% if i>1%}
                                 <div class="carousel-item" >
 
                                     <div class="tex-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
