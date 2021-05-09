@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-//use App\Form\Model\UserRegistrationFormModel;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
