@@ -3,10 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Olymphys-3.iml" filepath="$PROJECT_DIR$/.idea/Olymphys-3.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Olymphys-3_1/.idea/Olymphys-3_1.iml" filepath="$PROJECT_DIR$/../Olymphys-3_1/.idea/Olymphys-3_1.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../../xampp/www/Olymphys4/.idea/Olymphys4.iml" filepath="$PROJECT_DIR$/../../../xampp/www/Olymphys4/.idea/Olymphys4.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../../wamp/www/comptablite_perso/.idea/comptablite_perso.iml" filepath="$PROJECT_DIR$/../../../wamp/www/comptablite_perso/.idea/comptablite_perso.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../symfony5-2/.idea/symfony5-2.iml" filepath="$PROJECT_DIR$/../symfony5-2/.idea/symfony5-2.iml" />
     </modules>
   </component>
 </project>

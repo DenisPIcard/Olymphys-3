@@ -41,8 +41,7 @@ class Equipesadmin
      *
      * @ORM\Column(name="numero", type="smallint", nullable=true)
      */
-   ////
-    private $numero; 
+    private $numero;
           
  
     

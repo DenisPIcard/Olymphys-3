@@ -1,4 +1,6 @@
 {
+    "name": "vendor/olymphys",
+    "description": "Olympiades de physique. Gestion des équipes, des documents et du jury du concours",
     "type": "project",
     "license": "proprietary",
     "require": {
@@ -47,7 +49,6 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
-       
         "symfony/maker-bundle": "^1.19",
         "symfony/profiler-pack": "^1.0",
         "symfony/test-pack": "*"
@@ -98,6 +99,6 @@
             "require": "5.2.*"
         }
     },
-    "name": "vendor/olymphys",
-    "description": "Olympiades de physique. Gestion des équipes, des documents et du jury du concours"
+
+
 }

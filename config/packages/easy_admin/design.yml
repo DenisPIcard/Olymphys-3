@@ -52,7 +52,7 @@ easy_admin :
                         - { entity:  'Prix' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}
                         - { entity: 'Visites' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}
                         - { entity: 'Cadeaux' , icon : 'asterisk', permission : 'ROLE_SUPER_ADMIN'}
-                        
+
                     - { label: 'Retour à la page d''accueil', route: 'core_home' , icon : 'home'}
                     - { label: 'Secrétariat du jury', route: 'secretariatjury_accueil' , icon : 'pencil', permission : 'ROLE_SUPER_ADMIN'}
                     - { label : 'Deconnexion' , route: 'logout', icon : 'door-open'}

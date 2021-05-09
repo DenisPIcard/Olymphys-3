@@ -18,3 +18,4 @@ class JuresRepository extends \Doctrine\ORM\EntityRepository
     }
     
 }
+
