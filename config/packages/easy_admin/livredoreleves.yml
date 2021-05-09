@@ -1,0 +1,34 @@
+easy_admin :
+     entities :
+         Livredoreleves:
+             
+             
+             class : App\Entity\Livredor
+             controller: App\Controller\Admin\LivredoradminController
+             templates :
+               list: 'Admin/customizations/livredor.html.twig'
+             actions :
+               - {name : '-new', label : 'Déposer une autorisation'}
+               - {name : 'delete', label : 'effacer'}
+            
+             list :
+                  max_results: 50
+                  actions: [ 'delete', '-edit',{name : '-new','label' : 'Déposer une autorisation'}]
+
+                  filters :
+                    - 'edition'
+                      
+                  dql_filter : 'entity.categorie = eleve'
+                  title : '<h2>Le livre dor des élèves</h2>'
+                  fields: 
+                    - {property : 'equipe.lettre', label: 'Lettre équipe'}
+                    - {property: 'equipe.titreprojet', label : 'Projet'}
+                    - {property : 'texte', type  : 'text' }
+
+                  sort: ['equipe.lettre','ASC']
+
+                      
+          
+            
+                       
+    

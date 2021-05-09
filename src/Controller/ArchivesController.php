@@ -70,6 +70,7 @@ class ArchivesController extends AbstractController
                                           ->andWhere('f.rneId IS NOT NULL')
                                           ->setParameter('edition',$edition)
                                           ->addOrderBy('f.lettre','ASC')
+                                          ->addOrderBy('f.numero','ASC')
                                           ->getQuery()->getResult();
 
         $editions=$repositoryEdition->createQueryBuilder('e')
@@ -79,11 +80,45 @@ class ArchivesController extends AbstractController
                                     ->orderBy('e.ed','DESC')
                                     ->getQuery()->getResult();
 
-        $photos=$repositoryPhotos->findBy(['edition'=>$edition]);
+
+        $i=0;
+        foreach($equipes as $equipe){
+
+          $qb1= $repositoryPhotos->createQueryBuilder('p')
+
+                                   ->where('p.edition =:edition')
+                                   ->setParameter('edition',$edition)
+                                   ->andWhere('p.equipe =:equipe')
+                                   ->setParameter('equipe',$equipe);
+
+            if ($qb1->getQuery()->getResult()!=null){
+                $photos= $qb1->getQuery()->getResult();
+                shuffle($photos);
+                $photoseqcia[$i]=$photos[array_rand([0..(count($photos)-1)])];
+            }
+
+              if ($equipe->getSelectionnee()== true) {
+
+               $qb2=$repositoryPhotos->createQueryBuilder('p')
+
+                   ->where('p.edition =:edition')
+                   ->setParameter('edition',$edition)
+                   ->andWhere('p.equipe =:equipe')
+                   ->setParameter('equipe',$equipe)
+                   ->andWhere('p.national = 1');
+
+               $photos= $qb2->getQuery()->getResult();
+               if ($photos!=null){
+               shuffle($photos);
+               $photoseqcn[$i]=$photos[array_rand([0..(count($photos)-1)])];}
+           }
+                 $i++;
+        }
+
         $livresdor=$repositoryLivresdor->findBy(['edition'=>$edition]);
 
         return  $this->render('archives\archives.html.twig',
-                            array('fichiersequipes' => $fichiersEquipes,'editions' => $editions,'photos' =>$photos,'equipes'=>$equipes, 'livresdor'=>$livresdor,'edition_affichee'=>$edition));
+                            array('fichiersequipes' => $fichiersEquipes,'editions' => $editions,'photoseqcn' =>$photoseqcn,'photoseqcia' =>$photoseqcia,'equipes'=>$equipes, 'livresdor'=>$livresdor,'edition_affichee'=>$edition));
 
     }
 }

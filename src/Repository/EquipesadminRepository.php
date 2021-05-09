@@ -8,7 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\User;
-
+use App\Entity\Edition;
 
 /**
  * EquipesadminRepository
@@ -87,10 +87,10 @@ class EquipesadminRepository extends ServiceEntityRepository
         
         
     }
-     public function getEquipes_prof_cn(User $prof): array
+     public function getEquipes_prof_cn(User $prof, Edition $edition): array
     {
                 $entityManager = $this->getEntityManager();
-        $edition=$this->edition;
+
        
         $query = $entityManager->createQuery(
             'SELECT e

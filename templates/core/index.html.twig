@@ -143,9 +143,9 @@
                 {% if is_granted('ROLE_COMITE')  or  is_granted('ROLE_SUPER_ADMIN')%}    
                    <div class="btn-group">
                       <button class="btn btn-outline-primary dropdown-toggle active" type="button" id="dropdownMenu7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                         Admin livres d'or</button>
+                         Le livre d'or</button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenu7" >
-                          <a class="dropdown-item" href="{{path('livredor_choix_edition',{action:'editer'})}}" class="btn btn-primary" role="button" aria-pressed="true">Editer les livres d'or</a>
+                          {# <a class="dropdown-item" href="{{path('livredor_choix_edition',{action:'editer'})}}" class="btn btn-primary" role="button" aria-pressed="true">Editer les livres d'or</a>#}
                           <a class="dropdown-item" href="{{path('livredor_saisie_texte',{id : 'comite-'~app.user.id})}}" class="btn btn-primary" role="button" aria-pressed="true">Remplir le livre d'or du comite</a>
                       </div> 
                     </div>

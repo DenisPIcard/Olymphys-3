@@ -85,6 +85,7 @@ class CoreController extends AbstractController
     }
    
     if($this->session->get('resetpwd')==true){
+
         return $this->redirectToRoute('forgotten_password');
         
     }
