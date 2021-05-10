@@ -58,7 +58,7 @@
 .carousel-inner .carousel-item-right,
 .carousel-inner .carousel-item-left {
     
-    transform: translateX(0);
+    transform: translateX(1px);
   
 }
  
@@ -109,10 +109,10 @@
    bottom: -5px;
 }
 
-.top-content .carousel-control-prev{
+.carousel-control-prev-icon{
     color: #B21B16;
 }
-.top-content .carousel-control-next{
+ .carousel-control-next-icon{
     color: #B21B16;
 }
 

@@ -41,11 +41,11 @@
 
 {% block body %}
 
-
-    <div class="main" id="section1">
+<div class="main" id="section1">
+    {% if date(edition_affichee.concourscn) < date()%}
         <div class="container-fluid">
 
-            {% if date(edition_affichee.concourscn) < date()%}
+
                 <div class="text-center"><h4>Le concours national</h4></div>
 
                 <div class="row">
@@ -104,51 +104,63 @@
                         </div>
 
                     </div>
-                    <div class="col-xs-6 col-sm-3">{# block latéral droit #}
-                        <p></p>
-                        <div class="container d-flex justify-content-center flex-column" style="height: 300px;width:250px !important;">
-                            <div class="row">
-                                <div class="col text-center graylight">
-                                    <h5>Les photos du concours national</h5>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col text-center">
-                                      {%  set photoscarousel = photoseqcn %}
-                                      {% set concours='cn' %}
 
-                                      {%  include '/archives/carouselarchives.html.twig' %}
+                    <div class="row-cols-sm-6 row-cols-xs-6">{# block latéral droit #}
+                        <p></p>
+                        <div class="d-flex align-items-center flex-column " style="height:auto ;width:250px !important;">
+                            <div class="p ">
+                                <div class="row text-center graylight">
+                                    <div class="col">
+                                        <h5>Les photos du concours national</h5>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-center">
+                                          {%  set photoscarousel = photoseqcn %}
+                                          {% set concours='cn' %}
+
+                                          {%  include '/archives/carouselarchives.html.twig' %}
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                        <div class="col text-center">
+                                            <h5><a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
+                                        </div>
                                 </div>
                             </div>
-                            <div class="row ">
-                                    <div class="col text-center">
-                                        <h5><a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
-                                    </div>
-                            </div>
-                        </div>
 
                         {% if livresdor !=null %}
-                            <div class="container d-flex justify-content-center flex-column" style="height: 200px;width:250px !important;">
-                                <h5><div class="d-flex justify-content-center graylight">
-                                        Les livres d'or
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                            <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-eleves'}) }}" title="Livre d'or des élèves" > Livre d'or des élèves</a>
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                            <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-profs'}) }}" title="Livre d'or des professeurs" > Livre d'or des professeurs</a>
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                            <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-jury'}) }}" title="Livre d'or du jury" > Livre d'or du jury</a>
-                                    </div></h5>
-                            </div>
 
+                            <div class="p-2 ">
+                                <div class="row text-center graylight">
+                                        <div class="col">
+                                            <h5> Les livres d'or</h5>
+                                        </div>
+                                </div>
+                                <div class="row">
+                                        <div class="col">
+                                                <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-eleves'}) }}" title="Livre d'or des élèves" > Livre d'or des élèves</a>
+                                        </div>
+                                </div>
+                                <div class="row">
+                                            <div class="col">
+                                                <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-profs'}) }}" title="Livre d'or des professeurs" > Livre d'or des professeurs</a>
+                                            </div>
+                                </div>
+                                <div class="row">
+                                            <div class="col">
+                                                <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-jury'}) }}" title="Livre d'or du jury" > Livre d'or du jury</a>
+                                            </div>
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
-            {% endif %}
+            </div>
+
         </div>
-    </div>
+    {% endif %}
+</div>
     <hr>
     {# ###################################### concours académiques ################################################################# #}
     <div class="main" id="section2">
@@ -157,7 +169,7 @@
     <div class="text-center "><h4>Les concours interacadémiques</h4></div>
         <div class="row">  <p> <a href="#section1">Voir le concours national</a></p>  </div>
             <div class="row">
-                <div class="col-8">
+                <div class="col-sm-9">
                     <div class="text-center"><h5>Les documents des équipes non sélectionnées</h5><p></p></div>
                     <div class="container">
                     <ul class="list-group-flush">
@@ -198,23 +210,29 @@
                     </ul>
                     </div>
                 </div>
-                <div class="col">{# block latéral droit #}
+                <div class="col-xs-6 col-sm-3">{# block latéral droit #}
                     <p></p>
-                    <div class="d-flex justify-content-center flex-column" style="height: 300px;">
-                        <div class="d-flex justify-content-center"><h5>Les photos des concours interacadémiques</h5></div>
-                        <div class="d-flex justify-content-center">
-                            <div class="graylight text-center">
-                                {%  set photoscarousel = photoseqcia %}
-                                {% set concours = 'cia' %}
-                                {%  include '/archives/carouselarchives.html.twig' %}
-
-                                <a href="{{ path('photos_voirphotoscia',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a>
+                    <div class="container d-flex justify-content-center flex-column" style="height: 300px;width:250px !important;">
+                        <div class="row">
+                            <div class="col text-center graylight">
+                                <h5>Les photos des concours interacadémiques</h5>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                {%  set photoscarousel = photoseqcia%}
+                                {% set concours='cia' %}
 
+                                {%  include '/archives/carouselarchives.html.twig' %}
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col">
+                                <h5><a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
+                            </div>
+                        </div>
                     </div>
         </div>
-    </div>
     </div>
 
 {% block javascripts %}
