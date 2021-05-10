@@ -3,6 +3,11 @@
     background-color: #EEEEEE;
 
 }
+.black{
+
+    background-color : black;
+    color : #d3d8f2;
+}
 
 .top-content .carousel-control-prev-icon {
     width: 40px;
