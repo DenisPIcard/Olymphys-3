@@ -13,28 +13,27 @@
 
     <div class="text-left rougeodpf">Revivez les éditions passées </div>
     <div class="container-fluid">
-        <div class="row graylight">
+        <div class="row graylight ">
 
-            <div class="col-2 ">
-                <form  method="GET" action="{{ path('archives_fichiers_photos') }}" id="form1" name="form1" >
-
-
-                    <select class="form-control" id="sel" name="sel">
-                        <option value="" selected>Choisir l'année</option>
-                        {% for edition in editions %}
-                            <option value="{{ edition.id}}">{{ edition.ed }} - {{ edition.annee}}</option>
-                        {% endfor %}
-                    </select>
-
-                </form>
-
+            <div class="col-lg-5 ">
+                <div class="d-flex justify-content-center flex-column"
+                    <div class="form-group">
+                        <form  method="GET" action="{{ path('archives_fichiers_photos') }}" id="form1" name="form1" >
+                            <select class="form-control-lg" id="sel" name="sel">
+                                <option value="" selected>{{ edition_affichee.ed }}e édition - Année {{ edition_affichee.annee|slice(5,4) }}</option>
+                                {% for edition in editions %}
+                                    {% if edition !=edition_affichee %}
+                                        <option value="{{ edition.id}}">{{ edition.ed }}e édition - Année  {{ edition.annee|slice(5,4)}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-            <div class="col text-center"><div class="rougeodpf">
-                    <h4>{{ edition_affichee.ed }}<sup>e</sup> édition - Année {{ edition_affichee.annee }}</h4>
 
-                </div> </div>
-            <div class="col-2"></div>
+            <div class="col"></div>
         </div>
     </div>
 
@@ -46,7 +45,7 @@
 
 
     <div class="main" id="section1">
-    <div class="containerfluid">
+    <div class="container-fluid">
 
         {% if date(edition_affichee.concourscn) < date()%}
             <div class="text-center"><h4>Le concours national</h4></div>
@@ -55,7 +54,8 @@
             <div class="row">
                 <div class="col-8">
                     <div class="text-center"><h5>Les documents des équipes sélectionnées<p></p></h5></div>
-                    <ul>
+                    <div class="container">
+                    <ul class="list-group-flush">
                     {% for equipe in equipes %}
                         {% if equipe.selectionnee == true %}
                             {% set memoire=null %}{% set annexe=null %} {% set  resume= null %}{% set  presentation= null %}
@@ -75,34 +75,32 @@
                                         {%endif %}
                                     {% endif %}
                                 {% endfor %}
-                            <li>
+                            <li class="list-group-item">
                                 {% if memoire is not null %}
                                             {{memoire.equipe.lettre}} - <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
                                         {% endif %}
 
                                         <i>Lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}} </i>
 
-                                        {% if memoire is null %}
-                                            {% if resume is not null %}
-                                                <i>Lycée {{resume.equipe.rneId.nom}}, {{resume.equipe.rneId.commune}} </i>
-                                            {% endif %}
-                                        {% endif %}
                                         (
                                         {% if annexe is not null %}
-                                            <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>
+                                            <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>,
                                         {% endif %}
                                         {% if resume is not null %}
-                                            <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>
+                                            <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>,
                                         {% endif %}
-                                        )
+
                                         {% if presentation is not null %}
                                             <a href="{{asset('/fichiers/presentation/'~presentation.fichier)}}">présentation orale</a>
                                         {% endif %}
-                            </li>
-                        {% endif %}
+                                        )
+                                </li>
+                            {% endif %}
 
-                    {% endfor %}
-                </ul>
+                        {% endfor %}
+                    </ul>
+                    </div>
+
                 </div>
                 <div class="col">{# block latéral droit #}
                     <p></p>
@@ -148,7 +146,8 @@
             <div class="row">
                 <div class="col-8">
                     <div class="text-center"><h5>Les documents des équipes non sélectionnées</h5><p></p></div>
-                     <ul>
+                    <div class="container">
+                    <ul class="list-group-flush">
                         {% for equipe in equipes %}
                             {% if equipe.selectionnee == false %}
                                 {% set memoire=null %}{% set annexe=null %} {% set  resume= null %}{% set  presentation= null %}
@@ -165,21 +164,16 @@
                                         {%endif %}
                                     {% endif %}
                                 {% endfor %}
-                               <li>
+                               <li class="list-group-item">
                                             {% if memoire is not null %}
                                                 <a href="{{asset('/fichiers/memoires/'~memoire.fichier)}}">{{memoire.equipe.titreProjet}}</a>
                                             {% endif %}
 
                                             <i>Lycée {{equipe.rneId.nom}}, {{equipe.rneId.commune}} </i>
 
-                                            {% if memoire is null %}
-                                                {% if resume is not null %}
-                                                    <i>Lycée {{resume.equipe.rneId.nom}}, {{resume.equipe.rneId.commune}} </i>
-                                                {% endif %}
-                                            {% endif %}
                                             (
                                             {% if annexe is not null %}
-                                                <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>
+                                                <a href="{{asset('/fichiers/memoires/'~annexe.fichier)}}">annexe</a>,
                                             {% endif %}
                                             {% if resume is not null %}
                                                 <a href="{{asset('/fichiers/resumes/'~resume.fichier)}}">resumé</a>
@@ -188,7 +182,8 @@
                                </li>
                             {% endif %}
                         {% endfor %}
-                     </ul>
+                    </ul>
+                    </div>
                 </div>
                 <div class="col">{# block latéral droit #}
                     <p></p>
