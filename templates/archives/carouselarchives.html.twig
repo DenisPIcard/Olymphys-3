@@ -1,7 +1,7 @@
 <div class = "container-fluid ">
     <div class="d-flex justify-content-center flex-column" style="height: auto;">
         <div id="carousel{{concours }}{{edition_affichee.id}}" class="carousel slide" data-ride="carousel" >
-            <div class="carousel-inner"style="width:350px; height:250px !important;" bkgcolor="black">
+            <div class="carousel-inner"style="width:300px !important; height:250px !important; ;" bkgcolor="black">
                 {% set i = 1 %}
 
                 {% for photo in photoscarousel %}
@@ -9,11 +9,11 @@
                                 <div class="carousel-item active" data-interval="5000">
 
                                     <div class="tex-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
-                                                 alt="{{photo.equipe.TitreProjet}}" width="auto"  height="200">
+                                                 alt="{{photo.equipe.TitreProjet}}" class="img-fluid" >
                                     </div>
                                     <div class="text>">
 
-                                        <h6>{{photo.equipe.titreProjet }}</h6>
+                                        <div class="smallsize">{{photo.equipe.titreProjet }}</div>
 
                                     </div>
 
@@ -23,11 +23,11 @@
                                 <div class="carousel-item" >
 
                                     <div class="tex-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
-                                                  alt="{{photo.equipe.TitreProjet}}"  width="auto"  height="200" >
+                                                  alt="{{photo.equipe.TitreProjet}}" class="img-fluid" >
                                     </div>
                                     <div class="text>">
 
-                                        <h6>{{photo.equipe.titreProjet }}</h6>
+                                        <div class="smallsize">{{photo.equipe.titreProjet }}</div>
 
                                     </div>
 

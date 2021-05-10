@@ -22,4 +22,30 @@
     <button type="submit">S'inscrire!</button>
 {{ form_end(form) }}
  </div>
+
+
+{% block javascripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#user_registration_form").on('click', function () {
+                console.log('OK')
+            });
+        });
+    </script>
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
 {% endblock %}

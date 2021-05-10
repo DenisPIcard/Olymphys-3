@@ -78,7 +78,9 @@ class Mailer
          $email=(new Email())
                     ->from('info@olymphys.fr')
                     ->to('webmestre2@olymphys.fr') //'webmestre2@olymphys.fr', 'Denis'
+                    ->to($user->getEmail())
                     ->cc('webmestre3@olymphys.fr')
+                    ->cc('emma.gosse@orange.fr')
                     ->subject('Inscription de l\'équipe  '.$equipe->getNumero().' par '.$user->getPrenomNom())
                     ->html('Bonjour<br>
                             Nous confirmons que '.$equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().
@@ -90,10 +92,11 @@ class Mailer
                     ->from('info@olymphys.fr')
                     ->to('webmestre2@olymphys.fr') //'webmestre2@olymphys.fr', 'Denis'
                     ->cc('webmestre3@olymphys.fr')
+                    ->cc('emma.gosse@orange.fr')
                     ->subject('Modification de l\'équipe '.$equipe->getTitreProjet().' par '.$user->getPrenomNom())
                     ->html('Bonjour<br>'.
-                           $equipe->getIdProf1()->getPrenomNom().'(<a href="'.$user->getEmail().'">'.$user->getEmail().
-                            '</a>)  du lycée '.$equipe->getNomLycee().' de '.$equipe->getLyceeLocalite().'a modifié l\'équipe denommée : '.$equipe->getTitreProjet().
+                           $equipe->getIdProf1()->getPrenomNom().'( <a href="'.$user->getEmail().'">'.$user->getEmail().
+                            '</a>)  du lycée '.$equipe->getNomLycee().' de '.$equipe->getLyceeLocalite().' a modifié l\'équipe denommée : '.$equipe->getTitreProjet().
                             '<br> <br>Le comité national des Olympiades de Physique');
      }     
      $this->mailer->send($email);
