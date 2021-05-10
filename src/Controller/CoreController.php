@@ -39,22 +39,17 @@ class CoreController extends AbstractController
       $edition = $repositoryEdition->findOneBy([], ['id' => 'desc']);
       $this->session->set('edition', $edition);
       if (null != $user) {
-          $datelimcia = $edition->getDatelimcia();
-          $datelimnat = $edition->getDatelimnat();
           $datecia = $edition->getConcourscia();
-          $datecn = $edition->getConcourscn();
-          $dateouverturesite = $edition->getDateouverturesite();
           $dateconnect = new \datetime('now');
           if ($dateconnect > $datecia) {
               $concours = 'national';
           }
-          if (($dateconnect <= $datecia)) {
+          else                                                                                                                                     {
               $concours = 'interacadémique';
           }
           $datelimphotoscia = date_create();
           $datelimphotoscn = date_create();
           $datelimdiaporama = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d'));
-          $p = new \DateInterval('P7D');
           $datelimlivredor = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d'));
           $datelivredor = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d') . '00:00:00');
           $datelimlivredoreleve = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d') . '18:00:00');
