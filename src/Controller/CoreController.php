@@ -21,8 +21,7 @@ class CoreController extends AbstractController
         }
         
    
-
-
+    
     /**
      * @Route("/", name="core_home")
      */

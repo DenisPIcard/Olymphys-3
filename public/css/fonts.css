@@ -1,5 +1,5 @@
 .smallsize{
-    font-size : 10px;
+    font-size : 1vw;
 
 }
 .rougeodpf{
@@ -23,3 +23,6 @@ select:invalid{
 
 
 
+h5{
+    font-size: 1vw;
+}
