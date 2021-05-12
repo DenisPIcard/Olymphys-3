@@ -177,21 +177,15 @@ class User implements UserInterface, \Serializable
       * @ORM\OneToMany(targetEntity=Equipes::class, mappedBy="hote")
       */
      private $interlocuteur;
-
-     /**
-      * @ORM\ManyToOne(targetEntity=rne::class, inversedBy="users")
-      * @ORM\JoinColumn(nullable=false)
-      */
-     private $rneId;
      
      
      
 
-    public function __construct()
+    public function __construct(EntityManager $em)
     {
         $this->isActive = true;
         $this->roles = ['ROLE_USER'];
-
+        $this->em = $em;
         
     }
      /*public function __toString()
@@ -529,9 +523,6 @@ class User implements UserInterface, \Serializable
     public function getRne() {
         return $this->rne;
     }
-
-
-
     
     /**
      * Get nom
@@ -675,18 +666,6 @@ class User implements UserInterface, \Serializable
                 $interlocuteur->setHote(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getRneId(): ?rne
-    {
-        return $this->rneId;
-    }
-
-    public function setRneId(?rne $rneId): self
-    {
-        $this->rneId = $rneId;
 
         return $this;
     }

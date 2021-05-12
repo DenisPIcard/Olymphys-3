@@ -1,16 +1,16 @@
 easy_admin :
     entities :
         Professeurs :
-            class :  App\Entity\User
-            label : 'Professeurs'
-            controller: App\Controller\Admin\ProfesseursController
+            class :  App\Entity\Equipesadmin
+            label : 'Professeurs 1'
+            controller: App\Controller\Admin\ProfesseurController
             templates:
                        #list: 'Admin/customizations/list_prof.html.twig'
           
             list :
                 permission: 'ROLE_COMITE'
                 filters :
-                    - 'rne'
+                    - 'edition'
                     
                     
                 dql_filter : 
@@ -18,18 +18,15 @@ easy_admin :
 
                 actions :
                 fields :
-                    - {property : 'nom', label : 'Nom'}
-                    - {property : 'prenom', label : 'Prénom'}
-                    - {property : 'adresse', label : 'adresse'}
-                    - {property : 'code', label : 'CP'}
-                    - {property : 'ville',label :  'Ville'}
-                    - {property : 'email',label: 'courriel' }
-                    - {property : 'phone',label: 'Téléphone' }
-                    - {property : 'rneId.rne', label : 'code UAI'}
-                    - {property : 'rneId.nom', label : 'lycée'}
-                    - {property : 'rneId.commune', label : 'ville du lycée'}
-
-                sort : ['nom', ASC]
+                    - {property : 'nomProf1', label : 'Nom'}
+                    - {property : 'prenomProf1', label : 'Prénom'}
+                    - {property : 'idProf1.rne', label : 'code UAI'}
+                    - {property : 'idProf1.adresse', label : 'adresse'}
+                    - {property : 'idProf1.code', label : 'CP'}
+                    - {property : 'idProf1.ville',label :  'Ville'}
+                    - {property : 'idProf1.email',label :  'courriel'}
+                    - {property : 'idProf1.phone',label :  'Téléphone'}
+                sort : ['nomProf1', ASC]
                 #form:  # <-- 'form' is applied to both 'new' and 'edit' views
 
             
