@@ -89,16 +89,15 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);  
         if ($form->isSubmitted() && $form->isValid()) {
             
-             $rne=$form->get('rne')->getData();
-             if ($rneRepository->findOneByRne(['rne'=>$rne])==null){
-             $request->getSession()
+            $rne=$form->get('rne')->getData();
+            if ($rneRepository->findOneByRne(['rne'=>$rne])==null){
+                $request->getSession()
                                 ->getFlashBag()
                                 ->add('alert', 'Ce n° RNE n\'est pas valide !') ;   
           
-             return   $this->redirectToRoute('register');
+                return   $this->redirectToRoute('register');
             }    
             // Encode le mot de passe
-
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
             
@@ -108,16 +107,16 @@ class SecurityController extends AbstractController
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
             $user->setCreatedAt(new \Datetime());
-            if ($this->session->get('resetpwd')==true){
+            /*if ($this->session->get('resetpwd')==true){
                 $user->setLastVisit(new \datetime('now'));
                 $this->session->set('resetpwd',null);
             }
-            
+            */
             // Enregistre le membre en base
             $em = $this->getDoctrine()->getManager();
             $em->persist($user); 
             $em->flush();
-           $mailer->sendVerifEmail($user);
+            $mailer->sendVerifEmail($user);
             $request->getSession()->getFlashBag()->add('success', "Un mail va vous être envoyé afin que vous puissiez finaliser votre inscription. Le lien que vous recevrez sera valide 24h.");
 
             return $this->redirectToRoute("core_home");
@@ -182,9 +181,7 @@ class SecurityController extends AbstractController
             $em->flush();
             $rne=$user->getRne();
             $rne_obj=$rneRepository->findOneByRne(['rne'=>$rne]);
-                     //htmlTemplate('emails/signup.html.twig')('register/mail_nouvel_user.html.twig', ['user' => $user]);
             $mailer->sendMessage($user,$rne_obj);
-           //$mailer->sendMessage('info@olymphys.fr','info@olymphys.fr', 'Inscription d\'un nouvel utilisateur', $bodyMail);
             $request->getSession()->getFlashBag()->add('success', "Votre inscription est terminée, vous pouvez vous connecter.");
 
             return $this->redirectToRoute('login');
@@ -283,7 +280,7 @@ class SecurityController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-           $this->session->set('resetpwd',null);
+            $this->session->set('resetpwd',null);
             $request->getSession()->getFlashBag()->add('success', "Votre mot de passe a été renouvelé.");
 
             return $this->redirectToRoute('login');
