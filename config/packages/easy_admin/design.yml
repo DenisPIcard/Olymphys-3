@@ -1,6 +1,7 @@
 easy_admin :
     design:
                 brand_color: '#FF0000'
+
                 assets:
                     css:
                         # ...
@@ -13,18 +14,21 @@ easy_admin :
                     - { entity: 'User', label : 'Utilisateurs', permission: 'ROLE_SUPER_ADMIN', icon : 'user' }
                     - { entity: 'Jures' , permission: 'ROLE_SUPER_ADMIN', icon : 'graduation-cap'}
                     - { entity: 'Docequipes', label : 'Documents à télécharger',  icon : 'book' }
+                    - { entity : 'Equipesadmin', 'label' : 'Les equipes inscrites', icon : 'user-friends'}
+                    - { entity : 'Professeurs', 'label' : 'Professeurs', icon : 'fas fa-user-tie' }
+                    -  {entity : 'Elevesinter', 'label' : 'Eleves', icon : 'fas fa-child' }
+
                     - label : 'Concours interacadémique'
                       icon : 
                       css_class: 'text-bold'
                       children :
                          - { entity : 'Centrescia', 'label' : 'Centres interacadémiques', icon : 'city'}
-                         - { entity : 'Equipesadmin', 'label' : 'Equipes des cia', icon : 'user-friends'}
+
                          - { entity : 'Fichiersequipesmemoiresinter', 'label' : 'Les mémoires' , icon : 'book'}
                          - { entity : 'Fichiersequipesresumes', 'label' : 'Les résumés' , icon : 'book'}
                          - { entity : 'Fichiersequipesfichessecur', 'label' : 'Les fiches sécurités' , icon : 'book'}
                          - { entity : 'Fichiersequipesdiaporamas', 'label' : 'Les diaporamas' , icon : 'book'}
                          - { entity : 'Videosequipes', 'label' : 'Les vidéos des équipes' , icon : 'film'}
-                         - { entity : 'Elevesinter', 'label' : 'Elèves inscrits', icon : 'child' }
                          - { entity : 'Fichiersequipesautorisations', 'label' : ' Les autorisations photos', icon : 'balance-scale'}
                          - { entity : 'Photosequipesinter', 'label' : ' Les photos', icon : 'images'}
                          

@@ -39,7 +39,7 @@ class UserRepository extends ServiceEntityRepository
       
           return $qb1;
      }               
-    public function getProfesseur(UserRepository $er): QueryBuilder//Liste des prof sans autorisation photos
+    public function getProfesseur(UserRepository $er): QueryBuilder//Liste des profs
      {   
          
          $qb=$er->createQueryBuilder('p');
@@ -76,5 +76,9 @@ class UserRepository extends ServiceEntityRepository
           return $queryBuilder;
 
       }
-     
+     public function getEquipes(UserRepository $er): QueryBuilder
+     {
+
+
+     }
 }
