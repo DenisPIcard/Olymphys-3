@@ -13,7 +13,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Elevesinter;
-use App\Form\Filter\ElevesinterFilterType;
+use App\Entity\User;
+use App\Form\Filter\ProfesseursFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -21,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 
-class ElevesciaController extends EasyAdminController
+class ProfesseursController extends EasyAdminController
 {    private $session;
     public function __construct(SessionInterface $session)
         {
@@ -33,22 +34,18 @@ class ElevesciaController extends EasyAdminController
     { 
         $form = parent::createFiltersForm($entityName);
         
-        $form->add('edition', ElevesinterFilterType::class, [
-            'class' => Edition::class,
+        $form->add('edition', ProfesseursFilterType::class, [
+            'class' => User::class,
             'query_builder' => function (EntityRepository $er) {
                             return $er->createQueryBuilder('u')
                                     ->orderBy('u.ed', 'DESC');
                                      },
-           'choice_label' => 'getEd',
-            'multiple'=>false,]);
-            $form->add('equipe', ElevesinterFilterType::class, [
+           'choice_label' => 'getNomPrenom',
+           'multiple'=>false,]);
+            $form->add('equipe', ProfesseursFilterType::class, [
                          'class' => Equipesadmin::class,
-                         'query_builder' => function (EntityRepository $er) {
-                                         return $er->createQueryBuilder('u')
-                                                        ->addOrderBy('u.edition','DESC')
-                                                         ->addOrderBy('u.numero', 'ASC');
+                         'query_builder' => 'getEquipes',
 
-                                                  },
                         'choice_label' => function($equipe){return $equipe->getInfoequipe();},
                          'multiple'=>false,]);
            
@@ -56,23 +53,32 @@ class ElevesciaController extends EasyAdminController
     }
    
     public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
-           $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-            $edition= $this->session->get('edition');
+           $repositoryEquipes = $this->getDoctrine()->getRepository('App:Equipesadmin');
+           $repositoryUser = $this->getDoctrine()->getRepository('App:User');
+           $edition= $this->session->get('edition');
                  // $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
-        /* @var DoctrineQueryBuilder */
-        $queryBuilder = $em->createQueryBuilder()
-            ->select('entity')
-            ->from($this->entity['class'], 'entity')
-            ->leftJoin('entity.equipe','equipe')
-            ->where('equipe.edition =:edition')
-            ->setParameter('edition', $edition)
-           ->orderBy('equipe.numero', 'ASC');
+            $equipes = $repositoryEquipes->createQueryBuilder('e')
+                                         ->andWhere('e.edition =:edition')
+                                         ->setParameter('edition',$edition)
+                                         ->getQuery()->getArrayResult();
+            $profs= $repositoryUser->createQueryBuilder('p')
+                                   ->where('roles =:roles')
+                                    ->setParameter('roles', 'a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}')
+                                    ->getQuery()->getResult();
+
+            /* @var DoctrineQueryBuilder */
+            $queryBuilder = $em->createQueryBuilder()
+                ->select('entity')
+                ->from($this->entity['class'], 'entity')
+                ->where('entity.equipes =:equipes')
+                ->setParameter('equipes', $equipes)
+                ->orderBy('entity.nom', 'ASC');
             return $queryBuilder;
          
       }
     
-    public function extract_tableau_excel_ElevesnsBatchAction(){
+    public function extract_tableau_excel_ProfsAction(){
         $repositoryEdition = $this->getDoctrine()->getRepository('App:Elevesinter');
             $edition= $this->session->get('edition');
                  // $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
@@ -85,7 +91,7 @@ class ElevesciaController extends EasyAdminController
                 ->andWhere('e.selectionnee = FALSE')
                 ->andWhere('e.edition =:edition')
                 ->setParameter('edition',$edition);
-        $liste_eleves = $queryBuilder->getQuery()->getResult();
+        $liste_profs = $queryBuilder->getQuery()->getResult();
              
         
         $spreadsheet = new Spreadsheet();
@@ -107,25 +113,25 @@ class ElevesciaController extends EasyAdminController
 
                 $sheet->setCellValue('A'.$ligne, 'Nom')
                     ->setCellValue('B'.$ligne, 'Prenom')
-                    ->setCellValue('C'.$ligne, 'Numequipe')
-                    ->setCellValue('D'.$ligne, 'Titre')
+                    ->setCellValue('C'.$ligne, 'email')
+                    ->setCellValue('D'.$ligne, 'rne')
                     ->setCellValue('E'.$ligne, 'Lycée')
                     ->setCellValue('F'.$ligne, 'Commune')
                     ->setCellValue('G'.$ligne, 'Courriel');
                 
                 $ligne +=1; 
 
-        	foreach ($liste_eleves as $eleve) 
+        	foreach ($liste_profs as $prof)
                 {
-                    $equipe=$eleve->getEquipe();
+
                  
-                    $sheet->setCellValue('A'.$ligne,$eleve->getNom() )
-                        ->setCellValue('B'.$ligne, $eleve->getPrenom())
-                        ->setCellValue('C'.$ligne, $equipe->getNumero())
-                        ->setCellValue('D'.$ligne, $equipe->getTitreProjet())
-                        ->setCellValue('E'.$ligne,$equipe->getRneId()->getNom())
-                        ->setCellValue('F'.$ligne, $equipe->getRneId()->getCommune())
-                        ->setCellValue('G'.$ligne, $eleve->getCourriel());
+                    $sheet->setCellValue('A'.$ligne,$prof->getNom() )
+                        ->setCellValue('B'.$ligne, $prof->getPrenom())
+                        ->setCellValue('C'.$ligne, $prof->getEmail())
+                        ->setCellValue('D'.$ligne, $prof->getRne())
+                        ->setCellValue('E'.$ligne,$prof->getRneId()->getNom())
+                        ->setCellValue('F'.$ligne, $prof->getRneId()->getCommune())
+                        ->setCellValue('G'.$ligne, $prof->getadresse());
                       $ligne +=1;
                 }
                     
@@ -228,90 +234,5 @@ class ElevesciaController extends EasyAdminController
         
         
     }
-
-    /**
-     * @Route("/Admin/extract_tableau_excel_Eleves,{editionid}", name="liste_eleves")
-     */
-
-    public function extract_tableau_excel_Eleves($editionid)
-    {
-
-        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-        //$edition= $this->session->get('edition');
-        $edition=$repositoryEdition->findOneBy(['id'=>$editionid]);
-        $elevesRepository = $this->getDoctrine()->getManager()->getRepository('App:Elevesinter');
-        /* @var DoctrineQueryBuilder */
-        $queryBuilder =  $elevesRepository->createQueryBuilder('el')
-            ->select('el')
-            ->leftJoin('el.equipe','e')
-            ->andWhere('e.edition =:edition')
-            ->setParameter('edition',$edition);
-        $liste_eleves = $queryBuilder->getQuery()->getResult();
-
-
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->getProperties()
-            ->setCreator("Olymphys")
-            ->setLastModifiedBy("Olymphys")
-            ->setTitle("CIA  ".$edition->getEd()."ème édition - élèves non sélectionnés")
-            ->setSubject("Elèves non sélectionnés")
-            ->setDescription("Office 2007 XLSX Document pour mailing diplomes participation ")
-            ->setKeywords("Office 2007 XLSX")
-            ->setCategory("Test result file");
-
-        $sheet = $spreadsheet->getActiveSheet();
-
-
-
-
-        $ligne=1;
-
-        $sheet->setCellValue('A'.$ligne, 'Nom')
-            ->setCellValue('B'.$ligne, 'Prenom')
-            ->setCellValue('C'.$ligne, 'Numequipe')
-            ->setCellValue('D'.$ligne, 'Titre')
-            ->setCellValue('E'.$ligne, 'Lycée')
-            ->setCellValue('F'.$ligne, 'Commune')
-            ->setCellValue('G'.$ligne, 'Courriel');
-
-        $ligne +=1;
-
-        foreach ($liste_eleves as $eleve)
-        {
-            $equipe=$eleve->getEquipe();
-
-            $sheet->setCellValue('A'.$ligne,$eleve->getNom() )
-                ->setCellValue('B'.$ligne, $eleve->getPrenom())
-                ->setCellValue('C'.$ligne, $equipe->getNumero())
-                ->setCellValue('D'.$ligne, $equipe->getTitreProjet())
-                ->setCellValue('E'.$ligne,$equipe->getRneId()->getNom())
-                ->setCellValue('F'.$ligne, $equipe->getRneId()->getCommune())
-                ->setCellValue('G'.$ligne, $eleve->getCourriel());
-            $ligne +=1;
-        }
-
-
-
-
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="eleves_non_sélectionnés.xls"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
-        ob_end_clean();
-        $writer->save('php://output');
-
-
-
-
-
-    }
-
-
-
-
-
-
-
 }
 

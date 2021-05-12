@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
+use Doctrine\ORM\QueryBuilder;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
 use App\Entity\Centrescia;
@@ -70,14 +71,16 @@ class EquipesadminController extends EasyAdminController
          parent::persistEntity($entity);
         
     }
-    public  function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null){
+    public  function createListQueryBuilder($entityClass, $sortDirection, $sortField=null, $dqlFilter=null){
            $request=Request::createFromGlobals();
-        
+
         $edition= $this->session->get('edition');
          $this->session->set('edition_titre',$edition->getEd());
             $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
-      if ($request->query->get('entity')=='Equipesadmin'){
-        /* @var DoctrineQueryBuilder */
+
+
+      if (($request->query->get('entity')=='Equipesadmin')  ){
+
         $queryBuilder = $em->createQueryBuilder()
             ->select('entity')
             ->from($this->entity['class'], 'entity')
@@ -96,7 +99,19 @@ class EquipesadminController extends EasyAdminController
            ->addOrderBy('entity.lettre', 'ASC');
             
          }
-           
+
+         if ($request->query->get('entity')=='Professeurs'){
+            $queryBuilder = $em->createQueryBuilder()
+                ->select('entity')
+                ->from($this->entity['class'], 'entity')
+                ->where('entity.edition =:edition')
+                ->setParameter('edition', $edition)
+
+                ->addOrderBy('entity.nomProf1', 'ASC');
+
+
+
+        }
            
            
             return $queryBuilder;
