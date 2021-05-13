@@ -31,7 +31,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     {
         $this->userRepository = $userRepository;
         $this->router = $router;
-        $this->csrfTokenManager = $csrfTokenManager;
+        $this->csrfTokenManager= $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
     }
     
@@ -71,9 +71,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request,TokenInterface $token ,$providerKey)
     {
-
         return new RedirectResponse($this->router->generate('core_home'));
     }
      

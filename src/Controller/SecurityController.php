@@ -7,14 +7,12 @@ use App\Entity\User;
 use App\Form\UserRegistrationFormType;
 use App\Form\ProfileType;
 use App\Form\ResettingType;
-use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
-use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -23,27 +21,17 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Service\Mailer;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 
 class SecurityController extends AbstractController
 {
     private $session;
     public function __construct(SessionInterface $session)
     {
-      
         $this->session=$session;
     }
-    
-    
-    
-    
-    
+
     /**
      * @Route("/login", name="login")
      */
@@ -107,11 +95,11 @@ class SecurityController extends AbstractController
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
             $user->setCreatedAt(new \Datetime());
-            if ($this->session->get('resetpwd')==true){
+           /* if ($this->session->get('resetpwd')==true){
                 $user->setLastVisit(new \datetime('now'));
                 $this->session->set('resetpwd',null);
             }
-
+            */
             // Enregistre le membre en base
             $em = $this->getDoctrine()->getManager();
             $em->persist($user); 
@@ -126,13 +114,7 @@ class SecurityController extends AbstractController
             array('form' => $form->createView())
         );
     }
-    
 
-    
-   
-    
-     
-     
          // si supérieur à 24h, retourne false
     // sinon retourne false
     private function isRequestInTime(\Datetime $passwordRequestedAt = null)
@@ -189,13 +171,11 @@ class SecurityController extends AbstractController
         
     }
     
-             /**
+     /**
      * @Route("/forgottenPassword", name="forgotten_password")
      */
     public function forgottenPassword(Request $request, MailerInterface $mailer, TokenGeneratorInterface $tokenGenerator)
     {
-
-        // création d'un formulaire "à la volée", afin que l'internaute puisse renseigner son mail
         $form = $this->createFormBuilder()
             ->add('email', EmailType::class, [
                 'constraints' => [
@@ -204,7 +184,7 @@ class SecurityController extends AbstractController
                 ]
             ])
             ->getForm();
-        $form->handleRequest($request);
+            $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -228,7 +208,7 @@ class SecurityController extends AbstractController
 
             $email=(new TemplatedEmail())
                     ->from(new Address('info@olymphys.fr','Équipe Olymphys'))
-                    ->to('olymphys-11d237@inbox.mailtrap.io')//new Address($user->getEmail(), $user->getNom()))
+                    ->to(new Address($user->getEmail(), $user->getNom()))
                     ->subject('Renouvellement du mot de passe')
                     ->htmlTemplate('email/password_mail.html.twig')
                     ->context([
@@ -291,47 +271,6 @@ class SecurityController extends AbstractController
             'resetPasswordForm' => $form->createView()
         ]);
     }
-            /**
-     * @Route("/profile_show", name="profile_show")
-     */
-    public function profileShow()
-    {
-        $user = $this->getUser();
-        return $this->render('profile/show.html.twig', array(
-            'user' => $user,
-        ));
-    }
-    
-    /**
-     * Edit the user.
-     *
-     * @param Request $request
-     * @Route("profile_edit", name="profile_edit")
-     */
-    public function profileEdit(Request $request)
-    {
-        $user = $this->getUser();
-        $form = $this->createForm(ProfileType::class, $user);
-        $form->setData($user);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
-
-            return $this->redirectToRoute('core_home');
-        }
-
-        return $this->render('profile/edit.html.twig', array(
-            'editProfileForm' => $form->createView(),
-            'user' => $user,
-        ));
-    }
-    
-   
-    
 
 }
