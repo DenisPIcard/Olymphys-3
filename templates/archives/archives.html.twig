@@ -34,7 +34,10 @@
                         </div>
                     </div>
                 </div>
-            <div class="col"></div>
+                <div class="col">
+
+                </div>
+            </div>
         </div>
 
 {% endblock %}
@@ -44,19 +47,21 @@
 <div class="main" id="section1">
     {% if date(edition_affichee.concourscn) < date()%}
         <div class="container-fluid">
-
-
-                <div class="text-center"><h4>Le concours national</h4></div>
+               <div class="row">
+                    <div class="col">
+                        <div class="text-center"><h4>Le concours national</h4></div>
+                    </div>
+               </div>
 
                 <div class="row">
-                    <div class="col">
+                    <div class="col text-left">
                         <p><a href="#section2">Voir les concours académiques</a></p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-9">
-                        <div class="text-center"><h5>Les documents des équipes sélectionnées<p></p></h5></div>
-                        <div class="container">
+                    <div class="col sm-9">
+                        <div class="text-center"><h5>Les documents des équipes sélectionnées</h5><p></p></div>
+
                             <ul class="list-group-flush">
                             {% for equipe in equipes %}
                                 {% if equipe.selectionnee == true %}
@@ -101,19 +106,20 @@
 
                                 {% endfor %}
                             </ul>
-                        </div>
+
 
                     </div>
 
-                    <div class="row-cols-sm-6 row-cols-xs-6">{# block latéral droit #}
+                    <div class="col-sm-3">{# block latéral droit #}
                         <p></p>
                         <div class="d-flex align-items-center flex-column " style="height:auto ;width:250px !important;">
-                            <div class="p ">
+                            <div class="p-2 ">
                                 <div class="row text-center graylight">
                                     <div class="col">
                                         <h5>Les photos du concours national</h5>
                                     </div>
                                 </div>
+                            <div class="p-2 ">
                                 <div class="row">
                                     <div class="col text-center">
                                           {%  set photoscarousel = photoseqcn %}
@@ -122,11 +128,15 @@
                                           {%  include '/archives/carouselarchives.html.twig' %}
                                     </div>
                                 </div>
+                            </div>
+                            <div class="p-2 ">
+
                                 <div class="row ">
                                         <div class="col text-center">
                                             <h5><a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
                                         </div>
                                 </div>
+
                             </div>
 
                         {% if livresdor !=null %}
@@ -171,7 +181,7 @@
             <div class="row">
                 <div class="col-sm-9">
                     <div class="text-center"><h5>Les documents des équipes non sélectionnées</h5><p></p></div>
-                    <div class="container">
+
                     <ul class="list-group-flush">
                         {% for equipe in equipes %}
                             {% if equipe.selectionnee == false %}
@@ -208,30 +218,37 @@
                             {% endif %}
                         {% endfor %}
                     </ul>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-sm-3">{# block latéral droit #}
-                    <p></p>
-                    <div class="container d-flex justify-content-center flex-column" style="height: 300px;width:250px !important;">
-                        <div class="row">
-                            <div class="col text-center graylight">
-                                <h5>Les photos des concours interacadémiques</h5>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                {%  set photoscarousel = photoseqcia%}
-                                {% set concours='cia' %}
 
-                                {%  include '/archives/carouselarchives.html.twig' %}
+                </div>
+                <div class="col-sm-3">{# block latéral droit #}
+                    <p></p>
+                    <div class=" d-flex justify-content-center flex-column" style="height: 300px;width:250px !important;">
+                        <div class="p-2">
+                            <div class="row">
+                                <div class="col text-center graylight">
+                                    <h5>Les photos des concours interacadémiques</h5>
+                                </div>
                             </div>
                         </div>
-                        <div class="row ">
-                            <div class="col">
-                                <h5><a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
+                        <div class="p-2">
+                            <div class="row">
+                                <div class="col">
+                                    {%  set photoscarousel = photoseqcia%}
+                                    {% set concours='cia' %}
+
+                                    {%  include '/archives/carouselarchives.html.twig' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-2">
+                            <div class="row ">
+                                <div class="col text-center">
+                                    <h5><a href="{{ path('photos_voirphotoscia',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
+                                </div>
                             </div>
                         </div>
                     </div>
+            </div>
         </div>
     </div>
 
