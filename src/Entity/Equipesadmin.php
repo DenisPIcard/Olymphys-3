@@ -12,7 +12,7 @@ use App\Service\FileUploader;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * equipesadmin
+ * Equipesadmin
  * @Vich\Uploadable
  * @ORM\Table(name="equipesadmin")
  * @ORM\Entity(repositoryClass="App\Repository\EquipesadminRepository")
@@ -176,7 +176,7 @@ class Equipesadmin
     private $idProf1;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\ManyToOne(targetEntity=user::class)
      */
     private $idProf2;
 
@@ -680,24 +680,24 @@ class Equipesadmin
    }
 
 
-   public function getIdProf1(): ?User
+   public function getIdProf1(): ?user
    {
        return $this->idProf1;
    }
 
-   public function setIdProf1(?User $idProf1): self
+   public function setIdProf1(?user $idProf1): self
    {
        $this->idProf1 = $idProf1;
 
        return $this;
    }
 
-   public function getIdProf2(): ?User
+   public function getIdProf2(): ?user
    {
        return $this->idProf2;
    }
 
-   public function setIdProf2(?User $idProf2): self
+   public function setIdProf2(?user $idProf2): self
    {
        $this->idProf2 = $idProf2;
 
@@ -739,6 +739,10 @@ class Equipesadmin
 
        return $this;
    }
+
+
+
+
 
 
 

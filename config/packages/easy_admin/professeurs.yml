@@ -1,35 +1,35 @@
 easy_admin :
     entities :
         Professeurs :
-            class :  App\Entity\Professeurs
+            class :  App\Entity\User
             label : 'Professeurs'
             controller: App\Controller\Admin\ProfesseursController
             templates:
-                       list: 'Admin/customizations/list_profs.html.twig'
+                       #list: 'Admin/customizations/list_prof.html.twig'
           
             list :
                 permission: 'ROLE_COMITE'
-                filters : [{ property: 'equipesstring' }]
+                filters :
+                    - 'rne'
                     
                     
                 dql_filter : 
                
 
-                actions : ['-new','-edit','-delete']
+                actions :
                 fields :
-                    - {property : 'user.nom', label : 'Nom'}
-                    - {property : 'user.prenom', label : 'Prénom'}
-                    - {property : 'user.adresse', label : 'adresse'}
-                    - {property : 'user.code', label : 'CP'}
-                    - {property : 'user.ville',label :  'Ville'}
-                    - {property : 'user.email',label: 'courriel' }
-                    - {property : 'user.phone',label: 'Téléphone' }
-                    - {property : 'rne', label : 'code UAI'}
-                    - {property : 'nomlycee', label : 'lycée'}
-                    - {property : 'communelycee', label : 'ville du lycée'}
-                    - {property : 'equipesString', type: 'array', label : 'Equipes'}
+                    - {property : 'nom', label : 'Nom'}
+                    - {property : 'prenom', label : 'Prénom'}
+                    - {property : 'adresse', label : 'adresse'}
+                    - {property : 'code', label : 'CP'}
+                    - {property : 'ville',label :  'Ville'}
+                    - {property : 'email',label: 'courriel' }
+                    - {property : 'phone',label: 'Téléphone' }
+                    - {property : 'rneId.rne', label : 'code UAI'}
+                    - {property : 'rneId.nom', label : 'lycée'}
+                    - {property : 'rneId.commune', label : 'ville du lycée'}
 
-                sort : ['user.nom', ASC]
+                sort : ['nom', ASC]
                 #form:  # <-- 'form' is applied to both 'new' and 'edit' views
 
             

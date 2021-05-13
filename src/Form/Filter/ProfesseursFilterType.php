@@ -18,7 +18,7 @@ use App\Entity\Centrescia;
 
 class ProfesseursFilterType extends FilterType
 { use FilterTypeTrait;
-    private $session;
+    private $ession;
     public function __construct(SessionInterface $session)
                     {  
                         $this->session=$session;
@@ -26,7 +26,7 @@ class ProfesseursFilterType extends FilterType
                     }
     public function filter(QueryBuilder $queryBuilder, FormInterface $form, array $metadata)
     { 
-
+        
       $datas =$form->getParent()->getData();
 
       
@@ -34,13 +34,12 @@ class ProfesseursFilterType extends FilterType
             
          $queryBuilder
              ->select('App:Edition')
-             ->leftJoin('entity.equipes','e')
-             ->andwhere( 'e.edition =:edition')
+             ->where( 'entite.edition =:edition')
              ->setParameter('edition',$datas['edition']);
-          $this->session->set('edition_titre',$this->session->get('edition')->getEd());
-      }
+        
+       }     
 
-
+     
          
     }
     

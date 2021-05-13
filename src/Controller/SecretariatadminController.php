@@ -19,7 +19,7 @@ use App\Entity\Equipes ;
 use App\Entity\Rne;
 use App\Entity\Elevesinter ;
 use App\Entity\Edition ;
-Use App\Entity\Professeurs;
+
 use App\Entity\Jures ;
 use App\Entity\Notes ;
 use App\Entity\Palmares;
@@ -30,7 +30,6 @@ use App\Entity\Prix ;
 use App\Entity\Cadeaux ;
 use App\Entity\Liaison ;
 use App\Entity\Equipesadmin;
-
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -902,76 +901,36 @@ class SecretariatadminController extends AbstractController
      * @Route("/secretariatadmin/mise_a_jour_table_professeurs_equipesadmin", name="maj_profsequipes")
      *
      */
-    public function  mise_a_jour_table_professeurs(Request $request)//fonction provisoire pour le remplissage des tables profs et equipesadmin mai 2021
+    public function  mise_a_jour_table_user(Request $request)//fonction provisoire pour le remplissage des tables profs et equipesadmin mai 2021
     {
-        $em = $this->getDoctrine()->getManager();
+        $em=$this->getDoctrine()->getManager();
 
-        $repositoryProfesseurs = $this->getDoctrine()
-            ->getManager()
-            ->getRepository('App:Professeurs');
-        $repositoryUser = $this->getDoctrine()
-            ->getManager()
-            ->getRepository('App:User');
-        $repositoryEquipesadmin = $this->getDoctrine()
-            ->getManager()
-            ->getRepository('App:Equipesadmin');
-        $repositoryRne = $this->getDoctrine()
+        $repositoryRne= $this->getDoctrine()
             ->getManager()
             ->getRepository('App:Rne');
+        $repositoryUser= $this->getDoctrine()
+            ->getManager()
+            ->getRepository('App:User');
+        $qb=$repositoryUser->createQueryBuilder('p');
+        $qb1 =$repositoryUser->createQueryBuilder('u')
+            ->andWhere($qb->expr()->like('u.roles',':roles'))
+            ->setParameter('roles','%i:0;s:9:"ROLE_PROF";i:2;s:9:"ROLE_USER";%')
+            ->orWhere($qb->expr()->like('u.roles',':role'))
+            ->setParameter('role','%a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}%')
+            ->addOrderBy('u.nom','ASC');
+        $listeProfs=$qb1->getQuery()->getResult();
+        //dd($qb1);
 
-
-        $listeProfs = $repositoryUser->findAll();
-
-        foreach ($listeProfs as $prof) {
-
-            $rneId = $repositoryRne->findOneBy(['rne' => $prof->getRne()]);
-
-            if ($rneId != null) {
-                if (in_array('ROLE_PROF', $prof->getRoles())) {
-                    $prof->setRneId($rneId);
-                    $em->persist($prof);
-                    $em->flush();
-                }
-            }
-
-        }
 
         foreach($listeProfs as $prof){
 
-            if ($prof->getRneId()->getid()!=0) {
-                if ($repositoryProfesseurs->findOneBy(['user' => $prof]) == null) {
-                    $profuser = new Professeurs();
-                    $profuser->setUser($prof);
-                } else {
-                    $profuser = $repositoryProfesseurs->findOneBy(['user' => $prof]);
-                }
-                $equipes = $repositoryEquipesadmin->createQueryBuilder('e')
-                    ->where('e.idProf1 =:prof or e.idProf2 =:prof')
-                    ->setParameter('prof', $prof)
-                    ->getQuery()->getResult();
-                $profuser->setEquipesstring(null);
-                if ($equipes != null) {
-                    foreach ($equipes as $equipe) {
-
-                        $equipe->setInscrite(true);
-                        $em->persist($equipe);
-                        if ($profuser->getEquipes() != null) {
-                            $equipesString = $profuser->getEquipesString();
-                        } else {
-                            $equipesString = '';
-                        }
-
-                        $profuser->addEquipe($equipe);
-                        $profuser->setEquipesString($equipesString . '||' . $equipe->getEdition()->getEd() . '-' . $equipe->getNumero());
+           $prof->setRneId($repositoryRne->findOneBy(['rne'=>$prof->getRne()]));
 
 
-                    }
-                }
+           $em->persist($prof);
+           $em->flush();
 
-                $em->persist($profuser);
-                $em->flush();
 
-            }
         }
         return $this->redirectToRoute('core_home');
 
