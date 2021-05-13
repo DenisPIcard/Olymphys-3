@@ -13,41 +13,28 @@ use App\Form\CadeauxType ;
 use App\Form\ClassementType ;
 use App\Form\PrixType ;
 use App\Form\EditionType;
-use App\Form\MemoiresType;
-use App\Form\MemoiresinterType;
-use App\Form\MemoiresinterorgaciaType;
-use App\Form\ConfirmType;
-use App\Form\ListmemoiresinterType;
-
-use App\Form\ListmemoiresinterallType;
-use App\Form\FichessecurType;
 
 use App\Entity\User ;
 use App\Entity\Equipes ;
-use App\Entity\Eleves ;
+use App\Entity\Rne;
 use App\Entity\Elevesinter ;
 use App\Entity\Edition ;
-use App\Entity\Totalusers ;
+
 use App\Entity\Jures ;
 use App\Entity\Notes ;
-use App\Entity\Pamares;
+use App\Entity\Palmares;
 use App\Entity\Visites ;
 use App\Entity\Phrases ;
 use App\Entity\Classement ;
 use App\Entity\Prix ;
 use App\Entity\Cadeaux ;
 use App\Entity\Liaison ;
-use App\Entity\Memoires;
-use App\Entity\Memoiresinter;
-use App\Entity\Fichessecur;
 use App\Entity\Equipesadmin;
-use App\Entity\Rne;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextaeraType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -906,6 +893,49 @@ class SecretariatadminController extends AbstractController
            
         return $this->render('adminfichiers/modif_equipe.html.twig', [
             'formtab' => $formview,'equipe' =>$equipe        ]);
-    } 
+    }
+
+    /**
+     * @Security("is_granted('ROLE_SUPER_ADMIN')")
+     *
+     * @Route("/secretariatadmin/mise_a_jour_table_professeurs_equipesadmin", name="maj_profsequipes")
+     *
+     */
+    public function  mise_a_jour_table_user(Request $request)//fonction provisoire pour le remplissage des tables profs et equipesadmin mai 2021
+    {
+        $em=$this->getDoctrine()->getManager();
+
+        $repositoryRne= $this->getDoctrine()
+            ->getManager()
+            ->getRepository('App:Rne');
+        $repositoryUser= $this->getDoctrine()
+            ->getManager()
+            ->getRepository('App:User');
+        $qb=$repositoryUser->createQueryBuilder('p');
+        $qb1 =$repositoryUser->createQueryBuilder('u')
+            ->andWhere($qb->expr()->like('u.roles',':roles'))
+            ->setParameter('roles','%i:0;s:9:"ROLE_PROF";i:2;s:9:"ROLE_USER";%')
+            ->orWhere($qb->expr()->like('u.roles',':role'))
+            ->setParameter('role','%a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}%')
+            ->addOrderBy('u.nom','ASC');
+        $listeProfs=$qb1->getQuery()->getResult();
+        //dd($qb1);
+
+
+        foreach($listeProfs as $prof){
+
+           $prof->setRneId($repositoryRne->findOneBy(['rne'=>$prof->getRne()]));
+
+
+           $em->persist($prof);
+           $em->flush();
+
+
+        }
+        return $this->redirectToRoute('core_home');
+
+
+    }
+
            
 }
