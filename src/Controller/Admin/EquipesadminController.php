@@ -42,13 +42,13 @@ class EquipesadminController extends EasyAdminController
         $form = parent::createFiltersForm($entityName);
         
         $form->add('edition', EquipesadminFilterType::class, [
-            'class' => Edition::class,
-            'query_builder' => function (EntityRepository $er) {
-                            return $er->createQueryBuilder('u')
-                                    ->addOrderBy('u.ed', 'DESC');
-                                     },
-           'choice_label' => 'getEd',
-            'multiple'=>false,]);
+                        'class' => Edition::class,
+                        'query_builder' => function (EntityRepository $er) {
+                                        return $er->createQueryBuilder('u')
+                                                ->addOrderBy('u.ed', 'DESC');
+                                                 },
+                       'choice_label' => 'getEd',
+                        'multiple'=>false,]);
             $form->add('centre', EquipesadminFilterType::class, [
                          'class' => Centrescia::class,
                          'query_builder' => function (EntityRepository $er) {
@@ -75,8 +75,8 @@ class EquipesadminController extends EasyAdminController
            $request=Request::createFromGlobals();
 
         $edition= $this->session->get('edition');
-         $this->session->set('edition_titre',$edition->getEd());
-            $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+        $this->session->set('edition_titre',$edition->getEd());
+        $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
 
 
       if (($request->query->get('entity')=='Equipesadmin')  ){
