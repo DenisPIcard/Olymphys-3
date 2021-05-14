@@ -31,6 +31,7 @@ imports :
       - { resource: easy_admin/livredorprofs.yml }
       - { resource: easy_admin/livredorjury.yml }
       - { resource: easy_admin/livredorcomite.yml }
+      - { resource: easy_admin/professeurs.yml }
 easy_admin:   
     user:
         name_property_path: 'Nom'

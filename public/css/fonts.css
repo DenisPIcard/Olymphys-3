@@ -1,5 +1,5 @@
 .smallsize{
-    font-size : 20px;
+    font-size : 10px;
 
 }
 .rougeodpf{
@@ -7,3 +7,22 @@
     color : #B21B16;
 }
 
+select:valid{
+    color:  #B21B16;
+}
+select option { color: black; }
+select:invalid{
+    color:  black;
+}
+.list-group{
+ font-size: 1vw;
+
+
+}
+
+
+
+
+h5{
+    font-size: 1vw;
+}

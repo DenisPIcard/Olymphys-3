@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Entity\Rne;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -21,6 +23,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class User implements UserInterface, \Serializable
 {
+
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -177,12 +181,11 @@ class User implements UserInterface, \Serializable
      
      
 
-    public function __construct()
+    public function __construct(EntityManager $em)
     {
         $this->isActive = true;
         $this->roles = ['ROLE_USER'];
-
-
+        $this->em = $em;
         
     }
      /*public function __toString()
@@ -666,7 +669,6 @@ class User implements UserInterface, \Serializable
 
         return $this;
     }
-
 
 
 
