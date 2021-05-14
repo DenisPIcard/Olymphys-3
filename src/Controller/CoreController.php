@@ -2,13 +2,18 @@
 // src/Controller/CoreController.php
 namespace App\Controller;
 
+use datetime;
+use Exception as Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
 class CoreController extends AbstractController
-{    
-    private $session;
+{
+    private SessionInterface $session;
    
     public function __construct(SessionInterface $session)
         {
@@ -17,47 +22,44 @@ class CoreController extends AbstractController
 
     /**
      * @Route("/", name="core_home")
+     * @param TokenGeneratorInterface $tokenGenerator
+     * @return RedirectResponse|Response
+     * @throws Exception
      */
-  public function index()
+  public function index(TokenGeneratorInterface $tokenGenerator)
   {
       $user = $this->getUser();
       $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-
-      /*   if(($user==null) or  ($user->getRoles()[0]!='ROLE_SUPER_ADMIN')){
-
-                      $edition=$repositoryEdition->findOneBy([], ['id' => 'desc']);
-
-
-             }
-         if(($user!=null) and ($user->getRoles()[0]=='ROLE_SUPER_ADMIN')) {
-             $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
-                      $edition=$repositoryEdition->createQueryBuilder('e')
-                              ->where('e.encours = TRUE')
-                              ->getQuery()->getSingleResult();
-
-         }*/
-      $edition = $repositoryEdition->findOneBy([], ['id' => 'desc']);
+      $edition = $repositoryEdition->findOneBy([],['id' => 'desc']);
       $this->session->set('edition', $edition);
+      //dd($this->session);
       if (null != $user) {
-          $datelimcia = $edition->getDatelimcia();
-          $datelimnat = $edition->getDatelimnat();
+          //Pour obliger l'utilisateur dont le compte a été créé par les admin à mettre à jour son mot de passe
+          if($user->getLastVisit()==NULL) {
+              $em = $this->getDoctrine()->getManager();
+              $user->setToken($tokenGenerator->generateToken());
+              // enregistrement de la date de création du token
+              $user->setPasswordRequestedAt(new Datetime());
+              $em->persist($user);
+              $em->flush();
+           return $this->redirectToRoute('reset_password', [ 'id'=> $user->getId(),'token' => $user->getToken()]);
+          }
+
           $datecia = $edition->getConcourscia();
-          $datecn = $edition->getConcourscn();
-          $dateouverturesite = $edition->getDateouverturesite();
-          $dateconnect = new \datetime('now');
+          $dateconnect = new datetime('now');
           if ($dateconnect > $datecia) {
               $concours = 'national';
           }
-          if (($dateconnect <= $datecia)) {
+          else                                                                                                                                     {
               $concours = 'interacadémique';
           }
+
           $datelimphotoscia = date_create();
           $datelimphotoscn = date_create();
-          $datelimdiaporama = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d'));
-          $p = new \DateInterval('P7D');
-          $datelimlivredor = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d'));
-          $datelivredor = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d') . '00:00:00');
-          $datelimlivredoreleve = new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d') . '18:00:00');
+          $datelimdiaporama = new DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d'));
+          $datelimlivredor = new DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d'));
+          $datelivredor = new DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d') . '00:00:00');
+          $datelimlivredoreleve = new DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d') . '18:00:00');
           date_date_set($datelimphotoscia, $edition->getconcourscia()->format('Y'), $edition->getconcourscia()->format('m'), $edition->getconcourscia()->format('d') + 17);
           date_date_set($datelimphotoscn, $edition->getconcourscn()->format('Y'), $edition->getconcourscn()->format('m'), $edition->getconcourscn()->format('d') + 30);
           date_date_set($datelivredor, $edition->getconcourscn()->format('Y'), $edition->getconcourscn()->format('m'), $edition->getconcourscn()->format('d') - 1);
@@ -70,16 +72,11 @@ class CoreController extends AbstractController
           $this->session->set('datelimlivredor', $datelimlivredor);
           $this->session->set('datelimlivredoreleve', $datelimlivredoreleve);
           $this->session->set('datelimdiaporama', $datelimdiaporama);
-          $this->session->set('dateclotureinscription', new \DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d H:i:s')));
+          $this->session->set('dateclotureinscription', new DateTime($this->session->get('edition')->getConcourscn()->format('Y-m-d H:i:s')));
+      }
 
-      }
-      if ($this->session->get('resetpwd') == true) {
 
-          return $this->redirectToRoute('forgotten_password');
-      }
-      if (($this->session->get('resetpwd') == false) or ($this->session->get('resetpwd') == null)) {
-          return $this->render('core/index.html.twig');
-      }
+      return $this->render('core/index.html.twig');
   }
     
 
