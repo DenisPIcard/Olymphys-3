@@ -26,10 +26,7 @@ class Edition
      */
     private $date;
 
-    /**
-     * @ORM\Column(type="integer",  nullable=true)
-     */
-    private $edition;
+   
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -72,7 +69,21 @@ class Edition
         *  @ORM\Column(name="concours_cn", type="datetime",nullable=true)
         */    
         protected $concourscn;
-    
+
+        /**
+         * @ORM\Column(type="datetime")
+         */
+        private $dateclotureinscription;
+
+        /**
+         * @ORM\Column(type="string", length=255)
+         */
+        private $annee;
+
+       
+        
+  
+       
 
     public function getId(): ?int
     {
@@ -103,17 +114,7 @@ class Edition
         return $this;
     }
 
-    public function getEdition(): ?int
-    {
-        return $this->edition;
-    }
-
-    public function setEdition(int $edition): self
-    {
-        $this->edition = $edition;
-
-        return $this;
-    }
+   
 
     public function getVille(): ?string
     {
@@ -184,6 +185,42 @@ class Edition
     public function getConcourscn()
     {
         return $this->concourscn;
+    }
+
+    public function getEncours(): ?bool
+    {
+        return $this->encours;
+    }
+
+    public function setEncours(?bool $encours): self
+    {
+        $this->encours = $encours;
+
+        return $this;
+    }
+
+    public function getDateclotureinscription(): ?\DateTimeInterface
+    {
+        return $this->dateclotureinscription;
+    }
+
+    public function setDateclotureinscription(\DateTimeInterface $dateclotureinscription): self
+    {
+        $this->dateclotureinscription = $dateclotureinscription;
+
+        return $this;
+    }
+
+    public function getAnnee(): ?string
+    {
+        return $this->annee;
+    }
+
+    public function setAnnee(string $annee): self
+    {
+        $this->annee = $annee;
+
+        return $this;
     }
     
     

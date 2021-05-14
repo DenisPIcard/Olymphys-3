@@ -82,7 +82,8 @@ class Equipes
     private $rang;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Visites", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Visites",cascade={"persist"})
+     * @ORM\JoinColumn(name="visite_id", nullable=true)
      */
     private $visite;
 
@@ -124,10 +125,34 @@ class Equipes
     /**
      * @ORM\Column(name="nb_notes", type="integer")
      */
-    private $nbNotes=0;  
+    private $nbNotes=0;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sallesecours;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $hote;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $interlocuteur;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $code;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=user::class)
+     */
+    private $observateur;  
   
     
-     
     /**
      * Constructor
      */
@@ -282,7 +307,16 @@ class Equipes
      * @return Equipes
      */
     public function setVisite(\App\Entity\Visites $visite = null)
-    {
+    {    $visiteini=$this->visite; 
+         if ($visite != null){
+            $visite->setAttribue(true);
+           
+        }
+        else{
+            
+            if($visiteini!=null){
+            $visiteini->setAttribue(false);}
+        }
         $this->visite = $visite;
 
         return $this;
@@ -367,7 +401,17 @@ class Equipes
      * @return Equipes
      */
     public function setCadeau(\App\Entity\Cadeaux $cadeau = null)
-    {
+    {      
+        $cadeauini=$this->cadeau;
+        if ($cadeau != null){
+            $cadeau->setAttribue(true);
+           
+        }
+        else{
+        if ($cadeauini!=null){
+            $cadeauini->setAttribue(false);
+        }
+        }
         $this->cadeau = $cadeau;
 
         return $this;
@@ -582,17 +626,7 @@ class Equipes
         return $this;
     }
 
-    public function getMemoire()
-    {
-        return $this->memoire;
-    }
-
-    public function setMemoire($memoire)
-    {
-        $this->memoire = $memoire;
-
-        return $this;
-    }
+    
 
     public function addElefe(Eleves $elefe): self
     {
@@ -617,5 +651,71 @@ class Equipes
         return $this;
     }
     
-   
+   public function getClassementEquipe(){
+       $string=$this->classement.' prix'.' : '.$this->lettre.' - '.$this->infoequipe->getTitreProjet().' '.$this->infoequipe->getLyceeLocalite();
+       
+       Return $string;
+       
+       
+   }
+
+   public function getSallesecours(): ?string
+   {
+       return $this->sallesecours;
+   }
+
+   public function setSallesecours(?string $sallesecours): self
+   {
+       $this->sallesecours = $sallesecours;
+
+       return $this;
+   }
+
+   public function getHote(): ?user
+   {
+       return $this->hote;
+   }
+
+   public function setHote(?user $hote): self
+   {
+       $this->hote = $hote;
+
+       return $this;
+   }
+
+   public function getInterlocuteur(): ?user
+   {
+       return $this->interlocuteur;
+   }
+
+   public function setInterlocuteur(?user $interlocuteur): self
+   {
+       $this->interlocuteur = $interlocuteur;
+
+       return $this;
+   }
+
+   public function getCode(): ?string
+   {
+       return $this->code;
+   }
+
+   public function setCode(?string $code): self
+   {
+       $this->code = $code;
+
+       return $this;
+   }
+
+   public function getObservateur(): ?user
+   {
+       return $this->observateur;
+   }
+
+   public function setObservateur(?user $observateur): self
+   {
+       $this->observateur = $observateur;
+
+       return $this;
+   }
 }

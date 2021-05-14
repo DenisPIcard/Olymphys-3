@@ -17,7 +17,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\HasLifecycleCallbacks()
  */
 class Equipesadmin
-{
+{ 
+    
+    
     /**
      * @var int
      *
@@ -30,7 +32,7 @@ class Equipesadmin
     /**
      * @var string
      *
-     * @ORM\Column(name="lettre", type="string", length=1, unique=true,nullable= true)
+     * @ORM\Column(name="lettre", type="string", length=1, nullable= true)
      */
     private $lettre;
      
@@ -39,15 +41,9 @@ class Equipesadmin
      *
      * @ORM\Column(name="numero", type="smallint", nullable=true)
      */
-    private $numero; 
+    private $numero;
           
-     /**
-     * @var string
-     * 
-     * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
-     * @ORM\JoinColumn(name ="centre_id", referencedColumnName = "id", nullable=true)
-     */
-    private $centre; 
+ 
     
     /**
      * @var boolean
@@ -58,7 +54,7 @@ class Equipesadmin
     /**
      * @var string
      *
-     * @ORM\Column(name="titreProjet", type="string", length=255, unique=true, nullable=true)
+     * @ORM\Column(name="titreProjet", type="string", length=255, nullable=true)
      */
     private $titreProjet;
 
@@ -127,36 +123,80 @@ class Equipesadmin
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Rne")
-     * @ORM\JoinColumn(name ="rne_id", referencedColumnName = "id",nullable=true)
+     * 
      */
     private $rneId;
 
+   
+    
+  
+
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="id")
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
+     */
+    private $centre;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Edition"))
+     */
+    private $edition;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $contribfinance;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $origineprojet;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $recompense;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $partenaire;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+  
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
     private $idProf1;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="id")
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity=user::class)
      */
-    private $idProf2; 
-    
+    private $idProf2;
+
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Edition")
-     * @ORM\JoinColumn(name ="edition_id",referencedColumnName = "id", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $edition;
+    private $description;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $inscrite = 1;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $nbeleves;
+
    
-    
-  
-    public function __toString(): string
-        {
-           return $this->centre;
-           
-        }   
-       
+
+   
+
     
    
     /**
@@ -178,6 +218,8 @@ class Equipesadmin
      */
     public function setTitreProjet($titreProjet)
     {
+       
+        $this->createdAt= new \DateTime('now');
         $this->titreProjet = $titreProjet;
 
         return $this;
@@ -241,22 +283,7 @@ class Equipesadmin
         return $this->lettre;
     }
       
-    /**
-     * Set centre
-     *
-     * @param  App\Entity\Centrescia $centre
-     *
-     * @return Equipesadmin
-     */
-    public function setCentre(\App\Entity\Centrescia $centre = null)
-    {  
-           
-        //$centre=$centre->getCentre();
-         
-        $this->centre = $centre;
-
-        return $this;
-    }
+    
 
     /**
      * Get fichesecur
@@ -290,16 +317,7 @@ class Equipesadmin
     
     
 
-    /**
-     * Get centre
-     *
-     * @return string
-     */
-    public function getCentre()
-    {    
-        return $this->centre;
-    }
-    
+   
 
 
     /**
@@ -311,6 +329,8 @@ class Equipesadmin
     {   
         $nomcentre='';
         $Numero=$this->getNumero();
+        
+        $edition=$this->getEdition();
         If ($centre =$this->getCentre()){
         $nomcentre =$this->getCentre()->getCentre().'-';}
                
@@ -318,26 +338,29 @@ class Equipesadmin
         $nom_equipe=$this->getTitreProjet() ;
         $ville=$this->getLyceeLocalite();
         
-        $infoequipe= $nomcentre.'Eq '.$Numero.' - '.$nom_equipe.'-'.$ville;        
+        $infoequipe= $edition->getEd().'-'.$nomcentre.'Eq '.$Numero.' - '.$nom_equipe.'-'.$ville;        
         return $infoequipe;
     }
     public function getInfoequipenat()
     {   
-        if ($this->getSelectionnee()==TRUE){
-             
+    $edition=$this->getEdition();
+        if ($this->getSelectionnee()=='1'){
+          
         $lettre=$this->getLettre();
-        if (isset($lettre)) 
-        {
-        $Lettre=$this->getLettre();
+        
+       
         
         $nom_equipe=$this->getTitreProjet() ;
-        $ville=$this->getRneId()->getCommune();
-        
-        $infoequipe= 'Eq '.$Lettre.' - '.$nom_equipe.'-'.$ville;   
-        }   
-        if (isset($infoequipe)){
-        return $infoequipe;
+        $infoequipe=$lettre.' - '.$nom_equipe;
+        if ($this->getRneId()){
+        $infoequipe=$infoequipe.'-'.$this->getRneId()->getCommune();
         }
+       
+        
+       
+        
+        return $infoequipe;
+        
         }
     }
     
@@ -595,7 +618,7 @@ class Equipesadmin
     
    public function getLycee()
    {
-       return $this->getDenominationLycee().' '.$this->getNomLycee().' de  '.$this->getLyceeLocalite();
+       return $this->getNomLycee().' de  '.$this->getLyceeLocalite();
    } 
    public function getProf1()
    {
@@ -608,41 +631,158 @@ class Equipesadmin
        return $this->getPrenomProf2().' '.$this->getNomProf2();
    }
 
-   public function getIdProf1()
+
+
+  
+   
+   
+
+   public function getCentre(): ?centrescia
+   {
+       return $this->centre;
+   }
+
+   public function setCentre(?centrescia $centre): self
+   {
+       $this->centre = $centre;
+
+       return $this;
+   }
+
+   public function getEdition(): ?edition
+   {
+       return $this->edition;
+   }
+
+   public function setEdition(?edition $edition)
+   {
+       $this->edition = $edition;
+
+       return $this;
+   }
+
+   public function getContribfinance(): ?string
+   {
+       return $this->contribfinance;
+   }
+
+   public function setContribfinance(?string $contribfinance): self
+   {
+       $this->contribfinance = $contribfinance;
+
+       return $this;
+   }
+
+   public function getOrigineprojet(): ?string
+   {
+       return $this->origineprojet;
+   }
+
+   public function setOrigineprojet(?string $origineprojet): self
+   {
+       $this->origineprojet = $origineprojet;
+
+       return $this;
+   }
+
+   public function getRecompense(): ?string
+   {
+       return $this->recompense;
+   }
+
+   public function setRecompense(?string $recompense): self
+   {
+       $this->recompense = $recompense;
+
+       return $this;
+   }
+
+   public function getPartenaire(): ?string
+   {
+       return $this->partenaire;
+   }
+
+   public function setPartenaire(?string $partenaire): self
+   {
+       $this->partenaire = $partenaire;
+
+       return $this;
+   }
+
+   public function getCreatedAt(): ?\DateTimeInterface
+   {
+       return $this->createdAt;
+   }
+
+   public function setCreatedAt(\DateTimeInterface $createdAt): self
+   {
+       $this->createdAt = $createdAt;
+
+       return $this;
+   }
+
+
+   public function getIdProf1(): ?user
    {
        return $this->idProf1;
    }
 
-   public function setIdProf1(int $idProf1): self
+   public function setIdProf1(?user $idProf1): self
    {
        $this->idProf1 = $idProf1;
 
        return $this;
    }
 
-   public function getIdProf2()
+   public function getIdProf2(): ?user
    {
        return $this->idProf2;
    }
 
-   public function setIdProf2(int $idProf2): self
+   public function setIdProf2(?user $idProf2): self
    {
        $this->idProf2 = $idProf2;
 
        return $this;
    }
-   
-   public function getEdition()
+
+   public function getDescription(): ?string
    {
-       return $this->edition;
+       return $this->description;
    }
 
-   public function setEdition($edition)
+   public function setDescription(?string $description): self
    {
-       $this->edition = $edition;
+       $this->description = $description;
 
        return $this;
    }
+
+   public function getInscrite(): ?bool
+   {
+       return $this->inscrite;
+   }
+
+   public function setInscrite(bool $inscrite): self
+   {
+       $this->inscrite = $inscrite;
+
+       return $this;
+   }
+
+   public function getNbeleves(): ?int
+   {
+       return $this->nbeleves;
+   }
+
+   public function setNbeleves(int $nbeleves): self
+   {
+       $this->nbeleves = $nbeleves;
+
+       return $this;
+   }
+
+
    
    
 }

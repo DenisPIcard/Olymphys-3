@@ -20,40 +20,44 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
-   // use TargetPathTrait;
-    
-    private $userRepository;
-    private $router;
-    private $csrfTokenManager;
-    private $passwordEncoder;
+
+    use TargetPathTrait;
+
+    private UserRepository $userRepository;
+    private RouterInterface $router;
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    private UserPasswordEncoderInterface $passwordEncoder;
+
     
     public function __construct(UserRepository $userRepository, RouterInterface $router, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->userRepository = $userRepository;
         $this->router = $router;
-        $this->csrfTokenManager = $csrfTokenManager;
+        $this->csrfTokenManager= $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
     }
     
     public function supports(Request $request)
     {
-        //dump($request);
+
         return $request->attributes->get('_route') === 'login'
             and $request->isMethod('POST');
     }
 
     public function getCredentials(Request $request)
     {
-        $credentials = [
+
+       $credentials = [
             'username' => $request->request->get('_username'),
+            'email' => $request->request->get('_email'),
             'password' => $request->request->get('_password'),
             'csrf_token' => $request->request->get('_csrf_token'),
-        ]; 
-        //dd($credentials);
-        $request->getSession()->set(
+        ];
+           $request->getSession()->set(
             Security::LAST_USERNAME,
             $credentials['username']
-            );
+        );
+
         return $credentials;
     }
 
@@ -71,12 +75,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request,TokenInterface $token ,$providerKey)
     {
-         //    if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
-           //  return new RedirectResponse($targetPath);
-        //}
-        dump($token);
         return new RedirectResponse($this->router->generate('core_home'));
     }
      

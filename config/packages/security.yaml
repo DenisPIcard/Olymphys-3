@@ -17,12 +17,13 @@ security:
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
    
     firewalls:
-        dev:
+       dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+       main:
             pattern:    ^/
-            anonymous: lazy
+            anonymous: true
+            lazy: true
             provider: app_user_provider
             guard:
                 authenticators:
@@ -35,7 +36,7 @@ security:
             logout:
                 path: /logout
                 target: /
-
+            #entry_point: App\Security\AuthenticationEntryPoint
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -49,5 +50,5 @@ security:
          - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/core/index, roles: ROLE_SUPER_ADMIN,}
-         - { path :  ^/public, roles : ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/public, roles : ROLE_ADMIN }
+         - { path: ^/authorize, roles: IS_AUTHENTICATED_REMEMBERED }

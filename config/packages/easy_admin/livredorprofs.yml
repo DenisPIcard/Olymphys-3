@@ -1,0 +1,33 @@
+easy_admin :
+     entities :
+         Livredorprofs:
+             
+             
+             class : App\Entity\Livredor
+             controller: App\Controller\Admin\LivredoradminController
+             templates :
+               list: 'Admin/customizations/livredor.html.twig'
+             actions :
+               - {name : '-new'}
+               - {name : 'delete', label : 'effacer'}
+            
+             list :
+                  max_results: 50
+                  actions: [ 'delete', '-edit',{name : '-new'}]
+
+                  filters :
+                    - 'edition'
+                      
+                  dql_filter : 'entity.categorie = profs'
+                  title : <h2>Le livre d'or des professeurs</h2>
+                  fields: 
+                    - {property : 'user.prenomNom', label: 'Nom Prénom'}
+                    - {property : 'texte', type  : 'text' }
+
+                  sort: ['user.nom','ASC']
+
+                      
+          
+            
+                       
+    

@@ -27,7 +27,15 @@ class Visites
      * @ORM\Column(name="intitule", type="string", length=255, nullable=true)
      */
     private $intitule;
-
+    
+    
+     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="attribue", type="boolean")
+     */
+    public $attribue;
+    
 
     /**
      * Get id
@@ -38,7 +46,7 @@ class Visites
     {
         return $this->id;
     }
-
+    
     /**
      * Set intitule
      *
@@ -62,4 +70,25 @@ class Visites
     {
         return $this->intitule;
     }
+
+    
+
+    public function getAttribue(): ?bool
+    {
+        return $this->attribue;
+    }
+
+    public function setAttribue(bool $attribue): self
+    {
+        $this->attribue = $attribue;
+
+        return $this;
+    }
+    
+    
+    
+    
+    
 }
+
+

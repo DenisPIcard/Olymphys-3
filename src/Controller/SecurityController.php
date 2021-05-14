@@ -7,13 +7,12 @@ use App\Entity\User;
 use App\Form\UserRegistrationFormType;
 use App\Form\ProfileType;
 use App\Form\ResettingType;
-use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
-use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -22,10 +21,17 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Mime\Address;
-
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Service\Mailer;
 
 class SecurityController extends AbstractController
-{  
+{
+    private $session;
+    public function __construct(SessionInterface $session)
+    {
+        $this->session=$session;
+    }
+
     /**
      * @Route("/login", name="login")
      */
@@ -58,51 +64,57 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="register")
      */
-    public function register(MailerInterface $mailer, Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, TokenGeneratorInterface $tokenGenerator)
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, Mailer $mailer, TokenGeneratorInterface $tokenGenerator): Response
     {
-
-        $form = $this->createForm(UserRegistrationFormType::class );
-        $form->handleRequest($request);
+        $rneRepository=$this->getDoctrine()->getManager()->getRepository('App:Rne');
+        
+        // création du formulaire
+        $user = new User();
+        // instancie le formulaire avec les contraintes par défaut, + la contrainte registration pour que la saisie du mot de passe soit obligatoire
+        $form = $this->createForm(UserRegistrationFormType::class, $user,[
+           'validation_groups' => array('User', 'registration'),
+        ]);        
+        $form->handleRequest($request);  
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
-            //dump($user);
-            $user->setPassword($passwordEncoder->encodePassword(
-                $user,
-                $form['plainPassword']->getData()
-            ));
+            
+            $rne=$form->get('rne')->getData();
+            if ($rneRepository->findOneByRne(['rne'=>$rne])==null){
+                $request->getSession()
+                                ->getFlashBag()
+                                ->add('alert', 'Ce n° RNE n\'est pas valide !') ;   
+          
+                return   $this->redirectToRoute('register');
+            }    
+            // Encode le mot de passe
+            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
+            
+            //inactive l'User en attente de la vérification du mail
             $user->setIsActive(0);
             $user->setToken($tokenGenerator->generateToken());
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
             $user->setCreatedAt(new \Datetime());
-            // Enregistre le membre en base
-            // be absolutely sure they agree
-            if (true === $form['agreeTerms']->getData()) {
-                $user->agreeTerms();
+           /* if ($this->session->get('resetpwd')==true){
+                $user->setLastVisit(new \datetime('now'));
+                $this->session->set('resetpwd',null);
             }
-            //dd($user);
+            */
+            // Enregistre le membre en base
             $em = $this->getDoctrine()->getManager();
-            
-            $em->persist($user);
+            $em->persist($user); 
             $em->flush();
-            $email=(new TemplatedEmail())
-                    ->from(new Address('info@olymphys.fr','Équipe Olymphys'))
-                    ->to(new Address($user->getEmail(), $user->getNom()))
-                    ->subject('Bienvenue sur Olymphys')
-                    ->htmlTemplate('email/bienvenue.html.twig')
-                    ->context([
-                        'user' => $user,
-                        ]);
-            $mailer->send($email);
-            $request->getSession()->getFlashBag()->add('success', "Un mail va vous être envoyé afin que vous puissiez finaliser votre inscription. Le lien que vous recevrez sera valide 24h.");        
+            $mailer->sendVerifEmail($user);
+            $request->getSession()->getFlashBag()->add('success', "Un mail va vous être envoyé afin que vous puissiez finaliser votre inscription. Le lien que vous recevrez sera valide 24h.");
+
             return $this->redirectToRoute("core_home");
+
         }
-        return $this->render('security/register.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
-        
-     }
-     
+        return $this->render('register/register.html.twig',
+            array('form' => $form->createView())
+        );
+    }
+
          // si supérieur à 24h, retourne false
     // sinon retourne false
     private function isRequestInTime(\Datetime $passwordRequestedAt = null)
@@ -120,39 +132,38 @@ class SecurityController extends AbstractController
         return $response;
     }
     
+   
     /**
+     * 
      * @Route("/verif_mail/{id}/{token}", name="verif_mail")
+     * 
      */
-    public function verifMail(User $user, Request $request, MailerInterface $mailer, string $token)
+    public function verifMail(User $user, Request $request, Mailer $mailer, string $token)
     {
- 
-       // interdit l'accès à la page si:
+        $rneRepository=$this->getDoctrine()->getManager()->getRepository('App:Rne');
+        $rne=$user->getRne();
+        // interdit l'accès à la page si:
         // le token associé au membre est null
         // le token enregistré en base et le token présent dans l'url ne sont pas égaux
         // le token date de plus de 24h
+      
         if ($user->getToken() === null || $token !== $user->getToken() || !$this->isRequestInTime($user->getPasswordRequestedAt()))
         {
-            dd($user->getToken(),$token,$this->isRequestInTime($user->getPasswordRequestedAt()));
-            throw new AccessDeniedException();
+            $this->redirectToRoute('login');
         }
-
+        
             // réinitialisation du token à null pour qu'il ne soit plus réutilisable
             $user->setToken(null);
             $user->setPasswordRequestedAt(null);
             $user->setIsActive(1);
-            
+            $user->setUpdatedAt(new \Datetime());
+            $user->setRoles(['ROLE_PROF']);
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-            $email=(new TemplatedEmail())
-                    ->from(new Address('info@olymphys.fr','Équipe Olymphys'))
-                    ->to(new Address('webmestre2@olymphys.fr', 'Denis'))
-                    ->subject('Nouvel utilisateur sur Olymphys')
-                    ->htmlTemplate('email/nouvel_utilisateur.html.twig')
-                    ->context([
-                        'user' => $user,
-                        ]);
-            $mailer->send($email);
+            $rne=$user->getRne();
+            $rne_obj=$rneRepository->findOneByRne(['rne'=>$rne]);
+            $mailer->sendMessage($user,$rne_obj);
             $request->getSession()->getFlashBag()->add('success', "Votre inscription est terminée, vous pouvez vous connecter.");
 
             return $this->redirectToRoute('login');
@@ -160,13 +171,11 @@ class SecurityController extends AbstractController
         
     }
     
-             /**
+     /**
      * @Route("/forgottenPassword", name="forgotten_password")
      */
     public function forgottenPassword(Request $request, MailerInterface $mailer, TokenGeneratorInterface $tokenGenerator)
     {
-
-        // création d'un formulaire "à la volée", afin que l'internaute puisse renseigner son mail
         $form = $this->createFormBuilder()
             ->add('email', EmailType::class, [
                 'constraints' => [
@@ -175,24 +184,26 @@ class SecurityController extends AbstractController
                 ]
             ])
             ->getForm();
-        $form->handleRequest($request);
+            $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
 
             $em = $this->getDoctrine()->getManager();
 
             $user = $em->getRepository(User::class)->findOneByEmail($form->getData()['email']);
-
+          
             // aucun email associé à ce compte.
             if (!$user) {
-                $request->getSession()->getFlashBag()->add('warning', "Cet email ne correspond pas à un compte.");
-                return $this->redirectToRoute("forgotten_password");
+                $request->getSession()->getFlashBag()->add('alert', 'Cet email ne correspond pas à un compte.');
+                
+                return $this->redirectToRoute('forgotten_password');
             } 
 
             // création du token
             $user->setToken($tokenGenerator->generateToken());
             // enregistrement de la date de création du token
             $user->setPasswordRequestedAt(new \Datetime());
+            $em->persist($user);
             $em->flush();
 
             $email=(new TemplatedEmail())
@@ -210,7 +221,7 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/password_request.html.twig', [
-            'passwordRequestForm' => $form->createView()
+            'passwordRequestForm' => $form->createView(),'resetpwd'=>$this->session->get('resetpwd')
         ]);
     }
     
@@ -244,11 +255,12 @@ class SecurityController extends AbstractController
             // réinitialisation du token à null pour qu'il ne soit plus réutilisable
             $user->setToken(null);
             $user->setPasswordRequestedAt(null);
-
+            $user->setUpdatedAt(new \datetime('now'));
+            $user->setLastVisit(new \datetime('now'));
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
+            $this->session->set('resetpwd',null);
             $request->getSession()->getFlashBag()->add('success', "Votre mot de passe a été renouvelé.");
 
             return $this->redirectToRoute('login');
@@ -259,44 +271,6 @@ class SecurityController extends AbstractController
             'resetPasswordForm' => $form->createView()
         ]);
     }
-            /**
-     * @Route("/profile_show", name="profile_show")
-     */
-    public function profileShow()
-    {
-        $user = $this->getUser();
-        return $this->render('profile/show.html.twig', array(
-            'user' => $user,
-        ));
-    }
-    
-    /**
-     * Edit the user.
-     *
-     * @param Request $request
-     * @Route("profile_edit", name="profile_edit")
-     */
-    public function profileEdit(Request $request)
-    {
-        $user = $this->getUser();
-        $form = $this->createForm(ProfileType::class, $user);
-        $form->setData($user);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
-
-            return $this->redirectToRoute('core_home');
-        }
-
-        return $this->render('profile/edit.html.twig', array(
-            'editProfileForm' => $form->createView(),
-            'user' => $user,
-        ));
-    }
 
 }

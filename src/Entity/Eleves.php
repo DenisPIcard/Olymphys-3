@@ -41,13 +41,19 @@ class Eleves
      */
     private $classe;
 
-
-    /**
+     /**
      * @var string
      *
-     * @ORM\Column(name="lettre_equipe", type="string",length=1, nullable=true)
+     * @ORM\Column(name="lettre_equipe", type="string", length=1, nullable=true)
      */
-    private $lettreEquipe;
+    private$lettre_equipe;
+
+    /**
+      * @ORM\ManyToOne(targetEntity="App\Entity\Equipesadmin")
+       * @ORM\JoinColumn(name="equipe_id",  referencedColumnName="id" )
+       *
+     */
+    private $equipe;
     
 
 
@@ -155,5 +161,17 @@ class Eleves
     public function getLettreEquipe()
     {
         return $this->lettreEquipe;
+    }
+
+    public function getEquipe(): ?Equipesadmin
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(?Equipesadmin $equipe): self
+    {
+        $this->equipe = $equipe;
+
+        return $this;
     }
 }

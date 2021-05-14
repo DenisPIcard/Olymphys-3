@@ -2,21 +2,29 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Entity\Rne;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+
+
 
 /**
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(fields="email", message="Cet email est déjà enregistré en base.")
+ * @UniqueEntity(fields="username", message="Cet identifiant est déjà enregistré en base")
  */
-class User implements UserInterface ,\Serializable
+class User implements UserInterface, \Serializable
 {
+
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -30,11 +38,12 @@ class User implements UserInterface ,\Serializable
      * @Assert\Length(max=50)
      */
     private $username;
-    
-    /**
-     * @ORM\Column(type="json")
+
+     /**
+     * * @var array
+     * @ORM\Column(type="array")
      */
-    private $roles = [];
+    private $roles;
 
     /**
      * @var string The hashed password
@@ -42,10 +51,6 @@ class User implements UserInterface ,\Serializable
      */
     private $password;
     
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $agreedTermsAt;
 
     private $plainPassword;
     
@@ -58,7 +63,7 @@ class User implements UserInterface ,\Serializable
     private $email;
  
      /**
-     * @ORM\Column(name="is_active", type="boolean")
+     * @ORM\Column(name="is_active", type="boolean", nullable=true)
      */
     private $isActive;
     
@@ -122,6 +127,13 @@ class User implements UserInterface ,\Serializable
      * @ORM\Column(name="phone", type="string", length=15, nullable=true)
      */
     protected $phone;
+   
+     /**
+       *  
+       * @ORM\ManyToOne(targetEntity="App\Entity\Centrescia")
+       * @ORM\JoinColumn(name="centre_id",  referencedColumnName="id" )
+       */       
+    private $centrecia;
     
      /**
      * @var \DateTime
@@ -151,35 +163,78 @@ class User implements UserInterface ,\Serializable
      */
     protected $civilite;
     
-    public function __construct()
+    
+    
+   
+    /**
+       *  
+       * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes", cascade={"persist"})
+       * @ORM\JoinColumn( referencedColumnName="id", )
+       */
+     private $autorisationphotos;
+
+     /**
+      * @ORM\OneToMany(targetEntity=Equipes::class, mappedBy="hote")
+      */
+     private $interlocuteur;
+     
+     
+     
+
+    public function __construct(EntityManager $em)
     {
         $this->isActive = true;
-        $this->roles = ['ROLE_USER'];   
+        $this->roles = ['ROLE_USER'];
+        $this->em = $em;
+        
     }
-     
+     /*public function __toString()
+   {
+      return strval( $this->getNomPrenom() );
+   }*/
+
+
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    /*
-     * Get username
+   
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
      */
     public function getUsername(): string
     {
         return (string) $this->username;
     }
- 
-    /*
-     * Set username
-     */
+
     public function setUsername(string $username): self
     {
         $this->username = $username;
 
         return $this;
     }
+    
      /*
+     * Get email
+     */
+    public function getCentrecia()
+    {
+        return $this->centrecia;
+    }
+ 
+    /*
+     * Set email
+     */
+    public function setCentrecia($centrecia)
+    {
+        $this->centrecia= $centrecia;
+        return $this;
+    }
+    
+
+    /*
      * Get email
      */
     public function getEmail()
@@ -195,7 +250,7 @@ class User implements UserInterface ,\Serializable
         $this->email = $email;
         return $this;
     }
-    
+ 
     /**
      * @return string
      */
@@ -215,29 +270,36 @@ class User implements UserInterface ,\Serializable
     /**
      * @see UserInterface
      */
-    public function getRoles(): array
+    public function getRoles()
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->roles; 
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles)
     {
+        if (!in_array('ROLE_USER', $roles))
+        {
+            $roles[] = 'ROLE_USER';
+        }
+        foreach ($roles as $role)
+        {
+            if(substr($role, 0, 5) !== 'ROLE_') {
+                throw new InvalidArgumentException("Chaque rôle doit commencer par 'ROLE_'");
+            }
+        }
         $this->roles = $roles;
-
         return $this;
     }
-    
+
     /**
      * @see UserInterface
      */
     public function getPassword(): string
     {
         return (string) $this->password;
-    }  
+    }
+
+    
 
     public function setPassword(string $password): self
     {
@@ -245,24 +307,6 @@ class User implements UserInterface ,\Serializable
 
         return $this;
     }
-    
-    public function agreeTerms()
-    {
-        $this->agreedTermsAt = new \DateTime();
-    }
-    
-    public function getAgreedTermsAt(): ?\DateTimeInterface
-    {
-        return $this->agreedTermsAt;
-    }
-
-    public function setAgreedTermsAt(\DateTimeInterface $agreedTermsAt): self
-    {
-        $this->agreedTermsAt = $agreedTermsAt;
-
-        return $this;
-    }
-    
     /*
      * Get isActive
      */
@@ -279,7 +323,6 @@ class User implements UserInterface ,\Serializable
         $this->isActive = $isActive;
         return $this;
     }
-    
     /**
      * @see UserInterface
      */
@@ -340,11 +383,12 @@ class User implements UserInterface ,\Serializable
         ) = unserialize($serialized);
     }
     
-     /**
+        /**
      * @Assert\NotBlank(groups={"registration"})
      * @Assert\Length(max=4096)
      */
-     public function getPlainPassword()
+ 
+    public function getPlainPassword()
     {
         return $this->plainPassword;
     }
@@ -352,15 +396,6 @@ class User implements UserInterface ,\Serializable
     public function setPlainPassword($password)
     {
         $this->plainPassword = $password;
-    }
-    
-    /**
-     * Get rne
-     *
-     * @return string
-     */
-    public function getRne() {
-        return $this->rne;
     }
     
      /**
@@ -384,7 +419,6 @@ class User implements UserInterface ,\Serializable
     public function getAdresse() {
         return $this->adresse;
     }
-    
     /**
      * Set adresse
      *
@@ -406,7 +440,6 @@ class User implements UserInterface ,\Serializable
     public function getVille() {
         return $this->ville;
     }
-    
     /**
      * Set ville
      *
@@ -428,7 +461,6 @@ class User implements UserInterface ,\Serializable
     public function getCode() {
         return $this->code;
     }
-    
     /**
      * Set Code
      *
@@ -450,7 +482,6 @@ class User implements UserInterface ,\Serializable
     public function getCivilite() {
         return $this->civilite;
     }
-    
     /**
      * Set civilite
      *
@@ -463,7 +494,6 @@ class User implements UserInterface ,\Serializable
 
         return $this;
     }
-    
      /**
      * Get phone
      *
@@ -472,7 +502,6 @@ class User implements UserInterface ,\Serializable
     public function getPhone() {
         return $this->phone;
     }
-    
     /**
      * Set phone
      *
@@ -487,6 +516,15 @@ class User implements UserInterface ,\Serializable
     }
 
     /**
+     * Get rne
+     *
+     * @return string
+     */
+    public function getRne() {
+        return $this->rne;
+    }
+    
+    /**
      * Get nom
      *
      * @return string
@@ -494,7 +532,6 @@ class User implements UserInterface ,\Serializable
     public function getNom() {
         return $this->nom;
     }
-    
     /**
      * Set nom
      *
@@ -507,6 +544,7 @@ class User implements UserInterface ,\Serializable
 
         return $this;
     }
+
     
     /**
      * Get prenom
@@ -559,7 +597,7 @@ class User implements UserInterface ,\Serializable
      */
     public function setUpdatedAt($updatedAt)
     {
-        $this->updatedAt = $passwordRequestedAt;
+        $this->updatedAt =$updatedAt;
         return $this;
     }
     
@@ -573,11 +611,66 @@ class User implements UserInterface ,\Serializable
     /*
      * Set lastVisit
      */
-    public function setLastVisit()
+    public function setLastVisit($lastVisit)
     {
         $this->lastVisit = $lastVisit;
         return $this;
     }
+     public function getAutorisationphotos()
+    {
+        return $this->autorisationphotos;
+    }
     
     
+    public function setAutorisationphotos($autorisation)
+    {
+        $this->autorisationphotos = $autorisation;
+
+        return $this;
+    }
+    public function getNomPrenom()
+    {
+        return $this->nom.' '.$this->prenom;
+        
+    }
+    
+     public function getPrenomNom()
+    {
+        return $this->prenom.' '.$this->nom;
+        
+    }
+
+    /**
+     * @return Collection|Equipes[]
+     */
+    public function getInterlocuteur(): Collection
+    {
+        return $this->interlocuteur;
+    }
+
+    public function addInterlocuteur(Equipes $interlocuteur): self
+    {
+        if (!$this->interlocuteur->contains($interlocuteur)) {
+            $this->interlocuteur[] = $interlocuteur;
+            $interlocuteur->setHote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInterlocuteur(Equipes $interlocuteur): self
+    {
+        if ($this->interlocuteur->removeElement($interlocuteur)) {
+            // set the owning side to null (unless already changed)
+            if ($interlocuteur->getHote() === $this) {
+                $interlocuteur->setHote(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+
+
 }
