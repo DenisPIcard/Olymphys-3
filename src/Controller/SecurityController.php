@@ -228,7 +228,7 @@ class SecurityController extends AbstractController
 
             $email=(new TemplatedEmail())
                     ->from(new Address('info@olymphys.fr','Équipe Olymphys'))
-                    ->to('olymphys-11d237@inbox.mailtrap.io')//new Address($user->getEmail(), $user->getNom()))
+                    ->to(new Address($user->getEmail(), $user->getNom()))
                     ->subject('Renouvellement du mot de passe')
                     ->htmlTemplate('email/password_mail.html.twig')
                     ->context([
