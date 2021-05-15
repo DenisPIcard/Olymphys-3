@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\Equipesadmin;
 use App\Entity\Elevesinter;
 use App\Entity\Rne;
+use App\Entity\Professeurs;
 use App\Service\Mailer;
 use App\Form\UserType;
 use App\Form\UserRegistrationFormType;
@@ -105,6 +106,7 @@ class UtilisateurController extends AbstractController
         }
         $em=$this->getDoctrine()->getManager();
         $repositoryEquipesadmin=$em->getRepository('App:Equipesadmin');
+        $repositoryProfesseurs= $em->getRepository('App:Professeurs');
         $repositoryEleves=$em->getRepository('App:Elevesinter');
         $repositoryRne=$em->getRepository('App:Rne');
         if( null!=$this->getUser()){
@@ -119,9 +121,9 @@ class UtilisateurController extends AbstractController
                  $modif=false;
                  $eleves=[];         }
              else{
-               $equipe=   $repositoryEquipesadmin->findOneById(['id'=>intval($idequipe)]);
+               $equipe=   $repositoryEquipesadmin->findOneBy(['id'=>intval($idequipe)]);
 
-               $eleves= $repositoryEleves->findByEquipe(['equipe'=>$equipe]);
+               $eleves= $repositoryEleves->findBy(['equipe'=>$equipe]);
                $form1=$this->createForm(ModifEquipeType::class, $equipe,['rne'=>$this->getUser()->getRne(),'eleves'=>$eleves]);
                $modif=true;
              }
@@ -146,7 +148,7 @@ class UtilisateurController extends AbstractController
                   $equipe->setNumero($numero);
               }
               
-             $rne_objet=$repositoryRne->findOneByRne(['rne'=>$this->getUser()->getRne()]);
+             $rne_objet=$repositoryRne->findOneBy(['rne'=>$this->getUser()->getRne()]);
              $equipe->setPrenomprof1($form1->get('idProf1')->getData()->getPrenom());
              $equipe->setNomprof1($form1->get('idProf1')->getData()->getNom());
              if ($form1->get('idProf2')->getData() != null){
@@ -195,13 +197,23 @@ class UtilisateurController extends AbstractController
                }
               $equipe->setNbEleves($nbeleves);
               $em->persist($equipe);
+              $prof1=$repositoryProfesseurs->findOneBy(['user'=>$equipe->getIdProf1()]);
+              $prof2=$repositoryProfesseurs->findOneBy(['user'=>$equipe->getIdProf2()]);
+              if (in_array($equipe,$prof1->getEquipes(),false)){
+                     $prof1->addEquipe($equipe);
+                     $em->persist($prof1);
+                 }
+              if (in_array($equipe,$prof2->getEquipes(),false)){
+                     $prof2->addEquipe($equipe);
+                     $em->persist($prof2);
+                 }
               $em->flush();
               $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
-             
-               
+
+
              if($modif==false){
                
-              return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_equipe'));
+                    return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_equipe'));
               }
             if ($modif ==true){
                 
