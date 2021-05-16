@@ -158,10 +158,10 @@ class ModifEquipeType extends AbstractType
                               'mapped' =>true,
                               'required'=>true,
                            'empty_data'=>' ',
-                            'choices'=>['Prof1'=>1,
-                                               'Prof2'=>2,
-                                               'Gestionnaire du lycée'=>3,
-                                               'Autre'=>4
+                            'choices'=>['Prof1'=>'Prof1',
+                                               'Prof2'=>'Prof2',
+                                               'Gestionnaire du lycée'=>'Gestionnaire du lycée',
+                                               'Autre'=>'Autre'
                               ],
                              
                              ])      
