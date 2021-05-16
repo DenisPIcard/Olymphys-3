@@ -65,15 +65,21 @@ class ProfesseursController extends EasyAdminController
            $editionid = $request->query->get('filters')['edition'];
            $edition = $repositoryEdition->findOneBy(['id'=>$editionid]);
        }
+
+        $listequipes= $repositoryEquipes->findBy(['edition'=>$edition]);
+
+
         $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+
         $qb1 =$em->createQueryBuilder()
             ->select('entity')
             ->from($this->entity['class'], 'entity')
             ->groupBy('entity.user')
-            ->leftJoin('entity.equipes','eqs')
-            ->andWhere('eqs.edition =:edition')
+            ->join('entity.equipes','eq')
+            ->andWhere('eq.edition =:edition')
             ->setParameter('edition', $edition);
         $listProfs= $qb1->getQuery()->getResult();
+
         if($listProfs!=null){
             foreach($listProfs as $prof){
                 $equipestring ='';
