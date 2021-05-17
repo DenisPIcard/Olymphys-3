@@ -14,7 +14,7 @@ use App\Form\InscrireEquipeType;
 use App\Form\ModifEquipeType;
 use App\Form\ResettingType;
 use App\Form\ProfileType;
-
+use App\Service\Maj_profsequipes;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -198,7 +198,9 @@ class UtilisateurController extends AbstractController
               $equipe->setNbEleves($nbeleves);
               $em->persist($equipe);
               $em->flush();
-              $this->actualisation_table_prof($equipe);
+              $maj_profsequipes = new Maj_profsequipes($em);
+              $maj_profsequipes->maj_profsequipes($equipe);
+              //$this->actualisation_table_prof($equipe);
 
               //$mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
 
@@ -257,7 +259,7 @@ class UtilisateurController extends AbstractController
 
                $eleve->setAutorisationphotos(null);
                $em->remove($autorisation);
-               $em->flusch();
+               $em->flush();
            
             }
            $equipe=$eleve->getEquipe();
@@ -297,14 +299,14 @@ class UtilisateurController extends AbstractController
             $user->setLastVisit( new \datetime('now'));
             $em->persist($user);
             $em->flush();
-            
-            
+
+
         }
-        
+
         return $this->redirectToRoute('core_home');
-        
-        
-        
+
+
+
     }
 
     public function actualisation_table_prof($equipe)// lors de l'inscription ou de la modification d'une équipe, ajout du prof2 ou changement de prof1 ou 2
@@ -313,62 +315,75 @@ class UtilisateurController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $repositoryEquipesadmin = $em->getRepository('App:Equipesadmin');
         $repositoryProfesseurs = $em->getRepository('App:Professeurs');
-
-        $prof1 = $repositoryProfesseurs->findOneBy(['user' => $equipe->getIdProf1()]);
-        if (is_null($prof1)){
-            $prof1 = new Professeurs();
-            $prof1->setUser($equipe->getIdProf1());
-            $em->persist($prof1);
+        $repositoryUser = $em->getRepository('App:User');
+        $prof1 = $repositoryUser->findOneBy(['id' => $equipe->getIdProf1()->getId()]);
+        $profuser1= $repositoryProfesseurs->findOneBy(['user'=>$prof1]);
+        if (is_null($profuser1)){
+            $profuser1 = new Professeurs();
+            $profuser1->setUser($prof1);
+            $em->persist($profuser1);
             $em->flush();
 
         }
         if ($equipe->getIdProf2() != null) {
+            $prof2 = $repositoryUser->findOneBy(['id' => $equipe->getIdProf2()->getId()]);
+            $profuser2 = $repositoryProfesseurs->findOneBy(['user' => $prof2]);
 
-            $prof2 = $repositoryProfesseurs->findOneBy(['user' => $equipe->getIdProf2()]);
-
-            if (is_null($prof2)){
-                $prof2 = new Professeurs();
-                $prof2->setUser($equipe->getIdProf2());
-                $em->persist($prof2);
-                $em->flush();
-
-        }
-        }
-        $equipes=$prof1->getEquipes()->getValues();
-
-        if (!in_array($equipe,$equipes,true)){
-            $prof1->addEquipe($equipe);
-            $em->persist($prof1);
-            $em->flush();
-
-        }
-
-        if ($equipe->getIdProf2()!=null){
-            $prof2=$repositoryProfesseurs->findOneBy(['user'=>$equipe->getIdProf2()]);
-            $equipes=$prof2->getEquipes()->getValues();
-
-
-            if (!in_array($equipe,$equipes,true)){
-                $prof2->addEquipe($equipe);
-                $em->persist($prof2);
+            if (is_null($profuser2)){
+                $profuser2 = new Professeurs();
+                $profuser2->setUser($prof2);
+                $em->persist($profuser2);
                 $em->flush();
 
             }
+        }
+
+       /* if ((is_null($equipes)) or (!in_array($equipe,$equipes,true)))*/
+            //$equipe=$repositoryEquipesadmin->findOneBy(['id'=>$equipe->getId()]);
+        $equipe =$repositoryEquipesadmin->createQueryBuilder('e')
+            ->where('e.id =:id')
+            ->setParameter('id',$equipe->getId())
+            ->getQuery()->getSingleResult();
+            $profuser1->addEquipe($equipe);
+
+            $profuser1->setEquipesString($equipe->getEdition()->getEd().':'.$equipe->getNumero());
+            $em->persist($profuser1);
+            $em->flush();
+
+
+        if ($equipe->getIdProf2()!=null){
+            $profuser2=$repositoryProfesseurs->findOneBy(['user'=>$equipe->getIdProf2()]);
+            $equipes=$profuser2->getEquipes()->getValues();
+
+
+           /* if ((is_null($equipes)) or (!in_array($equipe,$equipes,true))){*/
+                $profuser2->addEquipe($equipe);
+                $profuser2->setEquipesString($equipe->getEdition()->getEd().':'.$equipe->getNumero());
+                $em->persist($profuser2);
+                $em->flush();
+
+
         }
         //En cas de supression ou changement de prof1 ou 2
 
         $listeprofs= $repositoryProfesseurs->findAll();
-        foreach($listeprofs as $prof) {
-            $equipesprof = $prof->getEquipes()->getvalues();
-            if (in_array($equipe, $equipesprof, true)) {
-                if ($prof != $equipe->getIdProf1() and $prof != $equipe->getIdProf2()) {
 
-                    $prof->removeEquipe($equipe);
-                    $em->persist($prof);
-                    $em->flush();
+         foreach($listeprofs as $prof) {
+            $equipesprof = $prof->getEquipes()->getvalues();
+
+           if (in_array($equipe, $equipesprof, true)) {
+                if ($prof->getUser() != $equipe->getIdProf1()){
+
+                    if ($prof->getUser()!= $equipe->getIdProf2()) {
+
+                                $prof->removeEquipe($equipe);
+                                $em->persist($prof);
+                                $em->flush();
+                    }
                 }
             }
         }
+        $em->flush();
 
         return $this;
 
