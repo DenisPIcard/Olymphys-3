@@ -939,12 +939,16 @@ class SecretariatadminController extends AbstractController
             if($equipes!=null){
                foreach($equipes as$equipe){
                    if ($profuser->getEquipes()!=null){
-                       if( in_array($equipe, $equipes,false )){
-                            $equipesString=$profuser->getEquipesString();
-                            $profuser->addEquipe($equipe);
-                            $profuser->setEquipesString($equipesString.'-'.$equipe->getEdition()->getEd().':'.$equipe->getNumero());
-                       }
+                        $equipesString=$profuser->getEquipesString();
                    }
+                   else{
+                           $equipesString='';
+                   }
+
+                   $profuser->addEquipe($equipe);
+                   $profuser->setEquipesString($equipesString.'||'.$equipe->getEdition()->getEd().'-'.$equipe->getNumero());
+
+
                }
            }
 

@@ -64,6 +64,7 @@ class ProfesseursController extends EasyAdminController
 
            $editionid = $request->query->get('filters')['edition'];
            $edition = $repositoryEdition->findOneBy(['id'=>$editionid]);
+           $this->session->set('edition_titre',$edition->getEd() );
        }
 
         $listequipes= $repositoryEquipes->findBy(['edition'=>$edition]);
@@ -100,7 +101,7 @@ class ProfesseursController extends EasyAdminController
                                 }
                                $equipestring =  $equipestring.$equipe->getTitreProjet().$encad;
                                if (next($equipes)!=null){
-                                   $equipestring= $equipestring.' ';
+                                   $equipestring= $equipestring.' || ';
                                }
                            }
                        $prof->setEquipesstring($equipestring);
@@ -153,7 +154,7 @@ class ProfesseursController extends EasyAdminController
                         }
                         $equipestring =  $equipestring.$equipe->getTitreProjet().$encad;
                         if (next($equipes)!=null){
-                            $equipestring= $equipestring.'\n';
+                            $equipestring= $equipestring."\n";
                         }
                     }
                     $prof->setEquipesstring($equipestring);
