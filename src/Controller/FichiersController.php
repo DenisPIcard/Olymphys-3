@@ -224,11 +224,10 @@ public function choix_equipe(Request $request,$choix) {
     
     
      $qb3 =$repositoryEquipesadmin->createQueryBuilder('t')
-                             ->where('t.idProf1=:professeur')
-                             ->orwhere('t.idProf2=:professeur')
+                             ->where('t.rneId =:rne')
                              ->andWhere('t.edition =:edition')
                              ->setParameter('edition', $edition)
-                             ->setParameter('professeur', $id_user)
+                             ->setParameter('rne', $user->getRneId())
                              ->orderBy('t.numero', 'ASC');
    if ($dateconnect>$datelimcia) {
         $phase='national';

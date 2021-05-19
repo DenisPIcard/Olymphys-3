@@ -100,14 +100,15 @@ class EquipesadminController extends EasyAdminController
             
          }
 
-         if ($request->query->get('entity')=='Professeurs'){
+         if ($request->query->get('entity')=='Etablissements'){
             $queryBuilder = $em->createQueryBuilder()
                 ->select('entity')
+                ->groupBy('entity.nomLycee')
                 ->from($this->entity['class'], 'entity')
                 ->where('entity.edition =:edition')
                 ->setParameter('edition', $edition)
 
-                ->addOrderBy('entity.nomProf1', 'ASC');
+                ->addOrderBy('entity.nomLycee', 'ASC');
 
 
 
@@ -299,7 +300,103 @@ class EquipesadminController extends EasyAdminController
 
         
     }
-    
+    /**
+     * @Route("/Equipesadmin/listeEquipes", name="liste_etablissementss")
+     */
+    function listeEtablissementsAction(){
+        $edition=$this->session->get('edition');
+
+
+        $repositoryProf = $this->getDoctrine()->getRepository('App:User');
+        $repositoryEleve = $this->getDoctrine()->getRepository('App:Elevesinter');
+        $repositoryEquipes = $this->getDoctrine()->getRepository('App:Equipesadmin');
+
+        $em = $this->getDoctrine()->getManager();
+
+        $queryBuilder = $em->createQueryBuilder()
+            ->select('entity')
+            ->groupBy('entity.nomLycee')
+            ->from($this->entity['class'], 'entity')
+            ->where('entity.edition =:edition')
+            ->setParameter('edition', $edition)
+            ->addOrderBy('entity.nomLycee', 'ASC');
+
+        $liste_etabs = $queryBuilder->getQuery()->getResult();
+
+        //dump($liste_equipes);
+        //dd($edition);
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()
+            ->setCreator("Olymphys")
+            ->setLastModifiedBy("Olymphys")
+            ->setTitle("CN  ".$edition->getEd()."ème édition -Tableau destiné au comité")
+            ->setSubject("Tableau destiné au comité")
+            ->setDescription("Office 2007 XLSX liste des établissements")
+            ->setKeywords("Office 2007 XLSX")
+            ->setCategory("Test result file");
+
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $ligne=1;
+
+        $sheet
+            ->setCellValue('A'.$ligne, 'Edition')
+            ->setCellValue('B'.$ligne, 'nom du lycée')
+            ->setCellValue('C'.$ligne, 'Code UAI')
+            ->setCellValue('D'.$ligne, 'adresse')
+            ->setCellValue('E'.$ligne, 'CP')
+            ->setCellValue('F'.$ligne, 'Ville')
+            ->setCellValue('G'.$ligne, 'Académie')
+            ->setCellValue('H'.$ligne, 'Equipes')
+
+        ;
+
+        $ligne +=1;
+
+        foreach ($liste_etabs as $etab) {
+            $listeEquipes = $em->createQueryBuilder()
+                ->select('entity')
+                ->where('entity.renId =:rneid')
+                ->andWhere('entity.edition =:edition')
+                ->setParameters(['renid' => $etab->getRneId, 'edition' => $edition])
+                ->getQuery()->getResult();
+            $equipes = '';
+            foreach ($listeEquipes as $equipe) {
+                $equipes = $equipes . $equipe->getTitreProjet() . '(' . $equipe->getPrenomProf1() . ' ' . $equipe->getNomProf1();
+
+               if ($equipe->getIdProf2() != null){
+                   $equipes = $equipes . ','.$equipe->getPrenomProf2() . ' ' . $equipe->getNomProf2() . ')';
+               }
+                else{
+                    $equipes = $equipes .')';
+                    }
+           }
+           $sheet->setCellValue('A'.$ligne,$equipe->getEdition() )
+                ->setCellValue('B'.$ligne, $equipe->getRneId()->getNom())
+                ->setCellValue('C'.$ligne, $equipe->getRne())
+                ->setCellValue('D'.$ligne, $equipe->getRneId()->getAdresse())
+                ->setCellValue('E'.$ligne, $equipe->getRneId()->getCode())
+                ->setCellValue('F'.$ligne, $equipe->getRneId()->getCommune())
+                ->setCellValue('G'.$ligne, $equipe->getAcademeie())
+                ->setCellValue('H'.$ligne, $equipes);
+
+
+            $ligne +=1;
+        }
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="equipes.xls"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+        //$writer= PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        //$writer =  \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+        // $writer =IOFactory::createWriter($spreadsheet, 'Xlsx');
+        ob_end_clean();
+        $writer->save('php://output');
+
+
+    }
     
     
     

@@ -1,0 +1,35 @@
+easy_admin :
+    entities :
+         Etablissements :
+            class : App\Entity\Equipesadmin
+            label : '<h2> Les établissements </h2>'
+            controller: App\Controller\Admin\EquipesadminController 
+            template :
+              list:  'Admin/customizations/list_etablissements.html.twig'
+            list : 
+                filters : 
+                    
+                    - property : 'edition' 
+                      
+
+                dql_filter : " entity.numero < 100  "  
+                #les équipes de n° >100 sont les photos du cn hors équipes
+                actions :
+
+                    - { name : '-new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
+                    - { name: '-edit', icon: 'pencil', label: false }
+                    - { name: '-delete', icon: 'trash-alt', label: false, permission : 'ROLE_SUPER_ADMIN', ask_confirm : true }
+                template:  'Admin/customizations/list_etablissements.html.twig'
+                max_results: 50
+                
+
+                fields :
+                  - { property : 'edition.ed', label : 'Edition'}
+                  - { property : 'rneId.nom', label : 'Lycée'}
+                  - { property : 'rne', label : 'Code UAI'}
+                  - { property : 'rneId.academie' , label : 'Académie'}
+                  - { property : 'rneId.adresse' ,label : 'adresse'}
+                  - { property : 'rneId.commune' , label : 'commune'}
+                  - { property : 'rneId.codePostal' , label : 'CP'}
+
+

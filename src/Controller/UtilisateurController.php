@@ -200,12 +200,8 @@ class UtilisateurController extends AbstractController
               $em->flush();
               $maj_profsequipes = new Maj_profsequipes($em);
               $maj_profsequipes->maj_profsequipes($equipe);
-              //$this->actualisation_table_prof($equipe);
-
-              //$mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
-
-
-             if($modif==false){
+              $mailer->sendConfirmeInscriptionEquipe($equipe,$this->getUser(), $modif);
+              if($modif==false){
                
                     return $this->redirectToRoute('fichiers_afficher_liste_fichiers_prof', array('infos'=>$equipe->getId().'-'.$this->session->get('concours').'-liste_equipe'));
               }
@@ -299,97 +295,10 @@ class UtilisateurController extends AbstractController
             $user->setLastVisit( new \datetime('now'));
             $em->persist($user);
             $em->flush();
-
-
-        }
+      }
 
         return $this->redirectToRoute('core_home');
 
-
-
     }
-
-    public function actualisation_table_prof($equipe)// lors de l'inscription ou de la modification d'une équipe, ajout du prof2 ou changement de prof1 ou 2
-    {
-        //Inscription d'une équipe
-        $em = $this->getDoctrine()->getManager();
-        $repositoryEquipesadmin = $em->getRepository('App:Equipesadmin');
-        $repositoryProfesseurs = $em->getRepository('App:Professeurs');
-        $repositoryUser = $em->getRepository('App:User');
-        $prof1 = $repositoryUser->findOneBy(['id' => $equipe->getIdProf1()->getId()]);
-        $profuser1= $repositoryProfesseurs->findOneBy(['user'=>$prof1]);
-        if (is_null($profuser1)){
-            $profuser1 = new Professeurs();
-            $profuser1->setUser($prof1);
-            $em->persist($profuser1);
-            $em->flush();
-
-        }
-        if ($equipe->getIdProf2() != null) {
-            $prof2 = $repositoryUser->findOneBy(['id' => $equipe->getIdProf2()->getId()]);
-            $profuser2 = $repositoryProfesseurs->findOneBy(['user' => $prof2]);
-
-            if (is_null($profuser2)){
-                $profuser2 = new Professeurs();
-                $profuser2->setUser($prof2);
-                $em->persist($profuser2);
-                $em->flush();
-
-            }
-        }
-
-       /* if ((is_null($equipes)) or (!in_array($equipe,$equipes,true)))*/
-            //$equipe=$repositoryEquipesadmin->findOneBy(['id'=>$equipe->getId()]);
-        $equipe =$repositoryEquipesadmin->createQueryBuilder('e')
-            ->where('e.id =:id')
-            ->setParameter('id',$equipe->getId())
-            ->getQuery()->getSingleResult();
-            $profuser1->addEquipe($equipe);
-
-            $profuser1->setEquipesString($equipe->getEdition()->getEd().':'.$equipe->getNumero());
-            $em->persist($profuser1);
-            $em->flush();
-
-
-        if ($equipe->getIdProf2()!=null){
-            $profuser2=$repositoryProfesseurs->findOneBy(['user'=>$equipe->getIdProf2()]);
-            $equipes=$profuser2->getEquipes()->getValues();
-
-
-           /* if ((is_null($equipes)) or (!in_array($equipe,$equipes,true))){*/
-                $profuser2->addEquipe($equipe);
-                $profuser2->setEquipesString($equipe->getEdition()->getEd().':'.$equipe->getNumero());
-                $em->persist($profuser2);
-                $em->flush();
-
-
-        }
-        //En cas de supression ou changement de prof1 ou 2
-
-        $listeprofs= $repositoryProfesseurs->findAll();
-
-         foreach($listeprofs as $prof) {
-            $equipesprof = $prof->getEquipes()->getvalues();
-
-           if (in_array($equipe, $equipesprof, true)) {
-                if ($prof->getUser() != $equipe->getIdProf1()){
-
-                    if ($prof->getUser()!= $equipe->getIdProf2()) {
-
-                                $prof->removeEquipe($equipe);
-                                $em->persist($prof);
-                                $em->flush();
-                    }
-                }
-            }
-        }
-        $em->flush();
-
-        return $this;
-
- }
-
-
-
 
 }

@@ -742,8 +742,4 @@ class Equipesadmin
 
 
 
-
-
-
-
 }
