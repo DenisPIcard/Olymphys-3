@@ -17,6 +17,7 @@ easy_admin :
                     - { entity : 'Equipesadmin', 'label' : 'Les equipes inscrites', icon : 'user-friends'}
                     - { entity : 'Professeurs', 'label' : 'Professeurs', icon : 'fas fa-user-tie' }
                     -  {entity : 'Elevesinter', 'label' : 'Eleves', icon : 'fas fa-child' }
+                    -  {entity : 'Etablissements', 'label' : 'Etablissements avec équipes', icon : 'fas fa-building' }
 
                     - label : 'Concours interacadémique'
                       icon : 
