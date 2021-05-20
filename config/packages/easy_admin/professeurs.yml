@@ -24,9 +24,9 @@ easy_admin :
                     - {property : 'user.ville',label :  'Ville'}
                     - {property : 'user.email',label: 'courriel' }
                     - {property : 'user.phone',label: 'Téléphone' }
-                    - {property : 'user.rneId.rne', label : 'code UAI'}
-                    - {property : 'user.rneId.nom', label : 'lycée'}
-                    - {property : 'user.rneId.commune', label : 'ville du lycée'}
+                    - {property : 'rne', label : 'code UAI'}
+                    - {property : 'nomlycee', label : 'lycée'}
+                    - {property : 'communelycee', label : 'ville du lycée'}
                     - {property : 'equipesString', type: 'array', label : 'Equipes'}
 
                 sort : ['user.nom', ASC]

@@ -91,4 +91,17 @@ class Professeurs
 
         return $this;
     }
+
+    public function getRne(): ?string
+    {
+        return $this->user->getRne();
+    }
+    public function getNomlycee(): ?string
+    {
+        return $this->user->getRneId()->getNom();
+    }
+    public function getCommunelycee(): ?string
+    {
+        return $this->user->getRneId()->getCommune();
+    }
 }
