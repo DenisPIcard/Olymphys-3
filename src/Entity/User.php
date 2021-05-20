@@ -187,11 +187,11 @@ class User implements UserInterface, \Serializable
      
      
 
-    public function __construct(EntityManager $em)
+    public function __construct()
     {
         $this->isActive = true;
         $this->roles = ['ROLE_USER'];
-        $this->em = $em;
+
         
     }
      /*public function __toString()
