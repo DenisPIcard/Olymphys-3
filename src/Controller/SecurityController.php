@@ -76,19 +76,21 @@ class SecurityController extends AbstractController
         ]);        
         $form->handleRequest($request);  
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $rne=$form->get('rne')->getData();
-            if ($rneRepository->findOneByRne(['rne'=>$rne])==null){
+
+            if ($rneRepository->findOneBy(['rne'=>$rne])==null){
                 $request->getSession()
                                 ->getFlashBag()
                                 ->add('alert', 'Ce n° RNE n\'est pas valide !') ;   
           
                 return   $this->redirectToRoute('register');
-            }    
-            // Encode le mot de passe
+            }
+            $rneId=$rneRepository->findBy(['rne'=>$rne]);
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
-            
+            $user->setRne($rne);
+            $user->setRneId($rneId[0]);
             //inactive l'User en attente de la vérification du mail
             $user->setIsActive(0);
             $user->setToken($tokenGenerator->generateToken());
@@ -157,6 +159,7 @@ class SecurityController extends AbstractController
             $user->setPasswordRequestedAt(null);
             $user->setIsActive(1);
             $user->setUpdatedAt(new \Datetime());
+            $user->setLastVisit(new \Datetime());
             $user->setRoles(['ROLE_PROF']);
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);

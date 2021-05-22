@@ -2,24 +2,37 @@
 {% extends '@!EasyAdmin/default/list.html.twig' %} 
 
 {%  block content_title %}
-    {% if app.request.query.get('entity')=='equipesadmin' %}
+
+    {% if app.request.query.get('entity')=='Equipesadmin' %}
+
         {% set category = 'Liste des équipes' %}
 
-    {% elseif app.request.query.get('entity')=='etablissements' %}
+    {% elseif app.request.query.get('entity')=='Etablissements' %}
         {% set category = 'Liste des etablissements' %}
     {% endif %}
     <tittle>
-        {{ category}} aux interacadémiques  de  la  <b>{{   app.session.get('edition_titre') }}<sup>e</sup></b> edition.
+      {{ category }}   aux interacadémiques  de  la  <b>{{   app.session.get('edition_titre') }}<sup>e</sup></b> edition.
     </tittle>
 {%  endblock %} 
 
 {% block global_actions %}
 
 <div class="button-action">
-    {% if app.request.query.get('entity')=='equipesadmin' %}
-            <a type="button" class="btn btn-primary"  href="{{ path('liste_equipes') }}">Extraction tableau excel </a>
-    {% elseif app.request.query.get('entity')=='etablissements' %}
-        <a type="button" class="btn btn-primary"  href="{{ path('liste_etablissements') }}">Extraction tableau excel </a>
+    {% if app.request.query.get('entity')=='Equipesadmin' %}
+        {% if  app.request.query.get('filters')!=null%}
+            <a type="button" class="btn btn-primary"  href="{{ path('liste_equipes',{editionid :app.request.query.get('filters').edition}) }}">Equipes : Extraction tableau excel </a>
+        {% endif %}
+        {% if  app.request.query.get('filters')==null%}
+            <a type="button" class="btn btn-primary"  href="{{ path('liste_equipes',{editionid :  app.session.get('edition').id}) }}">Equipes : Extraction tableau excel </a>
+        {% endif %}
+    {% endif %}
+    {% if app.request.query.get('entity')=='Etablissements' %}
+        {% if  app.request.query.get('filters')!=null%}
+            <a type="button" class="btn btn-primary"  href="{{ path('liste_etablissements',{editionid :app.request.query.get('filters').edition}) }}">Lycée :  Extraction tableau excel </a>
+        {% endif %}
+        {% if  app.request.query.get('filters')==null%}
+            <a type="button" class="btn btn-primary"  href="{{ path('liste_etablissements',{editionid :  app.session.get('edition').id}) }}">Lycées : Extraction tableau excel </a>
+        {% endif %}
     {% endif %}
 </div>
 

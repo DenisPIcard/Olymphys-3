@@ -23,7 +23,7 @@ easy_admin :
 
                 max_results: 50
                 
-                template : 'Admin\customizations\list.html.twig'
+
                 fields :
                   - { property : 'edition.ed', label : 'Edition'}
                   - {property : 'centre.centre', label : 'Centre'}
