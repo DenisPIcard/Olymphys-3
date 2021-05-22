@@ -114,14 +114,14 @@
                         <p></p>
                         <div class="d-flex align-items-center flex-column " style="height:auto ;width:250px !important;">
                             <div class="p-2 ">
-                                <div class="row text-center graylight">
-                                    <div class="col">
+                                <div class="row">
+                                    <div class="col text-center graylight">
                                         <h5>Les photos du concours national</h5>
                                     </div>
                                 </div>
                             <div class="p-2 ">
                                 <div class="row">
-                                    <div class="col text-center">
+                                    <div class="col">
                                           {%  set photoscarousel = photoseqcn %}
                                           {% set concours='cn' %}
 
@@ -131,7 +131,7 @@
                             </div>
                             <div class="p-2 ">
 
-                                <div class="row ">
+                                <div class="row">
                                         <div class="col text-center">
                                             <h5><a href="{{ path('photos_voirphotoscn',{edition : edition_affichee.id}) }}" title="Accéder à la galerie" > Accéder à la galerie</a></h5>
                                         </div>
@@ -142,23 +142,23 @@
                         {% if livresdor !=null %}
 
                             <div class="p-2 ">
-                                <div class="row text-center graylight">
-                                        <div class="col">
+                                <div class="row ">
+                                        <div class="col text-center graylight">
                                             <h5> Les livres d'or</h5>
                                         </div>
                                 </div>
                                 <div class="row">
-                                        <div class="col">
+                                        <div class="col text-center">
                                                 <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-eleves'}) }}" title="Livre d'or des élèves" > Livre d'or des élèves</a>
                                         </div>
                                 </div>
                                 <div class="row">
-                                            <div class="col">
+                                            <div class="col text-center">
                                                 <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-profs'}) }}" title="Livre d'or des professeurs" > Livre d'or des professeurs</a>
                                             </div>
                                 </div>
                                 <div class="row">
-                                            <div class="col">
+                                            <div class="col text-center">
                                                 <a href="{{ path('livredor_lire',{choix : edition_affichee.id~'-jury'}) }}" title="Livre d'or du jury" > Livre d'or du jury</a>
                                             </div>
                                 </div>
