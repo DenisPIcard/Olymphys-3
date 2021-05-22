@@ -30,6 +30,7 @@ use App\Entity\Prix ;
 use App\Entity\Cadeaux ;
 use App\Entity\Liaison ;
 use App\Entity\Equipesadmin;
+
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -903,59 +904,74 @@ class SecretariatadminController extends AbstractController
      */
     public function  mise_a_jour_table_professeurs(Request $request)//fonction provisoire pour le remplissage des tables profs et equipesadmin mai 2021
     {
-        $em=$this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
 
-        $repositoryProfesseurs= $this->getDoctrine()
+        $repositoryProfesseurs = $this->getDoctrine()
             ->getManager()
             ->getRepository('App:Professeurs');
-        $repositoryUser= $this->getDoctrine()
+        $repositoryUser = $this->getDoctrine()
             ->getManager()
             ->getRepository('App:User');
-        $repositoryEquipesadmin= $this->getDoctrine()
+        $repositoryEquipesadmin = $this->getDoctrine()
             ->getManager()
             ->getRepository('App:Equipesadmin');
+        $repositoryRne = $this->getDoctrine()
+            ->getManager()
+            ->getRepository('App:Rne');
 
-        $qb=$repositoryUser->createQueryBuilder('p');
-        $qb1 =$repositoryUser->createQueryBuilder('u')
-            ->andWhere($qb->expr()->like('u.roles',':roles'))
-            ->setParameter('roles','%a:2:{i:0;s:9:"ROLE_PROF";i:1;s:9:"ROLE_USER";}%')
-            ->addOrderBy('u.nom','ASC');
-        $listeProfs=$qb1->getQuery()->getResult();
+
+        $listeProfs = $repositoryUser->findAll();
+
+        foreach ($listeProfs as $prof) {
+
+            $rneId = $repositoryRne->findOneBy(['rne' => $prof->getRne()]);
+
+            if ($rneId != null) {
+                if (in_array('ROLE_PROF', $prof->getRoles())) {
+                    $prof->setRneId($rneId);
+                    $em->persist($prof);
+                    $em->flush();
+                }
+            }
+
+        }
 
         foreach($listeProfs as $prof){
-            if($repositoryProfesseurs->findOneBy(['user'=>$prof])==null)
-                {   $profuser =new Professeurs();
+
+            if ($prof->getRneId()->getid()!=0) {
+                if ($repositoryProfesseurs->findOneBy(['user' => $prof]) == null) {
+                    $profuser = new Professeurs();
                     $profuser->setUser($prof);
+                } else {
+                    $profuser = $repositoryProfesseurs->findOneBy(['user' => $prof]);
                 }
-            else
-            {
-                $profuser=$repositoryProfesseurs->findOneBy(['user'=>$prof]);
+                $equipes = $repositoryEquipesadmin->createQueryBuilder('e')
+                    ->where('e.idProf1 =:prof or e.idProf2 =:prof')
+                    ->setParameter('prof', $prof)
+                    ->getQuery()->getResult();
+                $profuser->setEquipesstring(null);
+                if ($equipes != null) {
+                    foreach ($equipes as $equipe) {
+
+                        $equipe->setInscrite(true);
+                        $em->persist($equipe);
+                        if ($profuser->getEquipes() != null) {
+                            $equipesString = $profuser->getEquipesString();
+                        } else {
+                            $equipesString = '';
+                        }
+
+                        $profuser->addEquipe($equipe);
+                        $profuser->setEquipesString($equipesString . '||' . $equipe->getEdition()->getEd() . '-' . $equipe->getNumero());
+
+
+                    }
+                }
+
+                $em->persist($profuser);
+                $em->flush();
+
             }
-           $equipes =$repositoryEquipesadmin->createQueryBuilder('e')
-                                            ->where('e.idProf1 =:prof or e.idProf2 =:prof')
-                                            ->setParameter('prof',$prof)
-                                            ->getQuery()->getResult();
-
-            if($equipes!=null){
-               foreach($equipes as$equipe){
-                   if ($profuser->getEquipes()!=null){
-                        $equipesString=$profuser->getEquipesString();
-                   }
-                   else{
-                           $equipesString='';
-                   }
-
-                   $profuser->addEquipe($equipe);
-                   $profuser->setEquipesString($equipesString.'||'.$equipe->getEdition()->getEd().'-'.$equipe->getNumero());
-
-
-               }
-           }
-
-           $em->persist($profuser);
-           $em->flush();
-
-
         }
         return $this->redirectToRoute('core_home');
 

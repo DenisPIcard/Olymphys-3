@@ -89,6 +89,7 @@ class EquipesadminController extends EasyAdminController
             ->setParameter('edition', $edition->getEd())
            ->addOrderBy('entity.centre', 'ASC')
            ->addOrderBy('entity.'.$sortField,$sortDirection);}
+
          if ($request->query->get('entity')=='Selectionnees'){
              $queryBuilder = $em->createQueryBuilder()
             ->select('entity')
@@ -113,7 +114,10 @@ class EquipesadminController extends EasyAdminController
 
 
         }
-           
+        if (!empty($dqlFilter)) {
+            $queryBuilder->andWhere($dqlFilter);
+
+        }
            
             return $queryBuilder;
          
@@ -192,22 +196,25 @@ class EquipesadminController extends EasyAdminController
         return parent::deleteAction(); 
     }
     /**
-     * @Route("/Equipesadmin/listeEquipes", name="liste_equipes")
+     * @Route("/Equipesadmin/listeEquipes,{editionid}", name="liste_equipes")
      */
-    function listeEquipesAction(){
-         $edition=$this->session->get('edition');
+    function listeEquipesAction($editionid){
 
 
-        $repositoryProf = $this->getDoctrine()->getRepository('App:User');
+
+
         $repositoryEleve = $this->getDoctrine()->getRepository('App:Elevesinter');
+        $repositoryProf = $this->getDoctrine()->getRepository('App:User');
+        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
         $repositoryEquipes = $this->getDoctrine()->getRepository('App:Equipesadmin');
+        $edition=$repositoryEdition->findOneBy(['id'=>$editionid]);
 
-        $em = $this->getDoctrine()->getManager();
 
         $queryBuilder = $repositoryEquipes->createQueryBuilder('e')
                 ->andWhere('e.edition =:edition')
                 ->andWhere('e.inscrite = TRUE')
                 ->setParameter('edition',$edition)
+                ->andWhere('e.numero <100')
                 ->orderBy('e.numero','ASC');
                 
         $liste_equipes = $queryBuilder->getQuery()->getResult();
@@ -218,13 +225,16 @@ class EquipesadminController extends EasyAdminController
          $spreadsheet->getProperties()
                         ->setCreator("Olymphys")
                         ->setLastModifiedBy("Olymphys")
-                        ->setTitle("CN  ".$edition->getEd()."ème édition -Tableau destiné au comité")
+                        ->setTitle("CN  ".$edition->getEd()."e édition -Tableau destiné au comité")
                         ->setSubject("Tableau destiné au comité")
                         ->setDescription("Office 2007 XLSX liste des équipes")
                         ->setKeywords("Office 2007 XLSX")
                         ->setCategory("Test result file");
  
                 $sheet = $spreadsheet->getActiveSheet();
+                foreach(['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T']as $letter) {
+                    $sheet->getColumnDimension($letter)->setAutoSize(true);
+                }
 
                 $ligne=1;
 
@@ -301,27 +311,25 @@ class EquipesadminController extends EasyAdminController
         
     }
     /**
-     * @Route("/Equipesadmin/listeEquipes", name="liste_etablissementss")
+     * @Route("/Equipesadmin/listeEtablissements,{editionid}", name="liste_etablissements")
      */
-    function listeEtablissementsAction(){
-        $edition=$this->session->get('edition');
+    function listeEtablissementsAction($editionid){
+
 
 
         $repositoryProf = $this->getDoctrine()->getRepository('App:User');
-        $repositoryEleve = $this->getDoctrine()->getRepository('App:Elevesinter');
+        $repositoryEdition = $this->getDoctrine()->getRepository('App:Edition');
         $repositoryEquipes = $this->getDoctrine()->getRepository('App:Equipesadmin');
-
+        $edition=$repositoryEdition->findOneBy(['id'=>$editionid]);
         $em = $this->getDoctrine()->getManager();
 
-        $queryBuilder = $em->createQueryBuilder()
-            ->select('entity')
-            ->groupBy('entity.nomLycee')
-            ->from($this->entity['class'], 'entity')
-            ->where('entity.edition =:edition')
+        $qb=$repositoryEquipes->createQueryBuilder('e')
+            ->groupBy('e.rneId')
+            ->where('e.edition =:edition')
             ->setParameter('edition', $edition)
-            ->addOrderBy('entity.nomLycee', 'ASC');
-
-        $liste_etabs = $queryBuilder->getQuery()->getResult();
+            ->addOrderBy('e.nomLycee', 'ASC')
+            ->andWhere('e.rneId IS NOT null');
+        $liste_etabs = $qb->getQuery()->getResult();
 
         //dump($liste_equipes);
         //dd($edition);
@@ -336,6 +344,9 @@ class EquipesadminController extends EasyAdminController
             ->setCategory("Test result file");
 
         $sheet = $spreadsheet->getActiveSheet();
+        foreach(['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T']as $letter) {
+            $sheet->getColumnDimension($letter)->setAutoSize(true);
+        }
 
         $ligne=1;
 
@@ -354,30 +365,29 @@ class EquipesadminController extends EasyAdminController
         $ligne +=1;
 
         foreach ($liste_etabs as $etab) {
-            $listeEquipes = $em->createQueryBuilder()
-                ->select('entity')
-                ->where('entity.renId =:rneid')
-                ->andWhere('entity.edition =:edition')
-                ->setParameters(['renid' => $etab->getRneId, 'edition' => $edition])
+            $listeEquipes=$repositoryEquipes->createQueryBuilder('e')
+                ->where('e.rneId =:rneid')
+                ->andWhere('e.edition =:edition')
+                ->setParameters(['rneid' => $etab->getRneId(), 'edition' => $edition])
                 ->getQuery()->getResult();
             $equipes = '';
             foreach ($listeEquipes as $equipe) {
                 $equipes = $equipes . $equipe->getTitreProjet() . '(' . $equipe->getPrenomProf1() . ' ' . $equipe->getNomProf1();
 
                if ($equipe->getIdProf2() != null){
-                   $equipes = $equipes . ','.$equipe->getPrenomProf2() . ' ' . $equipe->getNomProf2() . ')';
+                   $equipes =$equipes.','.$equipe->getPrenomProf2() . ' ' . $equipe->getNomProf2().')';
                }
                 else{
-                    $equipes = $equipes .')';
-                    }
+                    $equipes = $equipes .') ';
+                }
            }
-           $sheet->setCellValue('A'.$ligne,$equipe->getEdition() )
-                ->setCellValue('B'.$ligne, $equipe->getRneId()->getNom())
-                ->setCellValue('C'.$ligne, $equipe->getRne())
-                ->setCellValue('D'.$ligne, $equipe->getRneId()->getAdresse())
-                ->setCellValue('E'.$ligne, $equipe->getRneId()->getCode())
-                ->setCellValue('F'.$ligne, $equipe->getRneId()->getCommune())
-                ->setCellValue('G'.$ligne, $equipe->getAcademeie())
+           $sheet->setCellValue('A'.$ligne,$etab->getEdition()->getEd() )
+                ->setCellValue('B'.$ligne, $etab->getNomLycee())
+                ->setCellValue('C'.$ligne, $etab->getRneId()->getRne())
+                ->setCellValue('D'.$ligne, $etab->getRneId()->getAdresse())
+                ->setCellValue('E'.$ligne, $etab->getRneId()->getCodePostal())
+                ->setCellValue('F'.$ligne, $etab->getRneId()->getCommune())
+                ->setCellValue('G'.$ligne, $etab->getRneId()->getAcademie())
                 ->setCellValue('H'.$ligne, $equipes);
 
 

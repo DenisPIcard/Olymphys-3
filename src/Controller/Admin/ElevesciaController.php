@@ -99,7 +99,9 @@ class ElevesciaController extends EasyAdminController
                         ->setCategory("Test result file");
  
                 $sheet = $spreadsheet->getActiveSheet();
- 
+                foreach(['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T']as $letter) {
+                    $sheet->getColumnDimension($letter)->setAutoSize(true);
+                }
                
            
        
@@ -107,7 +109,7 @@ class ElevesciaController extends EasyAdminController
 
                 $sheet->setCellValue('A'.$ligne, 'Nom')
                     ->setCellValue('B'.$ligne, 'Prenom')
-                    ->setCellValue('C'.$ligne, 'Numequipe')
+                    ->setCellValue('C'.$ligne, 'N° equipe')
                     ->setCellValue('D'.$ligne, 'Titre')
                     ->setCellValue('E'.$ligne, 'Lycée')
                     ->setCellValue('F'.$ligne, 'Commune')
@@ -173,7 +175,9 @@ class ElevesciaController extends EasyAdminController
                         ->setCategory("Test result file");
  
                 $sheet = $spreadsheet->getActiveSheet();
- 
+                foreach(['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T']as $letter) {
+                    $sheet->getColumnDimension($letter)->setAutoSize(true);
+                }
                
            
        
@@ -260,7 +264,9 @@ class ElevesciaController extends EasyAdminController
             ->setCategory("Test result file");
 
         $sheet = $spreadsheet->getActiveSheet();
-
+        foreach(['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T']as $letter) {
+            $sheet->getColumnDimension($letter)->setAutoSize(true);
+        }
 
 
 

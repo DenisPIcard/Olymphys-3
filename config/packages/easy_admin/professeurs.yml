@@ -15,7 +15,7 @@ easy_admin :
                 dql_filter : 
                
 
-                actions :
+                actions : ['-new','-edit','-delete']
                 fields :
                     - {property : 'user.nom', label : 'Nom'}
                     - {property : 'user.prenom', label : 'Prénom'}

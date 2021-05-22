@@ -4,13 +4,13 @@ easy_admin :
             class : App\Entity\Equipesadmin
             label : '<h2> Les établissements </h2>'
             controller: App\Controller\Admin\EquipesadminController 
-            template :
-              list:  'Admin/customizations/list_etablissements.html.twig'
+            templates :
+              list:  'Admin/customizations/list_equipescia.html.twig'
             list : 
                 filters : 
                     
                     - property : 'edition' 
-                      
+
 
                 dql_filter : " entity.numero < 100  "  
                 #les équipes de n° >100 sont les photos du cn hors équipes
@@ -19,7 +19,7 @@ easy_admin :
                     - { name : '-new' , label  : 'Ajouter une équipe', icon : 'plus-square'}
                     - { name: '-edit', icon: 'pencil', label: false }
                     - { name: '-delete', icon: 'trash-alt', label: false, permission : 'ROLE_SUPER_ADMIN', ask_confirm : true }
-                template:  'Admin/customizations/list_etablissements.html.twig'
+
                 max_results: 50
                 
 

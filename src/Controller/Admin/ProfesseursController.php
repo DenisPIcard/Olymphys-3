@@ -78,7 +78,9 @@ class ProfesseursController extends EasyAdminController
             ->groupBy('entity.user')
             ->join('entity.equipes','eq')
             ->andWhere('eq.edition =:edition')
-            ->setParameter('edition', $edition);
+            ->setParameter('edition', $edition)
+            ->leftJoin('entity.user','u')
+            ->orderBy('u.nom', 'ASC');
         $listProfs= $qb1->getQuery()->getResult();
 
         if($listProfs!=null){
@@ -130,7 +132,9 @@ class ProfesseursController extends EasyAdminController
             ->groupBy('p.user')
             ->leftJoin('p.equipes','eqs')
             ->andWhere('eqs.edition =:edition')
-            ->setParameter('edition', $edition);
+            ->setParameter('edition', $edition)
+            ->leftJoin('p.user','u')
+            ->orderBY('u.nom','ASC');
         $listProfs= $queryBuilder->getQuery()->getResult();
 
         if($listProfs!=null){
@@ -154,9 +158,10 @@ class ProfesseursController extends EasyAdminController
                         }
                         $equipestring =  $equipestring.$equipe->getTitreProjet().$encad;
                         if (next($equipes)!=null){
-                            $equipestring= $equipestring."\n";
+                            $equipestring=$equipestring."\n";
                         }
                     }
+                    $equipestring=count($equipes).'-'.$equipestring;
                     $prof->setEquipesstring($equipestring);
                     $em->persist($prof);
                     $em->flush();
@@ -186,7 +191,7 @@ class ProfesseursController extends EasyAdminController
 
 
         $sheet->setCellValue('A'.$ligne, 'Nom')
-            ->setCellValue('B'.$ligne, 'Prenom')
+            ->setCellValue('B'.$ligne, 'Prénom')
             ->setCellValue('C'.$ligne, 'Adresse')
             ->setCellValue('D'.$ligne, 'Ville')
             ->setCellValue('E'.$ligne, 'Code Postal')
@@ -216,8 +221,10 @@ class ProfesseursController extends EasyAdminController
                 ->setCellValue('J' . $ligne, $prof->getUser()->getRneId()->getCommune());
             $sheet->setCellValue('K'.$ligne, $prof->getUser()->getRneId()->getAcademie());
 
-            $sheet ->getCell('L'.$ligne)->setValueExplicit($prof->getEquipesstring(),\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);//'abc \n cde'
-            $sheet->getStyle('L'.$ligne)->getAlignment()->setWrapText(true);
+            $equipesstring=explode('-',$prof->getEquipesstring());
+            $sheet ->getRowDimension($ligne)->setRowHeight(12.5*intval($equipesstring[0]));
+            $sheet ->getCell('L'.$ligne)->setValueExplicit($equipesstring[1],\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);//'abc \n cde'
+            $sheet->getStyle('A'.$ligne.':L'.$ligne)->getAlignment()->setWrapText(true);
             $ligne +=1;
         }
 
