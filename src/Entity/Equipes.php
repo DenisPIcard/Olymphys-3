@@ -133,12 +133,12 @@ class Equipes
     private $sallesecours;
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
     private $hote;
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
     private $interlocuteur;
 
@@ -148,7 +148,7 @@ class Equipes
     private $code;
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
     private $observateur;  
   
@@ -671,24 +671,24 @@ class Equipes
        return $this;
    }
 
-   public function getHote(): ?user
+   public function getHote(): ?User
    {
        return $this->hote;
    }
 
-   public function setHote(?user $hote): self
+   public function setHote(?User $hote): self
    {
        $this->hote = $hote;
 
        return $this;
    }
 
-   public function getInterlocuteur(): ?user
+   public function getInterlocuteur(): ?User
    {
        return $this->interlocuteur;
    }
 
-   public function setInterlocuteur(?user $interlocuteur): self
+   public function setInterlocuteur(?User $interlocuteur): self
    {
        $this->interlocuteur = $interlocuteur;
 
@@ -707,12 +707,12 @@ class Equipes
        return $this;
    }
 
-   public function getObservateur(): ?user
+   public function getObservateur(): ?User
    {
        return $this->observateur;
    }
 
-   public function setObservateur(?user $observateur): self
+   public function setObservateur(?User $observateur): self
    {
        $this->observateur = $observateur;
 

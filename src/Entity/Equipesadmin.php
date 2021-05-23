@@ -176,7 +176,7 @@ class Equipesadmin
     private $idProf1;
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
     private $idProf2;
 
@@ -680,24 +680,24 @@ class Equipesadmin
    }
 
 
-   public function getIdProf1(): ?user
+   public function getIdProf1(): ?User
    {
        return $this->idProf1;
    }
 
-   public function setIdProf1(?user $idProf1): self
+   public function setIdProf1(?User $idProf1): self
    {
        $this->idProf1 = $idProf1;
 
        return $this;
    }
 
-   public function getIdProf2(): ?user
+   public function getIdProf2(): ?User
    {
        return $this->idProf2;
    }
 
-   public function setIdProf2(?user $idProf2): self
+   public function setIdProf2(?User $idProf2): self
    {
        $this->idProf2 = $idProf2;
 
