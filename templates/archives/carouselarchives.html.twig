@@ -1,48 +1,48 @@
-<div class = "container-fluid ">
+<div class = "container-fluid">
 
 
-                <p></p>
-                <div id="carousel{{concours }}{{edition_affichee.id}}" class="carousel slide " data-ride="carousel" >
-                    <div class="d-flex align-items-center" style="height: auto;">
-                    <div class="p-2 ">
-                    <div class="carousel-inner black" style="width:200px !important; height:230px !important ;" >
-                        {% set i = 1 %}
 
-                        {% for photo in photoscarousel %}
+    <div id="carousel{{concours }}{{edition_affichee.id}}" class="carousel slide " data-ride="carousel" >
+        <div class="d-flex align-items-center flex-column text-center" style="height: auto;">
+            <div class="p-2 ">
+                <div class="carousel-inner black" style="width:250px !important; height:200px !important ;" >
+                    {% set i = 1 %}
 
-                                {% if i==1 %}
+                    {% for photo in photoscarousel %}
 
-                                        <div class="carousel-item active" data-interval="5000">
+                        {% if i==1 %}
 
-                                            <div class="text-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
-                                                         alt="{{photo.equipe.TitreProjet}}" class="img-fluid">
-                                            </div>
-                                            <div class="text-center>">
+                            <div class="carousel-item active" data-interval="5000">
 
-                                                <div class="smallsize">{{photo.equipe.titreProjet }}</div>
+                                <div class="text-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
+                                                              alt="{{photo.equipe.TitreProjet}}" class="img-fluid" style="width:auto !important; height:200px !important ;">
 
-                                            </div>
+                                    <div class="carousel-caption d-none d-md-block" style="transform: translateY(+50%);background:rgba(0, 0, 0, 0.5)">
 
-                                        </div>
-                                {% endif %}
-                                {% if i>1%}
-                                        <div class="carousel-item" >
+                                        <div class="smallsize">{{photo.equipe.titreProjet }}</div>
+                                    </div>
+                                </div>
 
-                                            <div class="text-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
-                                                          alt="{{photo.equipe.TitreProjet}}" class="img-fluid" >
-                                            </div>
-                                            <div class="text-center>">
+                            </div>
+                        {% endif %}
+                        {% if i>1%}
+                            <div class="carousel-item" >
 
-                                                <div class="smallsize">{{photo.equipe.titreProjet }}</div>
+                                <div class="text-center"><img src=" {{asset('upload/photos/thumbs/'~photo.photo) }}"
+                                                              alt="{{photo.equipe.TitreProjet}}" class="img-fluid" style="width:auto !important; height:200px !important ;">
+                                    <div class="carousel-caption d-none d-md-block" style="transform: translateY(+50%); background:rgba(0, 0, 0, 0.5)">
 
-                                            </div>
+                                        <div class="smallsize">{{photo.equipe.titreProjet }}</div>
+                                    </div>
 
-                                        </div>
+                                </div>
 
-                                {% endif %}
-                                {% set i= i+1 %}
+                            </div>
 
-                        {% endfor %}
+                        {% endif %}
+                        {% set i= i+1 %}
+
+                    {% endfor %}
 
 
                     <a class="carousel-control-prev" href="#carousel{{ concours }}{{edition_affichee.id}}" role="button" data-slide="prev">
@@ -53,9 +53,9 @@
                         <span class="carousel-control-next-icon" aria-hidden="true" ></span>
                         <span class="sr-only">Next</span>
                     </a>
-                    </div>
-                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
 </div>

@@ -60,8 +60,8 @@ class EquipesController extends EasyAdminController
            $request=Request::createFromGlobals();
         
         $edition= $this->session->get('edition');
-        $this->session->set('edition_titre',$edition->getEd());
-        $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+         $this->session->set('edition_titre',$edition->getEd());
+            $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
     
         /* @var DoctrineQueryBuilder */
         $queryBuilder = $em->createQueryBuilder()
