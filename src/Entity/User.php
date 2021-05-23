@@ -179,10 +179,11 @@ class User implements UserInterface, \Serializable
      private $interlocuteur;
 
      /**
-      * @ORM\ManyToOne(targetEntity=rne::class, inversedBy="users")
-      * @ORM\JoinColumn(nullable=false)
+      * @ORM\ManyToOne(targetEntity=rne::class)
       */
      private $rneId;
+
+
      
      
      
