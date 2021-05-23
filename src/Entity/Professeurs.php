@@ -20,7 +20,7 @@ class Professeurs
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity=user::class)
+     * @ORM\OneToOne(targetEntity=User::class)
      */
     private $user;
 

@@ -18,7 +18,7 @@ class Jury
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity=user::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
      */
     private $iduser;
 
@@ -27,12 +27,12 @@ class Jury
         return $this->id;
     }
 
-    public function getIduser(): ?user
+    public function getIduser(): ?User
     {
         return $this->iduser;
     }
 
-    public function setIduser(?user $iduser): self
+    public function setIduser(?User $iduser): self
     {
         $this->iduser = $iduser;
 
