@@ -2,16 +2,14 @@
 
 namespace App\Entity;
 
-use App\Entity\Rne;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Psr\Log\InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\Common\Collections\ArrayCollection;
+
 
 
 
@@ -30,29 +28,31 @@ class User implements UserInterface, \Serializable
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
      * @Assert\NotBlank()
      * @Assert\Length(max=50)
      */
-    private $username;
+    private string $username;
 
      /**
      * * @var array
      * @ORM\Column(type="array")
      */
-    private $roles;
+    private array $roles;
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
-    
+    private string $password;
 
-    private $plainPassword;
+    /**
+     * @var string The hashed password
+     */
+    private string $plainPassword;
     
      /**
      * @ORM\Column(type="string", length=60, unique=true)
@@ -60,73 +60,73 @@ class User implements UserInterface, \Serializable
      * @Assert\Length(max=60)
      * @Assert\Email()
      */
-    private $email;
+    private string $email;
  
      /**
      * @ORM\Column(name="is_active", type="boolean", nullable=true)
      */
-    private $isActive;
+    private bool $isActive;
     
     /**
      * @var string le token qui servira lors de l'oubli de mot de passe
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected $token;
+    protected string $token;
     
      /**
      * @ORM\Column(type="datetime", nullable=true)
      * @var \DateTime
      */
-    private $passwordRequestedAt;
+    private \DateTime $passwordRequestedAt;
     
     /**
      * @var string
      *
      * @ORM\Column(name="rne", type="string", length=255, nullable=true)
      */
-    protected $rne;
+    protected string $rne;
     
      /**
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
-    protected $nom;
+    protected string $nom;
     
      /**
      * @var string
      *
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
-    protected $prenom;  
+    protected string $prenom;
     
      /**
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
      */
-    protected $adresse;
+    protected string $adresse;
     
      /**
      * @var string
      *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
      */
-    protected $ville;
+    protected string $ville;
     
      /**
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=11, nullable=true)
      */
-    protected $code;
+    protected string $code;
     
      /**
      * @var string
      *
      * @ORM\Column(name="phone", type="string", length=15, nullable=true)
      */
-    protected $phone;
+    protected string $phone;
    
      /**
        *  
@@ -140,32 +140,30 @@ class User implements UserInterface, \Serializable
      *
      * @ORM\Column(name="createdAt", type="datetime", nullable=true)
      */
-    private $createdAt;
+    private \DateTime $createdAt;
     
      /**
      * @var \DateTime
      *
      * @ORM\Column(name="updatedAt", type="datetime", nullable=true)
      */
-    private $updatedAt;
+    private \DateTime $updatedAt;
     
      /**
      * @var \DateTime
      *
      * @ORM\Column(name="lastVisit", type="datetime", nullable=true)
      */
-    private $lastVisit;
+    private \DateTime $lastVisit;
     
      /**
      * @var string
      *
      * @ORM\Column(name="civilite", type="string", length=15, nullable=true)
      */
-    protected $civilite;
+    protected string $civilite;
     
-    
-    
-   
+
     /**
        *  
        * @ORM\OneToOne(targetEntity="App\Entity\Fichiersequipes", cascade={"persist"})
@@ -177,9 +175,13 @@ class User implements UserInterface, \Serializable
       * @ORM\OneToMany(targetEntity=Equipes::class, mappedBy="hote")
       */
      private $interlocuteur;
-     
-     
-     
+
+    /**
+     * @ORM\ManyToOne(targetEntity=rne::class, inversedBy="users")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private ?rne $rneId;
+
 
     public function __construct(EntityManager $em)
     {
@@ -188,11 +190,6 @@ class User implements UserInterface, \Serializable
         $this->em = $em;
         
     }
-     /*public function __toString()
-   {
-      return strval( $this->getNomPrenom() );
-   }*/
-
 
     public function getId(): ?int
     {
@@ -227,7 +224,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set email
      */
-    public function setCentrecia($centrecia)
+    public function setCentrecia($centrecia): User
     {
         $this->centrecia= $centrecia;
         return $this;
@@ -245,7 +242,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set email
      */
-    public function setEmail($email)
+    public function setEmail($email): User
     {
         $this->email = $email;
         return $this;
@@ -270,12 +267,12 @@ class User implements UserInterface, \Serializable
     /**
      * @see UserInterface
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles; 
     }
 
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): User
     {
         if (!in_array('ROLE_USER', $roles))
         {
@@ -310,7 +307,7 @@ class User implements UserInterface, \Serializable
     /*
      * Get isActive
      */
-    public function getIsActive()
+    public function getIsActive(): bool
     {
         return $this->isActive;
     }
@@ -318,7 +315,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set isActive
      */
-    public function setIsActive($isActive)
+    public function setIsActive($isActive): User
     {
         $this->isActive = $isActive;
         return $this;
@@ -343,7 +340,7 @@ class User implements UserInterface, \Serializable
     /*
      * Get passwordRequestedAt
      */
-    public function getPasswordRequestedAt()
+    public function getPasswordRequestedAt(): \DateTime
     {
         return $this->passwordRequestedAt;
     }
@@ -351,14 +348,14 @@ class User implements UserInterface, \Serializable
     /*
      * Set passwordRequestedAt
      */
-    public function setPasswordRequestedAt($passwordRequestedAt)
+    public function setPasswordRequestedAt($passwordRequestedAt): User
     {
         $this->passwordRequestedAt = $passwordRequestedAt;
         return $this;
     }
     
     /** @see \Serializable::serialize() */
-    public function serialize()
+    public function serialize(): ?string
     {
         return serialize(array(
             $this->id,
@@ -388,12 +385,12 @@ class User implements UserInterface, \Serializable
      * @Assert\Length(max=4096)
      */
  
-    public function getPlainPassword()
+    public function getPlainPassword(): string
     {
         return $this->plainPassword;
     }
  
-    public function setPlainPassword($password)
+    protected function setPlainPassword($password)
     {
         $this->plainPassword = $password;
     }
@@ -405,7 +402,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setRne( $rne) {
+    public function setRne( $rne): User
+    {
         $this->rne= $rne;
 
         return $this;
@@ -416,7 +414,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getAdresse() {
+    public function getAdresse(): string
+    {
         return $this->adresse;
     }
     /**
@@ -426,7 +425,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setAdresse( $adresse) {
+    public function setAdresse( $adresse): User
+    {
         $this->adresse= $adresse;
 
         return $this;
@@ -437,7 +437,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getVille() {
+    public function getVille(): string
+    {
         return $this->ville;
     }
     /**
@@ -447,7 +448,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setVille( $ville) {
+    public function setVille( $ville): User
+    {
         $this->ville= $ville;
 
         return $this;
@@ -458,7 +460,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getCode() {
+    public function getCode(): string
+    {
         return $this->code;
     }
     /**
@@ -468,7 +471,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setCode( $code) {
+    public function setCode( $code): User
+    {
         $this->code= $code;
 
         return $this;
@@ -479,7 +483,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getCivilite() {
+    public function getCivilite(): string
+    {
         return $this->civilite;
     }
     /**
@@ -489,7 +494,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setCivilite( $civilite) {
+    public function setCivilite( $civilite): User
+    {
         $this->civilite= $civilite;
 
         return $this;
@@ -499,17 +505,19 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getPhone() {
+    public function getPhone(): string
+    {
         return $this->phone;
     }
+
     /**
      * Set phone
      *
-     * @param string $code
-     *
+     * @param $phone
      * @return User
      */
-    public function setPhone( $phone) {
+    public function setPhone( $phone): User
+    {
         $this->phone= $phone;
 
         return $this;
@@ -520,7 +528,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getRne() {
+    public function getRne(): string
+    {
         return $this->rne;
     }
     
@@ -529,7 +538,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getNom() {
+    public function getNom(): string
+    {
         return $this->nom;
     }
     /**
@@ -539,7 +549,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setNom( $nom) {
+    public function setNom(string $nom): User
+    {
         $this->nom= $nom;
 
         return $this;
@@ -551,7 +562,8 @@ class User implements UserInterface, \Serializable
      *
      * @return string
      */
-    public function getPrenom() {
+    public function getPrenom(): string
+    {
         return $this->prenom;
     }
     /**
@@ -561,7 +573,8 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setPrenom( $prenom) {
+    public function setPrenom( $prenom): User
+    {
         $this->prenom= $prenom;
 
         return $this;
@@ -578,7 +591,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set updatedAt
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt($createdAt): User
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -587,7 +600,7 @@ class User implements UserInterface, \Serializable
     /*
      * Get updatedAt
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): \DateTime
     {
         return $this->updatedAt;
     }
@@ -595,7 +608,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set updatedAt
      */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt($updatedAt): User
     {
         $this->updatedAt =$updatedAt;
         return $this;
@@ -603,7 +616,7 @@ class User implements UserInterface, \Serializable
     
      /* Get lastVisit
      */
-    public function getLastVisit()
+    public function getLastVisit(): \DateTime
     {
         return $this->lastVisit;
     }
@@ -611,7 +624,7 @@ class User implements UserInterface, \Serializable
     /*
      * Set lastVisit
      */
-    public function setLastVisit($lastVisit)
+    public function setLastVisit($lastVisit): User
     {
         $this->lastVisit = $lastVisit;
         return $this;
@@ -622,20 +635,20 @@ class User implements UserInterface, \Serializable
     }
     
     
-    public function setAutorisationphotos($autorisation)
+    public function setAutorisationphotos($autorisation): User
     {
         $this->autorisationphotos = $autorisation;
 
         return $this;
     }
-    public function getNomPrenom()
+    public function getNomPrenom(): string
     {
         return $this->nom.' '.$this->prenom;
         
     }
     
-     public function getPrenomNom()
-    {
+     public function getPrenomNom(): string
+     {
         return $this->prenom.' '.$this->nom;
         
     }
@@ -670,6 +683,17 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
+    public function getRneId(): ?rne
+    {
+        return $this->rneId;
+    }
+
+    public function setRneId(?rne $rneId): self
+    {
+        $this->rneId = $rneId;
+
+        return $this;
+    }
 
 
 
