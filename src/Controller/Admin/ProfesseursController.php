@@ -68,7 +68,7 @@ class ProfesseursController extends EasyAdminController
        }
 
         $listequipes= $repositoryEquipes->findBy(['edition'=>$edition]);
-        
+
 
         $em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
 
