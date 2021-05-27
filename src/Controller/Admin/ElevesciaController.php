@@ -1,18 +1,12 @@
 <?php
 namespace App\Controller\Admin;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType ; 
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\Annotation\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Equipesadmin;
 use App\Entity\Edition;
-use App\Entity\Elevesinter;
 use App\Form\Filter\ElevesinterFilterType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
